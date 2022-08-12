@@ -1,0 +1,3 @@
+{
+  "i18next.i18nPaths": "/Users/simon/developer/linkedmap/example/ios/Pods/Flipper-Boost-iOSX/boost/locale,/Users/simon/developer/linkedmap/example/ios/Pods/Flipper-Folly/folly/lang,/Users/simon/developer/linkedmap/example/ios/Pods/RCT-Folly/folly/lang,/Users/simon/developer/linkedmap/example/ios/Pods/boost/boost/locale,/Users/simon/developer/linkedmap/example/ios/Pods/Headers/Private/Flipper-Folly/folly/lang,/Users/simon/developer/linkedmap/example/ios/Pods/Headers/Private/RCT-Folly/folly/lang,/Users/simon/developer/linkedmap/example/ios/Pods/Headers/Public/Flipper-Folly/folly/lang,/Users/simon/developer/linkedmap/example/ios/Pods/Headers/Public/RCT-Folly/folly/lang"
+}

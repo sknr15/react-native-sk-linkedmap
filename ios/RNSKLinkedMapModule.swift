@@ -1,14 +1,14 @@
 //
-//  RNModuleTemplateModule.swift
-//  RNModuleTemplateModule
+//  RNSKLinkedMapModule.swift
+//  RNSKLinkedMapModule
 //
-//  Copyright © 2022 Alex Demchenko. All rights reserved.
+//  Copyright © 2022 Simon Konrad. All rights reserved.
 //
 
 import Foundation
 
-@objc(RNModuleTemplateModule)
-class RNModuleTemplateModule: NSObject {
+@objc(RNSKLinkedMapModule)
+class RNSKLinkedMapModule: NSObject {
   @objc
   func constantsToExport() -> [AnyHashable : Any]! {
     return ["count": 1]
