@@ -107,10 +107,14 @@ export default function LinkedMap({
   const _addPosition = (title: string, key?: string) => {
     let _mapPos: typeof tempPositions = [...tempPositions]
     if (key) {
-      let _tempPos = _mapPos?.find((e) => e.key === key)
+      if (_mapPos.find((pos) => pos.key === key)) {
+        _mapPos = _mapPos.map((obj) => {
+          if (obj.key === key) {
+            return { ...obj, title: title }
+          }
 
-      if (_tempPos) {
-        _tempPos.title = title
+          return obj
+        })
       } else {
         _mapPos?.push({ key, title })
       }
@@ -491,7 +495,7 @@ export default function LinkedMap({
             />
             <MenuOption
               onSelect={() => {
-                setTempPositions(mapPositions)
+                setTempPositions([...mapPositions])
                 setOptionText('Manage positions')
                 setIsModalVisible(true)
               }}
