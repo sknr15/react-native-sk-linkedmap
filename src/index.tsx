@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {
-  Button,
+  Alert,
   Image,
   ImageSourcePropType,
   ScrollView,
@@ -83,10 +83,6 @@ export default function LinkedMap({
   React.useEffect(() => {
     _requestPermission()
   }, [])
-
-  React.useEffect(() => {
-    console.log('temp', tempPositions)
-  }, [tempPositions])
 
   const _requestPermission = async () => {
     // const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -260,7 +256,10 @@ export default function LinkedMap({
                 backgroundColor: '#448AFF',
                 borderRadius: 5,
               }}
-              onPress={() => setModalContentType('addPosition')}
+              onPress={() => {
+                setActiveKey(undefined)
+                setModalContentType('addPosition')
+              }}
             >
               <Text style={{ fontSize: 18, color: 'white' }}>Add position</Text>
             </TouchableOpacity>
@@ -365,11 +364,7 @@ export default function LinkedMap({
                   setIsModalVisible(false)
                 } else {
                   if (tempName) {
-                    if (modalContentType === 'showPositionDetail') {
-                      _addPosition(tempName, activeKey)
-                    } else {
-                      _addPosition(tempName)
-                    }
+                    _addPosition(tempName, activeKey)
                   }
                   setModalContentType('showAllPositions')
                 }
@@ -405,8 +400,32 @@ export default function LinkedMap({
               }}
               onPress={() => {
                 if (modalContentType === 'showAllPositions') {
-                  setTempPositions(mapPositions)
-                  setIsModalVisible(false)
+                  if (
+                    JSON.stringify(tempPositions) !==
+                    JSON.stringify(mapPositions)
+                  ) {
+                    Alert.alert(
+                      'Close?',
+                      'Do you really want to close? Any unsaved progress will be lost!',
+                      [
+                        {
+                          text: 'Cancel',
+                          style: 'cancel',
+                        },
+                        {
+                          text: 'OK',
+                          onPress: () => {
+                            setTempPositions([])
+                            setIsModalVisible(false)
+                          },
+                          style: 'destructive',
+                        },
+                      ]
+                    )
+                  } else {
+                    setTempPositions([])
+                    setIsModalVisible(false)
+                  }
                 } else {
                   setModalContentType('showAllPositions')
                 }
