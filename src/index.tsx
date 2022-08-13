@@ -3,8 +3,10 @@ import {
   Button,
   Image,
   ImageSourcePropType,
+  ScrollView,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native'
@@ -19,7 +21,10 @@ import {
 import * as ImagePicker from 'expo-image-picker'
 import Modal from 'react-native-modal'
 
-type TModalContentType = 'addPosition' | 'showPositions'
+type TModalContentType =
+  | 'addPosition'
+  | 'showAllPositions'
+  | 'showPositionDetail'
 
 export default function LinkedMap({
   source,
@@ -55,7 +60,19 @@ export default function LinkedMap({
   const [hasPermissions, setHasPermissions] = React.useState<boolean>(false)
 
   const [modalContentType, setModalContentType] =
-    React.useState<TModalContentType>('showPositions')
+    React.useState<TModalContentType>('showAllPositions')
+
+  const [mapPositions, setMapPositions] = React.useState<
+    { key: string; title: string }[]
+  >([])
+
+  const [tempPositions, setTempPositions] = React.useState<typeof mapPositions>(
+    []
+  )
+  const [tempName, setTempName] = React.useState<string>('')
+  const [activeKey, setActiveKey] = React.useState<string | undefined>(
+    undefined
+  )
 
   React.useEffect(() => {
     if (image) {
@@ -66,6 +83,10 @@ export default function LinkedMap({
   React.useEffect(() => {
     _requestPermission()
   }, [])
+
+  React.useEffect(() => {
+    console.log('temp', tempPositions)
+  }, [tempPositions])
 
   const _requestPermission = async () => {
     // const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -85,6 +106,31 @@ export default function LinkedMap({
         setImageSource(result)
       }
     }
+  }
+
+  const _addPosition = (title: string, key?: string) => {
+    let _mapPos: typeof tempPositions = [...tempPositions]
+    if (key) {
+      let _tempPos = _mapPos?.find((e) => e.key === key)
+
+      if (_tempPos) {
+        _tempPos.title = title
+      } else {
+        _mapPos?.push({ key, title })
+      }
+    } else {
+      let _key = title.replaceAll(' ', '').toLowerCase()
+      let i = 0
+      while (true) {
+        if (_mapPos?.find((e) => e.key === _key)) {
+          _key = title.replaceAll(' ', '').toLowerCase() + '_' + i++
+        } else {
+          _mapPos?.push({ key: _key, title })
+          break
+        }
+      }
+    }
+    setTempPositions(_mapPos)
   }
 
   const _renderImage = (height: number, width: number) => {
@@ -120,7 +166,7 @@ export default function LinkedMap({
     )
   }
 
-  const _renderModalContent = () => {
+  const _renderModalContent = (position?: string) => {
     switch (modalContentType) {
       case 'addPosition':
         return (
@@ -135,7 +181,7 @@ export default function LinkedMap({
             >
               <Text>Title: </Text>
               <TextInput
-                placeholder='123'
+                placeholder='Title'
                 style={{
                   flex: 1,
                   marginLeft: 5,
@@ -144,6 +190,8 @@ export default function LinkedMap({
                   borderRadius: 2,
                   borderWidth: 1,
                 }}
+                value={tempName}
+                onChangeText={(val) => setTempName(val)}
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -171,14 +219,102 @@ export default function LinkedMap({
             </View>
           </View>
         )
-      case 'showPositions':
+      case 'showPositionDetail':
+        return (
+          <View style={{ flex: 1 }}>
+            <View
+              testID='modal_change_mapposition_input'
+              style={{
+                marginBottom: 20,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Text>Title: </Text>
+              <TextInput
+                placeholder='Title'
+                style={{
+                  flex: 1,
+                  marginLeft: 5,
+                  paddingHorizontal: 5,
+                  paddingVertical: 2,
+                  borderRadius: 2,
+                  borderWidth: 1,
+                }}
+                value={tempName}
+                onChangeText={(val) => setTempName(val)}
+              />
+            </View>
+          </View>
+        )
+      case 'showAllPositions':
       default:
         return (
           <View style={{ flex: 1 }}>
-            <Button
-              title='Add position'
+            <TouchableOpacity
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                paddingVertical: 10,
+                paddingHorizontal: 10,
+                backgroundColor: '#448AFF',
+                borderRadius: 5,
+              }}
               onPress={() => setModalContentType('addPosition')}
-            />
+            >
+              <Text style={{ fontSize: 18, color: 'white' }}>Add position</Text>
+            </TouchableOpacity>
+            <ScrollView style={{ marginTop: 10 }}>
+              {tempPositions?.map((position, index) => {
+                return (
+                  <View
+                    style={{
+                      width: '100%',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      borderBottomWidth:
+                        index === tempPositions.length - 1 ? 0 : 1,
+                      paddingVertical: 5,
+                    }}
+                    key={`mapposition_${position.key}`}
+                  >
+                    <TouchableOpacity
+                      testID={`mapposition_${position.key}_detail`}
+                      onPress={() => {
+                        setActiveKey(position.key)
+                        setTempName(position.title)
+                        setModalContentType('showPositionDetail')
+                      }}
+                      style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        paddingLeft: 10,
+                        paddingVertical: 5,
+                        paddingHorizontal: 10,
+                      }}
+                    >
+                      <Text style={{ fontSize: 16 }}>{position.title}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      testID={`mapposition_${position.key}_delete`}
+                      onPress={() => {
+                        let _mapPos = tempPositions?.filter(
+                          (e) => e.key !== position.key
+                        )
+                        setTempPositions(_mapPos)
+                      }}
+                      style={{
+                        justifyContent: 'center',
+                        paddingVertical: 5,
+                        paddingHorizontal: 10,
+                      }}
+                    >
+                      <Text style={{ color: 'red', fontSize: 16 }}>Delete</Text>
+                    </TouchableOpacity>
+                  </View>
+                )
+              })}
+            </ScrollView>
           </View>
         )
     }
@@ -191,7 +327,8 @@ export default function LinkedMap({
           testID='modal_backdrop'
           style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
           onTouchEnd={() => {
-            setModalContentType('showPositions')
+            setModalContentType('showAllPositions')
+            setTempName('')
             setIsModalVisible(false)
           }}
         />
@@ -212,26 +349,76 @@ export default function LinkedMap({
               width: '100%',
               flexDirection: 'row',
               justifyContent: 'space-between',
+              alignItems: 'center',
               marginBottom: 20,
             }}
           >
-            <Button
-              title='Accept'
-              onPress={() => {
-                setModalContentType('showPositions')
-                setIsModalVisible(false)
+            <TouchableOpacity
+              style={{
+                justifyContent: 'center',
+                paddingVertical: 5,
+                paddingHorizontal: 10,
               }}
-            />
-            <Button
-              title='Close'
               onPress={() => {
-                if (modalContentType === 'showPositions') {
+                if (modalContentType === 'showAllPositions') {
+                  setMapPositions(tempPositions)
                   setIsModalVisible(false)
                 } else {
-                  setModalContentType('showPositions')
+                  if (tempName) {
+                    if (modalContentType === 'showPositionDetail') {
+                      _addPosition(tempName, activeKey)
+                    } else {
+                      _addPosition(tempName)
+                    }
+                  }
+                  setModalContentType('showAllPositions')
                 }
+                setTempName('')
               }}
-            />
+            >
+              <Text
+                style={{
+                  fontSize: 18,
+                  color: '#2962FF',
+                  fontWeight: 'bold',
+                }}
+              >
+                Accept
+              </Text>
+            </TouchableOpacity>
+            <Text
+              style={{
+                flex: 1,
+                fontSize: 22,
+                textAlign: 'center',
+              }}
+              adjustsFontSizeToFit
+              numberOfLines={2}
+            >
+              {optionText}
+            </Text>
+            <TouchableOpacity
+              style={{
+                justifyContent: 'center',
+                paddingVertical: 5,
+                paddingHorizontal: 10,
+              }}
+              onPress={() => {
+                if (modalContentType === 'showAllPositions') {
+                  setTempPositions(mapPositions)
+                  setIsModalVisible(false)
+                } else {
+                  setModalContentType('showAllPositions')
+                }
+                setTempName('')
+              }}
+            >
+              <Text
+                style={{ fontSize: 18, color: '#2962FF', fontWeight: 'bold' }}
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
           </View>
           {_renderModalContent()}
         </View>
@@ -285,6 +472,7 @@ export default function LinkedMap({
             />
             <MenuOption
               onSelect={() => {
+                setTempPositions(mapPositions)
                 setOptionText('Manage positions')
                 setIsModalVisible(true)
               }}
@@ -322,7 +510,6 @@ export default function LinkedMap({
           }
         >
           {_renderMenu()}
-          <Text>{optionText}</Text>
           {title && (
             <Text style={{ marginTop: 10, fontSize: 18, fontWeight: 'bold' }}>
               {title}
