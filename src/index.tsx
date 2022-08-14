@@ -25,6 +25,9 @@ type TModalContentType =
   | 'addPosition'
   | 'showAllPositions'
   | 'showPositionDetail'
+  | 'changeMap'
+
+type TPosition = { key: string; title: string }
 
 export default function LinkedMap({
   source,
@@ -32,12 +35,16 @@ export default function LinkedMap({
   title,
   showMenu,
   style,
+  positions,
+  onChange,
 }: {
   source?: string
   image?: ImageSourcePropType
   title?: string
   showMenu?: boolean
   style?: ViewStyle
+  positions?: TPosition[]
+  onChange?: (pos: TPosition[]) => void
 }) {
   const [containerSize, setContainerSize] = React.useState<{
     height: number
@@ -62,9 +69,7 @@ export default function LinkedMap({
   const [modalContentType, setModalContentType] =
     React.useState<TModalContentType>('showAllPositions')
 
-  const [mapPositions, setMapPositions] = React.useState<
-    { key: string; title: string }[]
-  >([])
+  const [mapPositions, setMapPositions] = React.useState<TPosition[]>([])
 
   const [tempPositions, setTempPositions] = React.useState<typeof mapPositions>(
     []
@@ -83,6 +88,12 @@ export default function LinkedMap({
   React.useEffect(() => {
     _requestPermission()
   }, [])
+
+  React.useEffect(() => {
+    if (positions) {
+      setMapPositions(positions)
+    }
+  }, [positions])
 
   const _requestPermission = async () => {
     // const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -166,7 +177,7 @@ export default function LinkedMap({
     )
   }
 
-  const _renderModalContent = (position?: string) => {
+  const _renderManagePositions = () => {
     switch (modalContentType) {
       case 'addPosition':
         return (
@@ -244,6 +255,29 @@ export default function LinkedMap({
                 value={tempName}
                 onChangeText={(val) => setTempName(val)}
               />
+            </View>
+            <View style={{ flex: 1 }}>
+              <View
+                testID='modal_add_mapposition_map'
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  borderColor: 'black',
+                  borderWidth: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onLayout={(e) =>
+                  setModalSize({
+                    height: e.nativeEvent.layout.height - 2,
+                    width: e.nativeEvent.layout.width - 2,
+                  })
+                }
+              >
+                <View style={{ flex: 1 }}>
+                  {_renderImage(modalSize.height, modalSize.width)}
+                </View>
+              </View>
             </View>
           </View>
         )
@@ -323,6 +357,59 @@ export default function LinkedMap({
     }
   }
 
+  const _renderMapPicker = () => {
+    return (
+      <View>
+        <View style={{ marginBottom: 20 }}>
+          <Text style={{ color: 'red' }}>
+            Achtung: Alle verlinkten Positionen gehen verloren!
+          </Text>
+        </View>
+        <View style={{ marginBottom: 20 }}>
+          <TouchableOpacity
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              borderRadius: 5,
+              borderColor: 'black',
+              borderWidth: 1,
+              backgroundColor: '#EEE',
+              alignSelf: 'center',
+              marginBottom: 2,
+            }}
+            onPress={() => {
+              console.log('TODO: ImagePicker öffnen, Bild ändern')
+            }}
+          >
+            <Text>Bild auswählen...</Text>
+          </TouchableOpacity>
+          <Text
+            style={{
+              alignSelf: 'center',
+              maxWidth: '50%',
+              fontStyle: 'italic',
+            }}
+            numberOfLines={2}
+          >
+            {imageSource}
+          </Text>
+        </View>
+        <View></View>
+      </View>
+    )
+  }
+
+  const _renderModalContent = () => {
+    switch (optionText) {
+      case 'Change map':
+        return _renderMapPicker()
+      default:
+        return _renderManagePositions()
+    }
+  }
+
   const _renderModal = () => {
     return (
       <View style={{ flex: 1, justifyContent: 'center' }}>
@@ -330,7 +417,6 @@ export default function LinkedMap({
           testID='modal_backdrop'
           style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
           onTouchEnd={() => {
-            setModalContentType('showAllPositions')
             setTempName('')
             setIsModalVisible(false)
           }}
@@ -366,6 +452,7 @@ export default function LinkedMap({
                 if (modalContentType === 'showAllPositions') {
                   setMapPositions(tempPositions)
                   setIsModalVisible(false)
+                  if (onChange) onChange(tempPositions)
                 } else {
                   if (tempName) {
                     _addPosition(tempName, activeKey)
@@ -431,7 +518,7 @@ export default function LinkedMap({
                     setIsModalVisible(false)
                   }
                 } else {
-                  setModalContentType('showAllPositions')
+                  setIsModalVisible(false)
                 }
                 setTempName('')
               }}
@@ -488,6 +575,8 @@ export default function LinkedMap({
             <MenuOption
               onSelect={() => {
                 setOptionText('Change map')
+                setModalContentType('changeMap')
+                setIsModalVisible(true)
                 _pickImage()
               }}
               text='Change map'
@@ -497,6 +586,7 @@ export default function LinkedMap({
               onSelect={() => {
                 setTempPositions([...mapPositions])
                 setOptionText('Manage positions')
+                setModalContentType('showAllPositions')
                 setIsModalVisible(true)
               }}
               text='Manage positions'
