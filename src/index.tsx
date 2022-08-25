@@ -18,16 +18,18 @@ import {
   MenuProvider,
   MenuTrigger,
 } from 'react-native-popup-menu'
-import * as ImagePicker from 'expo-image-picker'
 import Modal from 'react-native-modal'
+import * as ImagePicker from 'expo-image-picker'
 
 type TModalContentType =
   | 'addPosition'
+  | 'editPosition'
   | 'showAllPositions'
-  | 'showPositionDetail'
   | 'changeMap'
 
-type TPosition = { key: string; title: string }
+type TPosition = { key: string; title: string } // needs coordinates etc.
+
+type TMap = { key: string; title: string; image?: string } // what does a map need?
 
 export default function LinkedMap({
   source,
@@ -36,7 +38,8 @@ export default function LinkedMap({
   showMenu,
   style,
   positions,
-  onChange,
+  onChangePositions,
+  onChangeMap,
 }: {
   source?: string
   image?: ImageSourcePropType
@@ -44,7 +47,8 @@ export default function LinkedMap({
   showMenu?: boolean
   style?: ViewStyle
   positions?: TPosition[]
-  onChange?: (pos: TPosition[]) => void
+  onChangePositions?: (pos: TPosition[]) => void
+  onChangeMap?: (map: TMap) => void
 }) {
   const [containerSize, setContainerSize] = React.useState<{
     height: number
@@ -78,6 +82,7 @@ export default function LinkedMap({
   const [activeKey, setActiveKey] = React.useState<string | undefined>(
     undefined
   )
+  const [hasChanges, setHasChanges] = React.useState<boolean>(false)
 
   React.useEffect(() => {
     if (image) {
@@ -86,33 +91,35 @@ export default function LinkedMap({
   }, [image])
 
   React.useEffect(() => {
-    _requestPermission()
-  }, [])
-
-  React.useEffect(() => {
     if (positions) {
-      setMapPositions(positions)
+      setMapPositions(
+        positions.sort((a, b) => {
+          return a.title.localeCompare(b.title)
+        })
+      )
     }
   }, [positions])
 
+  React.useEffect(() => {
+    _requestPermission()
+  }, [])
+
   const _requestPermission = async () => {
-    // const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    // setHasPermissions(status === ImagePicker.PermissionStatus.GRANTED)
+    //ImagePicker.useMediaLibraryPermissions({})
+    //setHasPermissions(ImagePicker.PermissionStatus.GRANTED === 'granted')
   }
 
   const _pickImage = async () => {
-    if (hasPermissions) {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [16, 9],
-        quality: 0.66,
-      })
-
-      if (!result.cancelled) {
-        setImageSource(result)
-      }
+    if (!hasPermissions) {
+      Alert.alert('No permission', 'No permissions to media library', [
+        { text: 'OK' },
+      ])
+      return
     }
+
+    const result = await ImagePicker.launchImageLibraryAsync({})
+
+    setHasChanges(true)
   }
 
   const _addPosition = (title: string, key?: string) => {
@@ -144,7 +151,7 @@ export default function LinkedMap({
     setTempPositions(_mapPos)
   }
 
-  const _renderImage = (height: number, width: number) => {
+  const _renderImage = (height: number, width: number, editMode?: boolean) => {
     if (image || imageSource) {
       return (
         <ImageZoom
@@ -202,7 +209,10 @@ export default function LinkedMap({
                   borderWidth: 1,
                 }}
                 value={tempName}
-                onChangeText={(val) => setTempName(val)}
+                onChangeText={(val) => {
+                  setTempName(val)
+                  setHasChanges(true)
+                }}
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -224,13 +234,13 @@ export default function LinkedMap({
                 }
               >
                 <View style={{ flex: 1 }}>
-                  {_renderImage(modalSize.height, modalSize.width)}
+                  {_renderImage(modalSize.height, modalSize.width, true)}
                 </View>
               </View>
             </View>
           </View>
         )
-      case 'showPositionDetail':
+      case 'editPosition':
         return (
           <View style={{ flex: 1 }}>
             <View
@@ -253,7 +263,10 @@ export default function LinkedMap({
                   borderWidth: 1,
                 }}
                 value={tempName}
-                onChangeText={(val) => setTempName(val)}
+                onChangeText={(val) => {
+                  setTempName(val)
+                  setHasChanges(true)
+                }}
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -296,61 +309,68 @@ export default function LinkedMap({
               }}
               onPress={() => {
                 setActiveKey(undefined)
+                setTempName('')
                 setModalContentType('addPosition')
               }}
             >
               <Text style={{ fontSize: 18, color: 'white' }}>Add position</Text>
             </TouchableOpacity>
             <ScrollView style={{ marginTop: 10 }}>
-              {tempPositions?.map((position, index) => {
-                return (
-                  <View
-                    style={{
-                      width: '100%',
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      borderBottomWidth:
-                        index === tempPositions.length - 1 ? 0 : 1,
-                      paddingVertical: 5,
-                    }}
-                    key={`mapposition_${position.key}`}
-                  >
-                    <TouchableOpacity
-                      testID={`mapposition_${position.key}_detail`}
-                      onPress={() => {
-                        setActiveKey(position.key)
-                        setTempName(position.title)
-                        setModalContentType('showPositionDetail')
-                      }}
+              {tempPositions
+                ?.sort((a, b) => {
+                  return a.title.localeCompare(b.title)
+                })
+                .map((position, index) => {
+                  const isLastItem = index === tempPositions.length - 1
+                  return (
+                    <View
                       style={{
-                        flex: 1,
-                        justifyContent: 'center',
-                        paddingLeft: 10,
+                        width: '100%',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        borderBottomWidth: isLastItem ? 0 : 1,
                         paddingVertical: 5,
-                        paddingHorizontal: 10,
                       }}
+                      key={`mapposition_${position.key}`}
                     >
-                      <Text style={{ fontSize: 16 }}>{position.title}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      testID={`mapposition_${position.key}_delete`}
-                      onPress={() => {
-                        let _mapPos = tempPositions?.filter(
-                          (e) => e.key !== position.key
-                        )
-                        setTempPositions(_mapPos)
-                      }}
-                      style={{
-                        justifyContent: 'center',
-                        paddingVertical: 5,
-                        paddingHorizontal: 10,
-                      }}
-                    >
-                      <Text style={{ color: 'red', fontSize: 16 }}>Delete</Text>
-                    </TouchableOpacity>
-                  </View>
-                )
-              })}
+                      <TouchableOpacity
+                        testID={`mapposition_${position.key}_detail`}
+                        onPress={() => {
+                          setActiveKey(position.key)
+                          setTempName(position.title)
+                          setModalContentType('editPosition')
+                        }}
+                        style={{
+                          flex: 1,
+                          justifyContent: 'center',
+                          paddingLeft: 10,
+                          paddingVertical: 5,
+                          paddingHorizontal: 10,
+                        }}
+                      >
+                        <Text style={{ fontSize: 16 }}>{position.title}</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        testID={`mapposition_${position.key}_delete`}
+                        onPress={() => {
+                          let _mapPos = tempPositions?.filter(
+                            (e) => e.key !== position.key
+                          )
+                          setTempPositions(_mapPos)
+                        }}
+                        style={{
+                          justifyContent: 'center',
+                          paddingVertical: 5,
+                          paddingHorizontal: 10,
+                        }}
+                      >
+                        <Text style={{ color: 'red', fontSize: 16 }}>
+                          Delete
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )
+                })}
             </ScrollView>
           </View>
         )
@@ -379,8 +399,9 @@ export default function LinkedMap({
               alignSelf: 'center',
               marginBottom: 2,
             }}
-            onPress={() => {
+            onPress={async () => {
               console.log('TODO: ImagePicker öffnen, Bild ändern')
+              _pickImage()
             }}
           >
             <Text>Bild auswählen...</Text>
@@ -405,6 +426,7 @@ export default function LinkedMap({
     switch (optionText) {
       case 'Change map':
         return _renderMapPicker()
+      case 'Manage positions':
       default:
         return _renderManagePositions()
     }
@@ -452,13 +474,14 @@ export default function LinkedMap({
                 if (modalContentType === 'showAllPositions') {
                   setMapPositions(tempPositions)
                   setIsModalVisible(false)
-                  if (onChange) onChange(tempPositions)
+                  if (onChangePositions) onChangePositions(tempPositions)
                 } else {
                   if (tempName) {
                     _addPosition(tempName, activeKey)
                   }
                   setModalContentType('showAllPositions')
                 }
+                setHasChanges(false)
                 setTempName('')
               }}
             >
@@ -490,37 +513,47 @@ export default function LinkedMap({
                 paddingHorizontal: 10,
               }}
               onPress={() => {
-                if (modalContentType === 'showAllPositions') {
-                  if (
+                if (
+                  (modalContentType === 'showAllPositions' &&
                     JSON.stringify(tempPositions) !==
-                    JSON.stringify(mapPositions)
-                  ) {
-                    Alert.alert(
-                      'Close?',
-                      'Do you really want to close? Any unsaved progress will be lost!',
-                      [
-                        {
-                          text: 'Cancel',
-                          style: 'cancel',
-                        },
-                        {
-                          text: 'OK',
-                          onPress: () => {
+                      JSON.stringify(mapPositions)) ||
+                  hasChanges
+                ) {
+                  Alert.alert(
+                    'Close?',
+                    'Do you really want to close? Any unsaved progress will be lost!',
+                    [
+                      {
+                        text: 'Cancel',
+                        style: 'cancel',
+                      },
+                      {
+                        text: 'OK',
+                        onPress: () => {
+                          if (
+                            modalContentType === 'showAllPositions' ||
+                            modalContentType === 'changeMap'
+                          ) {
                             setTempPositions([])
+                            setTempName('')
                             setIsModalVisible(false)
-                          },
-                          style: 'destructive',
+                          } else {
+                            setModalContentType('showAllPositions')
+                          }
+                          setHasChanges(false)
                         },
-                      ]
-                    )
-                  } else {
+                        style: 'destructive',
+                      },
+                    ]
+                  )
+                } else {
+                  if (modalContentType === 'showAllPositions') {
                     setTempPositions([])
                     setIsModalVisible(false)
+                  } else {
+                    setModalContentType('showAllPositions')
                   }
-                } else {
-                  setIsModalVisible(false)
                 }
-                setTempName('')
               }}
             >
               <Text
@@ -577,7 +610,6 @@ export default function LinkedMap({
                 setOptionText('Change map')
                 setModalContentType('changeMap')
                 setIsModalVisible(true)
-                _pickImage()
               }}
               text='Change map'
               style={{ borderBottomWidth: 1 }}
