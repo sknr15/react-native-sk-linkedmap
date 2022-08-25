@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react'
-import { Image, SafeAreaView } from 'react-native'
+import { ImageSourcePropType, SafeAreaView } from 'react-native'
 import LinkedMap from 'react-native-sk-linkedmap'
 import { request, check, PERMISSIONS } from 'react-native-permissions'
 
 const example = require('./mapExample.png')
 
 type TPositions = { key: string; title: string }
+type TMap = { key: string; title: string; src?: ImageSourcePropType }
 
 const App = () => {
   const [pos, setPos] = React.useState<TPositions[]>([
@@ -13,6 +14,10 @@ const App = () => {
     { key: 'testmap1', title: 'Testmap 1' },
     { key: 'dasisteintest', title: 'Das ist ein Test' },
     { key: '123456', title: '123456' },
+  ])
+
+  const [maps, setMaps] = React.useState<TMap[]>([
+    { key: 'mapexample', title: 'Map Example', src: example },
   ])
 
   useEffect(() => {
@@ -26,12 +31,15 @@ const App = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <LinkedMap
-        image={example}
+        //image={maps[0].src as ImageSourcePropType}
+        map={maps[0]}
         showMenu
         positions={pos}
         onChangePositions={(pos) => setPos(pos)}
         onChangeMap={(map) => {
-          console.log(map)
+          const _maps = { ...maps }
+          _maps[0] = map
+          setMaps(_maps)
         }}
       />
     </SafeAreaView>

@@ -29,19 +29,19 @@ type TModalContentType =
 
 type TPosition = { key: string; title: string } // needs coordinates etc.
 
-type TMap = { key: string; title: string; image?: string } // what does a map need?
+type TMap = { key: string; title: string; src?: ImageSourcePropType } // what does a map need?
 
 export default function LinkedMap({
-  source,
   image,
   title,
   showMenu,
   style,
+  map,
   positions,
   onChangePositions,
   onChangeMap,
 }: {
-  source?: string
+  map: TMap
   image?: ImageSourcePropType
   title?: string
   showMenu?: boolean
@@ -59,9 +59,7 @@ export default function LinkedMap({
     width: number
   }>({ height: 0, width: 0 })
 
-  const [imageSource, setImageSource] = React.useState<
-    ImageSourcePropType | undefined
-  >(undefined)
+  const [imageSource, setImageSource] = React.useState<ImageSourcePropType>(0)
   const [optionText, setOptionText] = React.useState<string>('')
 
   const [isMapPickerVisible, setIsMapPickerVisible] =
@@ -78,6 +76,8 @@ export default function LinkedMap({
   const [tempPositions, setTempPositions] = React.useState<typeof mapPositions>(
     []
   )
+  const [tempMap, setTempMap] = React.useState<typeof map>()
+
   const [tempName, setTempName] = React.useState<string>('')
   const [activeKey, setActiveKey] = React.useState<string | undefined>(
     undefined
@@ -88,17 +88,24 @@ export default function LinkedMap({
     if (image) {
       setImageSource(image)
     }
-  }, [image])
+  }, [image, map])
 
   React.useEffect(() => {
     if (positions) {
       setMapPositions(
         positions.sort((a, b) => {
+          if (a.title === b.title) return a.key.localeCompare(b.key)
           return a.title.localeCompare(b.title)
         })
       )
     }
   }, [positions])
+
+  React.useEffect(() => {
+    if (map) {
+      setTempMap(map)
+    }
+  }, [map])
 
   React.useEffect(() => {
     _requestPermission()
@@ -110,14 +117,25 @@ export default function LinkedMap({
   }
 
   const _pickImage = async () => {
-    if (!hasPermissions) {
+    if (hasPermissions) {
       Alert.alert('No permission', 'No permissions to media library', [
         { text: 'OK' },
       ])
       return
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({})
+    //const result = await ImagePicker.launchImageLibraryAsync({})
+
+    //
+    // CHANGE!!!
+    //
+
+    let _src =
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Example_image.svg/600px-Example_image.svg.png' as ImageSourcePropType
+
+    if (map.src === _src) _src = require('../example/src/mapExample.png')
+
+    setTempMap({ ...map, src: _src })
 
     setHasChanges(true)
   }
@@ -152,7 +170,7 @@ export default function LinkedMap({
   }
 
   const _renderImage = (height: number, width: number, editMode?: boolean) => {
-    if (image || imageSource) {
+    if (map && map.src) {
       return (
         <ImageZoom
           cropHeight={height}
@@ -161,11 +179,26 @@ export default function LinkedMap({
           imageWidth={width}
         >
           <Image
-            source={
-              imageSource ?? {
-                uri: source,
-              }
-            }
+            source={typeof map.src === 'string' ? { uri: map.src } : map.src}
+            style={{
+              height,
+              width,
+            }}
+            resizeMode={'contain'}
+            resizeMethod={'resize'}
+          />
+        </ImageZoom>
+      )
+    } else if (image || imageSource) {
+      return (
+        <ImageZoom
+          cropHeight={height}
+          cropWidth={width}
+          imageHeight={height}
+          imageWidth={width}
+        >
+          <Image
+            source={imageSource}
             style={{
               height,
               width,
@@ -318,6 +351,7 @@ export default function LinkedMap({
             <ScrollView style={{ marginTop: 10 }}>
               {tempPositions
                 ?.sort((a, b) => {
+                  if (a.title === b.title) return a.key.localeCompare(b.key)
                   return a.title.localeCompare(b.title)
                 })
                 .map((position, index) => {
@@ -348,7 +382,19 @@ export default function LinkedMap({
                           paddingHorizontal: 10,
                         }}
                       >
-                        <Text style={{ fontSize: 16 }}>{position.title}</Text>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'baseline',
+                          }}
+                        >
+                          <Text style={{ fontSize: 16, paddingRight: 5 }}>
+                            {position.title}
+                          </Text>
+                          <Text
+                            style={{ fontSize: 14, opacity: 0.7 }}
+                          >{`(${position.key})`}</Text>
+                        </View>
                       </TouchableOpacity>
                       <TouchableOpacity
                         testID={`mapposition_${position.key}_delete`}
@@ -476,10 +522,15 @@ export default function LinkedMap({
                   setIsModalVisible(false)
                   if (onChangePositions) onChangePositions(tempPositions)
                 } else {
-                  if (tempName) {
-                    _addPosition(tempName, activeKey)
+                  if (modalContentType === 'changeMap') {
+                    setIsModalVisible(false)
+                    if (onChangeMap) onChangeMap(tempMap)
+                  } else {
+                    if (tempName) {
+                      _addPosition(tempName, activeKey)
+                    }
+                    setModalContentType('showAllPositions')
                   }
-                  setModalContentType('showAllPositions')
                 }
                 setHasChanges(false)
                 setTempName('')
@@ -547,10 +598,21 @@ export default function LinkedMap({
                     ]
                   )
                 } else {
+                  switch (modalContentType) {
+                    case 'addPosition':
+                    case 'editPosition':
+                      setModalContentType('showAllPositions')
+                      break
+                    case 'showAllPositions':
+                      setTempPositions([])
+                    case 'changeMap':
+                    default:
+                      setIsModalVisible(false)
+                  }
                   if (modalContentType === 'showAllPositions') {
                     setTempPositions([])
                     setIsModalVisible(false)
-                  } else {
+                  } else if (modalContentType) {
                     setModalContentType('showAllPositions')
                   }
                 }
