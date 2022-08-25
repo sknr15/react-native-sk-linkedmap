@@ -57,5 +57,14 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
+    <false/>
+    <key>NSCameraUsageDescription</key>
+    <string>YOUR TEXT Camera</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>YOUR TEXT PhotoLibrary</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+  	<string>YOUR TEXT PhotoLibraryAdd</string>
+
 </dict>
 </plist>

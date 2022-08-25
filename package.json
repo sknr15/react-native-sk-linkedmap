@@ -70,6 +70,8 @@
     "react-native-image-pan-zoom": "^2.1.12",
     "react-native-image-picker": "^4.8.5",
     "react-native-modal": "^13.0.1",
-    "react-native-popup-menu": "^0.15.13"
+    "react-native-permissions": "^3.6.1",
+    "react-native-popup-menu": "^0.15.13",
+    "react-native-screens": "^3.15.0"
   }
 }
