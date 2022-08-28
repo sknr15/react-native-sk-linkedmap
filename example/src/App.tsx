@@ -1,5 +1,11 @@
 import React, { useEffect } from 'react'
-import { ImageSourcePropType, SafeAreaView } from 'react-native'
+import {
+  ImageSourcePropType,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import LinkedMap from 'react-native-sk-linkedmap'
 import { request, check, PERMISSIONS } from 'react-native-permissions'
 
@@ -20,6 +26,8 @@ const App = () => {
     { key: 'mapexample', title: 'Map Example', src: example },
   ])
 
+  const [showMenu, setShowMenu] = React.useState<boolean>(false)
+
   useEffect(() => {
     check(PERMISSIONS.IOS.CAMERA).then((res) => {
       console.log(res)
@@ -30,10 +38,36 @@ const App = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <View
+        style={{
+          width: '100%',
+          backgroundColor: 'lightgray',
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingVertical: 5,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => setShowMenu(!showMenu)}
+          style={{ padding: 5, flexDirection: 'row', alignItems: 'center' }}
+        >
+          <Text
+            style={{
+              width: 20,
+              borderWidth: 1,
+              textAlign: 'center',
+              marginRight: 10,
+            }}
+          >
+            {showMenu ? 'x' : ' '}
+          </Text>
+          <Text>Enable Menu</Text>
+        </TouchableOpacity>
+      </View>
       <LinkedMap
         //image={maps[0].src as ImageSourcePropType}
         map={maps[0]}
-        showMenu
+        showMenu={showMenu}
         positions={pos}
         onChangePositions={(pos) => setPos(pos)}
         onChangeMap={(map) => {

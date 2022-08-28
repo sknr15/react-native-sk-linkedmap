@@ -5,7 +5,6 @@ import {
   ImageSourcePropType,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
   ViewStyle,
@@ -23,6 +22,7 @@ import Modal from 'react-native-modal'
 import * as ImagePicker from 'expo-image-picker'
 import ReactCrop from 'react-image-crop'
 import { MapPicker } from './Map/MapPicker'
+import { AddPosition, EditPosition } from './Position'
 
 type TModalContentType =
   | 'addPosition'
@@ -226,115 +226,31 @@ export default function LinkedMap({
     switch (modalContentType) {
       case 'addPosition':
         return (
-          <View style={{ flex: 1 }}>
-            <View
-              testID='modal_add_mapposition_input'
-              style={{
-                marginBottom: 20,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
-            >
-              <Text>Title: </Text>
-              <TextInput
-                placeholder='Title'
-                style={{
-                  flex: 1,
-                  marginLeft: 5,
-                  paddingHorizontal: 5,
-                  paddingVertical: 2,
-                  borderRadius: 2,
-                  borderWidth: 1,
-                }}
-                value={tempName}
-                onChangeText={(val) => {
-                  setTempName(val)
-                  setHasChanges(true)
-                }}
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              {_renderAspectRatioButtons()}
-              <View
-                testID='modal_add_mapposition_map'
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  borderColor: 'black',
-                  borderWidth: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                onLayout={(e) =>
-                  setModalSize({
-                    height: e.nativeEvent.layout.height - 2,
-                    width: e.nativeEvent.layout.width - 2,
-                  })
-                }
-              >
-                <View style={{ flex: 1 }}>
-                  {/* {_renderImage(modalSize.height, modalSize.width, true)} */}
-                  {_renderPositionPicker(modalSize.height, modalSize.width)}
-                </View>
-              </View>
-            </View>
-          </View>
+          <AddPosition
+            map={map}
+            onChange={(pos) => {
+              setTempName(pos)
+              setHasChanges(true)
+            }}
+          />
         )
       case 'editPosition':
-        return (
-          <View style={{ flex: 1 }}>
-            <View
-              testID='modal_change_mapposition_input'
-              style={{
-                marginBottom: 20,
-                flexDirection: 'row',
-                alignItems: 'center',
+        const _activePosition = tempPositions.find((e) => e.key === activeKey)
+        if (_activePosition) {
+          return (
+            <EditPosition
+              testId='modal_change_mapposition'
+              position={_activePosition}
+              map={map}
+              onChange={(pos) => {
+                setTempName(pos)
+                setHasChanges(true)
               }}
-            >
-              <Text>Title: </Text>
-              <TextInput
-                placeholder='Title'
-                style={{
-                  flex: 1,
-                  marginLeft: 5,
-                  paddingHorizontal: 5,
-                  paddingVertical: 2,
-                  borderRadius: 2,
-                  borderWidth: 1,
-                }}
-                value={tempName}
-                onChangeText={(val) => {
-                  setTempName(val)
-                  setHasChanges(true)
-                }}
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              {_renderAspectRatioButtons()}
-              <View
-                testID='modal_edit_mapposition_map'
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  borderColor: 'black',
-                  borderWidth: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                onLayout={(e) =>
-                  setModalSize({
-                    height: e.nativeEvent.layout.height - 2,
-                    width: e.nativeEvent.layout.width - 2,
-                  })
-                }
-              >
-                <View style={{ flex: 1 }}>
-                  {_renderImage(modalSize.height, modalSize.width)}
-                </View>
-              </View>
-            </View>
-          </View>
-        )
+            />
+          )
+        }
+
+        return null
       case 'showAllPositions':
       default:
         return (
