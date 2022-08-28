@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
+  ImageBackground,
 } from 'react-native'
 import ImageZoom from 'react-native-image-pan-zoom'
 import {
@@ -20,6 +21,8 @@ import {
 } from 'react-native-popup-menu'
 import Modal from 'react-native-modal'
 import * as ImagePicker from 'expo-image-picker'
+import ReactCrop from 'react-image-crop'
+import { MapPicker } from './Map/MapPicker'
 
 type TModalContentType =
   | 'addPosition'
@@ -27,9 +30,9 @@ type TModalContentType =
   | 'showAllPositions'
   | 'changeMap'
 
-type TPosition = { key: string; title: string } // needs coordinates etc.
+export type TPosition = { key: string; title: string } // needs coordinates etc.
 
-type TMap = { key: string; title: string; src?: ImageSourcePropType } // what does a map need?
+export type TMap = { key: string; title: string; src?: ImageSourcePropType } // what does a map need?
 
 export default function LinkedMap({
   image,
@@ -76,7 +79,9 @@ export default function LinkedMap({
   const [tempPositions, setTempPositions] = React.useState<typeof mapPositions>(
     []
   )
-  const [tempMap, setTempMap] = React.useState<typeof map>()
+  const [tempMap, setTempMap] = React.useState<typeof map | undefined>(
+    undefined
+  )
 
   const [tempName, setTempName] = React.useState<string>('')
   const [activeKey, setActiveKey] = React.useState<string | undefined>(
@@ -114,30 +119,6 @@ export default function LinkedMap({
   const _requestPermission = async () => {
     //ImagePicker.useMediaLibraryPermissions({})
     //setHasPermissions(ImagePicker.PermissionStatus.GRANTED === 'granted')
-  }
-
-  const _pickImage = async () => {
-    if (hasPermissions) {
-      Alert.alert('No permission', 'No permissions to media library', [
-        { text: 'OK' },
-      ])
-      return
-    }
-
-    //const result = await ImagePicker.launchImageLibraryAsync({})
-
-    //
-    // CHANGE!!!
-    //
-
-    let _src =
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Example_image.svg/600px-Example_image.svg.png' as ImageSourcePropType
-
-    if (map.src === _src) _src = require('../example/src/mapExample.png')
-
-    setTempMap({ ...map, src: _src })
-
-    setHasChanges(true)
   }
 
   const _addPosition = (title: string, key?: string) => {
@@ -217,6 +198,30 @@ export default function LinkedMap({
     )
   }
 
+  const _renderAspectRatioButtons = () => {
+    return <View style={{ flexDirection: 'row' }}></View>
+  }
+
+  const _renderPositionPicker = (height: number, width: number) => {
+    // if iOS or Android
+    return (
+      <ImageBackground
+        source={map.src ?? imageSource}
+        resizeMode='contain'
+        style={{ width: width, height: height }}
+      >
+        {/* Cropper */}
+      </ImageBackground>
+    )
+
+    // if WEB
+    return (
+      <ReactCrop onChange={() => {}}>
+        {_renderImage(height, width, true)}
+      </ReactCrop>
+    )
+  }
+
   const _renderManagePositions = () => {
     switch (modalContentType) {
       case 'addPosition':
@@ -249,6 +254,7 @@ export default function LinkedMap({
               />
             </View>
             <View style={{ flex: 1 }}>
+              {_renderAspectRatioButtons()}
               <View
                 testID='modal_add_mapposition_map'
                 style={{
@@ -267,7 +273,8 @@ export default function LinkedMap({
                 }
               >
                 <View style={{ flex: 1 }}>
-                  {_renderImage(modalSize.height, modalSize.width, true)}
+                  {/* {_renderImage(modalSize.height, modalSize.width, true)} */}
+                  {_renderPositionPicker(modalSize.height, modalSize.width)}
                 </View>
               </View>
             </View>
@@ -303,8 +310,9 @@ export default function LinkedMap({
               />
             </View>
             <View style={{ flex: 1 }}>
+              {_renderAspectRatioButtons()}
               <View
-                testID='modal_add_mapposition_map'
+                testID='modal_edit_mapposition_map'
                 style={{
                   height: '100%',
                   width: '100%',
@@ -425,46 +433,15 @@ export default function LinkedMap({
 
   const _renderMapPicker = () => {
     return (
-      <View>
-        <View style={{ marginBottom: 20 }}>
-          <Text style={{ color: 'red' }}>
-            Achtung: Alle verlinkten Positionen gehen verloren!
-          </Text>
-        </View>
-        <View style={{ marginBottom: 20 }}>
-          <TouchableOpacity
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              paddingVertical: 10,
-              paddingHorizontal: 20,
-              borderRadius: 5,
-              borderColor: 'black',
-              borderWidth: 1,
-              backgroundColor: '#EEE',
-              alignSelf: 'center',
-              marginBottom: 2,
-            }}
-            onPress={async () => {
-              console.log('TODO: ImagePicker öffnen, Bild ändern')
-              _pickImage()
-            }}
-          >
-            <Text>Bild auswählen...</Text>
-          </TouchableOpacity>
-          <Text
-            style={{
-              alignSelf: 'center',
-              maxWidth: '50%',
-              fontStyle: 'italic',
-            }}
-            numberOfLines={2}
-          >
-            {imageSource}
-          </Text>
-        </View>
-        <View></View>
-      </View>
+      <MapPicker
+        map={map}
+        positions={tempPositions}
+        onChange={(map) => {
+          setTempMap({ ...map })
+
+          setHasChanges(true)
+        }}
+      />
     )
   }
 
@@ -524,7 +501,7 @@ export default function LinkedMap({
                 } else {
                   if (modalContentType === 'changeMap') {
                     setIsModalVisible(false)
-                    if (onChangeMap) onChangeMap(tempMap)
+                    if (onChangeMap && tempMap) onChangeMap(tempMap)
                   } else {
                     if (tempName) {
                       _addPosition(tempName, activeKey)
