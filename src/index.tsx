@@ -21,8 +21,13 @@ import {
 import Modal from 'react-native-modal'
 import * as ImagePicker from 'expo-image-picker'
 import ReactCrop from 'react-image-crop'
-import { MapPicker } from './Map/MapPicker'
-import { AddPosition, EditPosition } from './Position'
+import { MapPicker, TMap } from './Map'
+import {
+  AddPosition,
+  EditPosition,
+  PositionPicker,
+  TPosition,
+} from './Position'
 
 type TModalContentType =
   | 'addPosition'
@@ -30,26 +35,24 @@ type TModalContentType =
   | 'showAllPositions'
   | 'changeMap'
 
-export type TPosition = { key: string; title: string } // needs coordinates etc.
-
-export type TMap = { key: string; title: string; src?: ImageSourcePropType } // what does a map need?
-
 export default function LinkedMap({
-  image,
+  testID,
   title,
-  showMenu,
+  image,
   style,
   map,
   positions,
+  showMenu,
   onChangePositions,
   onChangeMap,
 }: {
-  map: TMap
-  image?: ImageSourcePropType
+  testID: string
   title?: string
-  showMenu?: boolean
+  image?: ImageSourcePropType
   style?: ViewStyle
+  map: TMap
   positions?: TPosition[]
+  showMenu?: boolean
   onChangePositions?: (pos: TPosition[]) => void
   onChangeMap?: (map: TMap) => void
 }) {
@@ -83,7 +86,10 @@ export default function LinkedMap({
     undefined
   )
 
-  const [tempName, setTempName] = React.useState<string>('')
+  const [tempValues, setTempValues] = React.useState<{
+    title: string
+    target: string
+  }>({ title: '', target: '' })
   const [activeKey, setActiveKey] = React.useState<string | undefined>(
     undefined
   )
@@ -121,19 +127,19 @@ export default function LinkedMap({
     //setHasPermissions(ImagePicker.PermissionStatus.GRANTED === 'granted')
   }
 
-  const _addPosition = (title: string, key?: string) => {
+  const _addPosition = (title: string, target: string, key?: string) => {
     let _mapPos: typeof tempPositions = [...tempPositions]
     if (key) {
       if (_mapPos.find((pos) => pos.key === key)) {
         _mapPos = _mapPos.map((obj) => {
           if (obj.key === key) {
-            return { ...obj, title: title }
+            return { ...obj, title: title, target: target }
           }
 
           return obj
         })
       } else {
-        _mapPos?.push({ key, title })
+        _mapPos?.push({ key, title, target })
       }
     } else {
       let _key = title.replaceAll(' ', '').toLowerCase()
@@ -142,7 +148,7 @@ export default function LinkedMap({
         if (_mapPos?.find((e) => e.key === _key)) {
           _key = title.replaceAll(' ', '').toLowerCase() + '_' + i++
         } else {
-          _mapPos?.push({ key: _key, title })
+          _mapPos?.push({ key: _key, title, target })
           break
         }
       }
@@ -203,22 +209,14 @@ export default function LinkedMap({
   }
 
   const _renderPositionPicker = (height: number, width: number) => {
-    // if iOS or Android
     return (
-      <ImageBackground
-        source={map.src ?? imageSource}
-        resizeMode='contain'
-        style={{ width: width, height: height }}
-      >
-        {/* Cropper */}
-      </ImageBackground>
-    )
-
-    // if WEB
-    return (
-      <ReactCrop onChange={() => {}}>
-        {_renderImage(height, width, true)}
-      </ReactCrop>
+      <PositionPicker
+        testId={testID}
+        map={map}
+        height={height}
+        width={width}
+        onChange={() => {}}
+      />
     )
   }
 
@@ -227,9 +225,10 @@ export default function LinkedMap({
       case 'addPosition':
         return (
           <AddPosition
+            testId={`${testID}_add_mapposition`}
             map={map}
-            onChange={(pos) => {
-              setTempName(pos)
+            onChange={(title, target) => {
+              setTempValues({ title, target })
               setHasChanges(true)
             }}
           />
@@ -239,11 +238,11 @@ export default function LinkedMap({
         if (_activePosition) {
           return (
             <EditPosition
-              testId='modal_change_mapposition'
+              testId={`${testID}_edit_mapposition`}
               position={_activePosition}
               map={map}
-              onChange={(pos) => {
-                setTempName(pos)
+              onChange={(title, target) => {
+                setTempValues({ title, target })
                 setHasChanges(true)
               }}
             />
@@ -266,7 +265,7 @@ export default function LinkedMap({
               }}
               onPress={() => {
                 setActiveKey(undefined)
-                setTempName('')
+                setTempValues({ title: '', target: '' })
                 setModalContentType('addPosition')
               }}
             >
@@ -295,7 +294,10 @@ export default function LinkedMap({
                         testID={`mapposition_${position.key}_detail`}
                         onPress={() => {
                           setActiveKey(position.key)
-                          setTempName(position.title)
+                          setTempValues({
+                            title: position.title,
+                            target: position.target,
+                          })
                           setModalContentType('editPosition')
                         }}
                         style={{
@@ -372,13 +374,20 @@ export default function LinkedMap({
   }
 
   const _renderModal = () => {
+    const isDisabled =
+      (modalContentType === 'addPosition' ||
+        modalContentType === 'editPosition') &&
+      (!tempValues.title ||
+        !tempValues.target ||
+        tempValues.title === '' ||
+        tempValues.target === '')
     return (
       <View style={{ flex: 1, justifyContent: 'center' }}>
         <View
           testID='modal_backdrop'
           style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
           onTouchEnd={() => {
-            setTempName('')
+            setTempValues({ title: '', target: '' })
             setIsModalVisible(false)
           }}
         />
@@ -409,7 +418,11 @@ export default function LinkedMap({
                 paddingVertical: 5,
                 paddingHorizontal: 10,
               }}
+              disabled={isDisabled}
               onPress={() => {
+                if (isDisabled) {
+                  return
+                }
                 if (modalContentType === 'showAllPositions') {
                   setMapPositions(tempPositions)
                   setIsModalVisible(false)
@@ -419,20 +432,24 @@ export default function LinkedMap({
                     setIsModalVisible(false)
                     if (onChangeMap && tempMap) onChangeMap(tempMap)
                   } else {
-                    if (tempName) {
-                      _addPosition(tempName, activeKey)
+                    if (tempValues) {
+                      _addPosition(
+                        tempValues.title,
+                        tempValues.target,
+                        activeKey
+                      )
                     }
                     setModalContentType('showAllPositions')
                   }
                 }
                 setHasChanges(false)
-                setTempName('')
+                setTempValues({ title: '', target: '' })
               }}
             >
               <Text
                 style={{
                   fontSize: 18,
-                  color: '#2962FF',
+                  color: isDisabled ? '#CCC' : '#2962FF',
                   fontWeight: 'bold',
                 }}
               >
@@ -479,7 +496,7 @@ export default function LinkedMap({
                             modalContentType === 'changeMap'
                           ) {
                             setTempPositions([])
-                            setTempName('')
+                            setTempValues({ title: '', target: '' })
                             setIsModalVisible(false)
                           } else {
                             setModalContentType('showAllPositions')

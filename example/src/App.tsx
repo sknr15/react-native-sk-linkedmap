@@ -11,15 +11,15 @@ import { request, check, PERMISSIONS } from 'react-native-permissions'
 
 const example = require('./mapExample.png')
 
-type TPositions = { key: string; title: string }
+type TPosition = { key: string; title: string; target: string }
 type TMap = { key: string; title: string; src?: ImageSourcePropType }
 
 const App = () => {
-  const [pos, setPos] = React.useState<TPositions[]>([
-    { key: '123', title: '123' },
-    { key: 'testmap1', title: 'Testmap 1' },
-    { key: 'dasisteintest', title: 'Das ist ein Test' },
-    { key: '123456', title: '123456' },
+  const [pos, setPos] = React.useState<TPosition[]>([
+    { key: '123', title: '123', target: '' },
+    { key: 'testmap1', title: 'Testmap 1', target: '' },
+    { key: 'dasisteintest', title: 'Das ist ein Test', target: 'test' },
+    { key: '123456', title: '123456', target: '' },
   ])
 
   const [maps, setMaps] = React.useState<TMap[]>([
@@ -65,6 +65,7 @@ const App = () => {
         </TouchableOpacity>
       </View>
       <LinkedMap
+        testID='linkedmap'
         //image={maps[0].src as ImageSourcePropType}
         map={maps[0]}
         showMenu={showMenu}

@@ -6,7 +6,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { TMap, TPosition } from '../'
+import { TPosition } from '../../Position'
+
+export type TMap = { key: string; title: string; src?: ImageSourcePropType } // what does a map need?
 
 type Props = {
   map?: TMap
@@ -48,7 +50,7 @@ export const MapPicker = ({ map, onChange, positions }: Props) => {
       let _src =
         'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Example_image.svg/600px-Example_image.svg.png' as ImageSourcePropType
 
-      if (map.src === _src) _src = require('./mapExample.png')
+      if (map.src === _src) _src = require('../mapExample.png')
 
       setTempSource(_src.toString())
 

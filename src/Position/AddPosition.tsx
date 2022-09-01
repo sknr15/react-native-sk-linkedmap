@@ -1,15 +1,23 @@
 import React from 'react'
 import { Text, TextInput, View } from 'react-native'
-import { TMap, TPosition } from '..'
-import { PositionPicker } from './PositionPicker'
+import { TMap } from '../Map'
+import { PositionPicker, TPosition } from './PositionPicker'
 
 type Props = {
+  testId: string
   map: TMap
-  onChange?: (title: string, coordinates?: { x: number; y: number }) => void
+  onChange?: (
+    title: string,
+    target: string,
+    coordinates?: { x: number; y: number }
+  ) => void
 }
 
-export const AddPosition = ({ map, onChange }: Props) => {
-  const [tempName, setTempName] = React.useState<string>('')
+export const AddPosition = ({ testId, map, onChange }: Props) => {
+  const [tempValues, setTempValues] = React.useState<{
+    title: string
+    target: string
+  }>({ title: '', target: '' })
   const [tempPosition, setTempPosition] = React.useState<TPosition | undefined>(
     undefined
   )
@@ -18,7 +26,20 @@ export const AddPosition = ({ map, onChange }: Props) => {
     width: number
   }>({ height: 0, width: 0 })
 
-  //return null
+  const _onChange = (type: 'title' | 'target', value: string) => {
+    setTempValues({ ...tempValues, [type]: value })
+
+    if (onChange) {
+      switch (type) {
+        case 'title':
+          onChange(value, tempValues.target)
+          break
+        case 'target':
+          onChange(tempValues.title, value)
+          break
+      }
+    }
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -32,6 +53,7 @@ export const AddPosition = ({ map, onChange }: Props) => {
       >
         <Text>Title: </Text>
         <TextInput
+          testID={`${testId}_input_title`}
           placeholder='Title'
           style={{
             flex: 1,
@@ -41,17 +63,42 @@ export const AddPosition = ({ map, onChange }: Props) => {
             borderRadius: 2,
             borderWidth: 1,
           }}
-          value={tempName}
+          value={tempValues.title}
           onChangeText={(val) => {
-            setTempName(val)
-            if (onChange) onChange(val)
+            _onChange('title', val)
+          }}
+        />
+      </View>
+      <View
+        style={{
+          marginBottom: 20,
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
+        <Text>Target: </Text>
+        <TextInput
+          testID={`${testId}_input_target`}
+          placeholder='Target'
+          style={{
+            flex: 1,
+            marginLeft: 5,
+            paddingHorizontal: 5,
+            paddingVertical: 2,
+            borderRadius: 2,
+            borderWidth: 1,
+          }}
+          autoCapitalize={'none'}
+          value={tempValues.target}
+          onChangeText={(val) => {
+            _onChange('target', val)
           }}
         />
       </View>
       <View style={{ flex: 1 }}>
         {/* {_renderAspectRatioButtons()} */}
         <View
-          testID='modal_add_mapposition_map'
+          testID={`${testId}_map`}
           style={{
             height: '100%',
             width: '100%',
@@ -70,6 +117,7 @@ export const AddPosition = ({ map, onChange }: Props) => {
           <View style={{ flex: 1 }}>
             {/* {_renderImage(modalSize.height, modalSize.width, true)} */}
             <PositionPicker
+              testId={testId}
               map={map}
               width={modalSize.width}
               height={modalSize.height}
