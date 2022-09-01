@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import {
+  Alert,
   ImageSourcePropType,
   SafeAreaView,
   Text,
@@ -16,10 +17,10 @@ type TMap = { key: string; title: string; src?: ImageSourcePropType }
 
 const App = () => {
   const [pos, setPos] = React.useState<TPosition[]>([
-    { key: '123', title: '123', target: '' },
-    { key: 'testmap1', title: 'Testmap 1', target: '' },
+    { key: '123', title: '123', target: 'www.123.de' },
+    { key: 'testmap1', title: 'Testmap 1', target: 'testmap.com' },
     { key: 'dasisteintest', title: 'Das ist ein Test', target: 'test' },
-    { key: '123456', title: '123456', target: '' },
+    { key: '123456', title: '123456', target: '123456' },
   ])
 
   const [maps, setMaps] = React.useState<TMap[]>([
@@ -75,6 +76,9 @@ const App = () => {
           const _maps = { ...maps }
           _maps[0] = map
           setMaps(_maps)
+        }}
+        onClick={(pos) => {
+          Alert.alert(`Position: ${pos?.title}`, `Target: ${pos?.target}`)
         }}
       />
     </SafeAreaView>

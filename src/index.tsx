@@ -45,6 +45,7 @@ export default function LinkedMap({
   showMenu,
   onChangePositions,
   onChangeMap,
+  onClick,
 }: {
   testID: string
   title?: string
@@ -53,8 +54,9 @@ export default function LinkedMap({
   map: TMap
   positions?: TPosition[]
   showMenu?: boolean
-  onChangePositions?: (pos: TPosition[]) => void
+  onChangePositions?: (positions: TPosition[]) => void
   onChangeMap?: (map: TMap) => void
+  onClick?: (position?: TPosition) => void
 }) {
   const [containerSize, setContainerSize] = React.useState<{
     height: number
@@ -127,6 +129,16 @@ export default function LinkedMap({
     //setHasPermissions(ImagePicker.PermissionStatus.GRANTED === 'granted')
   }
 
+  const _handleOnClick = () => {
+    const _activePosition =
+      mapPositions.find((e) => e.key === activeKey) ?? mapPositions[0]
+    if (_activePosition) {
+      if (onClick) {
+        onClick(_activePosition)
+      }
+    }
+  }
+
   const _addPosition = (title: string, target: string, key?: string) => {
     let _mapPos: typeof tempPositions = [...tempPositions]
     if (key) {
@@ -164,6 +176,7 @@ export default function LinkedMap({
           cropWidth={width}
           imageHeight={height}
           imageWidth={width}
+          onClick={_handleOnClick}
         >
           <Image
             source={typeof map.src === 'string' ? { uri: map.src } : map.src}
@@ -176,13 +189,16 @@ export default function LinkedMap({
           />
         </ImageZoom>
       )
-    } else if (image || imageSource) {
+    }
+
+    if (image || imageSource) {
       return (
         <ImageZoom
           cropHeight={height}
           cropWidth={width}
           imageHeight={height}
           imageWidth={width}
+          onClick={_handleOnClick}
         >
           <Image
             source={imageSource}
