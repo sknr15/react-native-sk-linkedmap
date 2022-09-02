@@ -21,6 +21,11 @@ export const MapPicker = ({ map, onChange, positions }: Props) => {
   const [tempSource, setTempSource] = React.useState<string>('')
 
   useEffect(() => {
+    // TODO: Check for permissions
+    setHasPermissions(true)
+  }, [])
+
+  useEffect(() => {
     if (map) {
       if (typeof map.src === 'string') {
         setTempSource(map.src)
@@ -32,7 +37,7 @@ export const MapPicker = ({ map, onChange, positions }: Props) => {
   }, [map])
 
   const _pickImage = async () => {
-    if (hasPermissions) {
+    if (!hasPermissions) {
       Alert.alert('No permission', 'No permissions to media library', [
         { text: 'OK' },
       ])
@@ -46,9 +51,7 @@ export const MapPicker = ({ map, onChange, positions }: Props) => {
     //
 
     if (map) {
-      console.log(123)
-      let _src =
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Example_image.svg/600px-Example_image.svg.png' as ImageSourcePropType
+      let _src = require('../solarMap.jpeg')
 
       if (map.src === _src) _src = require('../mapExample.png')
 

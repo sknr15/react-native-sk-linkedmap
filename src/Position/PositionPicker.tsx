@@ -3,7 +3,7 @@ import ReactCrop from 'react-image-crop'
 import { ImageBackground } from 'react-native'
 import { TMap } from '../Map'
 
-export type TPosition = { key: string; title: string; target: string } // needs coordinates etc.
+export type TPosition = { key: string; title: string; target: any } // needs coordinates etc.
 
 type Props = {
   testId: string
