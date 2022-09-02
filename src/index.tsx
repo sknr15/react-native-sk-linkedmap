@@ -4,7 +4,6 @@ import {
   Image,
   ImageSourcePropType,
   ScrollView,
-  Text,
   TouchableOpacity,
   View,
   ViewStyle,
@@ -28,6 +27,7 @@ import {
   PositionPicker,
   TPosition,
 } from './Position'
+import { Text } from './Form'
 
 type TModalContentType =
   | 'addPosition'
@@ -154,11 +154,11 @@ export default function LinkedMap({
         _mapPos?.push({ key, title, target })
       }
     } else {
-      let _key = title.replaceAll(' ', '').toLowerCase()
+      let _key = title.replace(/\s/g, '').toLowerCase()
       let i = 0
       while (true) {
         if (_mapPos?.find((e) => e.key === _key)) {
-          _key = title.replaceAll(' ', '').toLowerCase() + '_' + i++
+          _key = title.replace(/\s/g, '').toLowerCase() + '_' + i++
         } else {
           _mapPos?.push({ key: _key, title, target })
           break
@@ -330,12 +330,15 @@ export default function LinkedMap({
                             alignItems: 'baseline',
                           }}
                         >
-                          <Text style={{ fontSize: 16, paddingRight: 5 }}>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              paddingRight: 5,
+                            }}
+                          >
                             {position.title}
                           </Text>
-                          <Text
-                            style={{ fontSize: 14, opacity: 0.7 }}
-                          >{`(${position.key})`}</Text>
+                          <Text>{`(${position.key})`}</Text>
                         </View>
                       </TouchableOpacity>
                       <TouchableOpacity
@@ -464,10 +467,11 @@ export default function LinkedMap({
             >
               <Text
                 style={{
-                  fontSize: 18,
                   color: isDisabled ? '#CCC' : '#2962FF',
-                  fontWeight: 'bold',
                 }}
+                bold
+                center
+                largerText
               >
                 Accept
               </Text>
@@ -475,10 +479,11 @@ export default function LinkedMap({
             <Text
               style={{
                 flex: 1,
-                fontSize: 22,
+                fontSize: 20,
                 textAlign: 'center',
               }}
               adjustsFontSizeToFit
+              center
               numberOfLines={2}
             >
               {optionText}
@@ -544,9 +549,7 @@ export default function LinkedMap({
                 }
               }}
             >
-              <Text
-                style={{ fontSize: 18, color: '#2962FF', fontWeight: 'bold' }}
-              >
+              <Text style={{ color: '#2962FF' }} bold center largerText>
                 Close
               </Text>
             </TouchableOpacity>
@@ -572,14 +575,20 @@ export default function LinkedMap({
           <MenuTrigger
             text='Menu'
             style={{
-              height: 30,
-              width: 50,
               borderWidth: 1,
               borderRadius: 5,
               margin: 10,
               justifyContent: 'center',
               alignItems: 'center',
               backgroundColor: 'white',
+            }}
+            customStyles={{
+              triggerText: {
+                fontSize: 18,
+                color: 'black',
+                paddingVertical: 4,
+                paddingHorizontal: 8,
+              },
             }}
           />
           <MenuOptions
@@ -590,7 +599,13 @@ export default function LinkedMap({
               borderRadius: 5,
             }}
             customStyles={{
-              optionWrapper: { padding: 5 },
+              optionWrapper: {},
+              optionText: {
+                fontSize: 16,
+                color: 'black',
+                paddingVertical: 2,
+                paddingHorizontal: 4,
+              },
             }}
           >
             <MenuOption

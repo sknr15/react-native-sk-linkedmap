@@ -1,5 +1,6 @@
 import React from 'react'
-import { Text, TextInput, View } from 'react-native'
+import { View } from 'react-native'
+import { Text, TextInput } from '../Form'
 import { TMap } from '../Map'
 import { PositionPicker, TPosition } from './PositionPicker'
 
@@ -51,10 +52,10 @@ export const AddPosition = ({ testId, map, onChange }: Props) => {
           alignItems: 'center',
         }}
       >
-        <Text>Title: </Text>
+        <Text bold>Title: </Text>
         <TextInput
           testID={`${testId}_input_title`}
-          placeholder='Title'
+          placeholder='Title...'
           style={{
             flex: 1,
             marginLeft: 5,
@@ -76,10 +77,10 @@ export const AddPosition = ({ testId, map, onChange }: Props) => {
           alignItems: 'center',
         }}
       >
-        <Text>Target: </Text>
+        <Text bold>Target: </Text>
         <TextInput
           testID={`${testId}_input_target`}
-          placeholder='Target'
+          placeholder='Target...'
           style={{
             flex: 1,
             marginLeft: 5,

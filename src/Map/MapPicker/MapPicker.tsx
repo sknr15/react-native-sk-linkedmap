@@ -2,10 +2,10 @@ import React, { useEffect } from 'react'
 import {
   Alert,
   ImageSourcePropType,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native'
+import { Text } from '../../Form'
 import { TPosition } from '../../Position'
 
 export type TMap = { key: string; title: string; src?: ImageSourcePropType } // what does a map need?

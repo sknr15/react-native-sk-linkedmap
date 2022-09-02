@@ -50,19 +50,30 @@ const App = () => {
       >
         <TouchableOpacity
           onPress={() => setShowMenu(!showMenu)}
-          style={{ padding: 5, flexDirection: 'row', alignItems: 'center' }}
+          style={{ flexDirection: 'row', alignItems: 'center' }}
         >
-          <Text
+          <View
             style={{
               width: 20,
+              height: 20,
+              borderColor: 'black',
               borderWidth: 1,
-              textAlign: 'center',
-              marginRight: 10,
+              marginRight: 5,
+              borderRadius: 999,
             }}
           >
-            {showMenu ? 'x' : ' '}
-          </Text>
-          <Text>Enable Menu</Text>
+            <View
+              style={{
+                flex: 1,
+                margin: 2,
+                backgroundColor: showMenu ? 'black' : 'transparent',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 999,
+              }}
+            />
+          </View>
+          <Text style={{ fontSize: 16, color: 'black' }}>Enable Menu</Text>
         </TouchableOpacity>
       </View>
       <LinkedMap
