@@ -25,6 +25,8 @@ export const TextInput = (props: ITextInputComponent) => {
         },
         style,
       ]}
+      value={props.value ?? ''}
+      placeholderTextColor={'grey'}
     >
       {children}
     </RNTextInput>

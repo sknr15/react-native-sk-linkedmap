@@ -7,16 +7,8 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-  ImageBackground,
 } from 'react-native'
 import ImageZoom from 'react-native-image-pan-zoom'
-import {
-  Menu,
-  MenuOption,
-  MenuOptions,
-  MenuProvider,
-  MenuTrigger,
-} from 'react-native-popup-menu'
 import Modal from 'react-native-modal'
 import * as ImagePicker from 'expo-image-picker'
 import ReactCrop from 'react-image-crop'
@@ -28,6 +20,7 @@ import {
   TPosition,
 } from './Position'
 import { Text } from './Form'
+import RBSheet from 'react-native-raw-bottom-sheet'
 
 type TModalContentType =
   | 'addPosition'
@@ -97,6 +90,8 @@ export default function LinkedMap({
   )
   const [hasChanges, setHasChanges] = React.useState<boolean>(false)
 
+  const bottomSheetRef = React.useRef<RBSheet | undefined>(undefined)
+
   React.useEffect(() => {
     if (image) {
       setImageSource(image)
@@ -125,8 +120,8 @@ export default function LinkedMap({
   }, [])
 
   const _requestPermission = async () => {
-    //ImagePicker.useMediaLibraryPermissions({})
-    //setHasPermissions(ImagePicker.PermissionStatus.GRANTED === 'granted')
+    ImagePicker.useMediaLibraryPermissions({})
+    setHasPermissions(ImagePicker.PermissionStatus.GRANTED === 'granted')
   }
 
   const _handleOnClick = () => {
@@ -392,6 +387,90 @@ export default function LinkedMap({
     }
   }
 
+  const _handleModalAction = (
+    type: 'accept' | 'close',
+    isDisabled?: boolean
+  ) => {
+    switch (type) {
+      case 'accept':
+        if (isDisabled) {
+          return
+        }
+        if (modalContentType === 'showAllPositions') {
+          setMapPositions(tempPositions)
+          setIsModalVisible(false)
+          if (onChangePositions) onChangePositions(tempPositions)
+        } else {
+          if (modalContentType === 'changeMap') {
+            setIsModalVisible(false)
+            if (onChangeMap && tempMap) onChangeMap(tempMap)
+          } else {
+            if (tempValues) {
+              _addPosition(tempValues.title, tempValues.target, activeKey)
+            }
+            setModalContentType('showAllPositions')
+          }
+        }
+        setHasChanges(false)
+        setTempValues({ title: '', target: '' })
+        break
+      case 'close':
+      default:
+        if (
+          (modalContentType === 'showAllPositions' &&
+            JSON.stringify(tempPositions) !== JSON.stringify(mapPositions)) ||
+          hasChanges
+        ) {
+          Alert.alert(
+            'Close?',
+            'Do you really want to close? Any unsaved progress will be lost!',
+            [
+              {
+                text: 'Cancel',
+                style: 'cancel',
+              },
+              {
+                text: 'OK',
+                onPress: () => {
+                  if (
+                    modalContentType === 'showAllPositions' ||
+                    modalContentType === 'changeMap'
+                  ) {
+                    setTempPositions([])
+                    setTempValues({ title: '', target: '' })
+                    setIsModalVisible(false)
+                  } else {
+                    setModalContentType('showAllPositions')
+                  }
+                  setHasChanges(false)
+                },
+                style: 'destructive',
+              },
+            ]
+          )
+        } else {
+          switch (modalContentType) {
+            case 'addPosition':
+            case 'editPosition':
+              setModalContentType('showAllPositions')
+              break
+            case 'showAllPositions':
+              setTempPositions([])
+            case 'changeMap':
+            default:
+              setIsModalVisible(false)
+          }
+          if (modalContentType === 'showAllPositions') {
+            setTempPositions([])
+            setIsModalVisible(false)
+          } else if (modalContentType) {
+            setModalContentType('showAllPositions')
+          }
+        }
+        break
+    }
+  }
+
   const _renderModal = () => {
     const isDisabled =
       (modalContentType === 'addPosition' ||
@@ -418,7 +497,7 @@ export default function LinkedMap({
             shadowColor: 'grey',
             backgroundColor: 'white',
             padding: 20,
-            marginVertical: 40,
+            marginVertical: 20,
           }}
         >
           <View
@@ -432,49 +511,28 @@ export default function LinkedMap({
             }}
           >
             <TouchableOpacity
+              testID='modal_button_accept'
               style={{
                 justifyContent: 'center',
-                paddingVertical: 5,
-                paddingHorizontal: 10,
+                padding: 8,
+                aspectRatio: 1,
+                borderWidth: 1,
+                borderRadius: 999,
+                borderColor: isDisabled ? 'grey' : 'darkgreen',
               }}
               disabled={isDisabled}
               onPress={() => {
-                if (isDisabled) {
-                  return
-                }
-                if (modalContentType === 'showAllPositions') {
-                  setMapPositions(tempPositions)
-                  setIsModalVisible(false)
-                  if (onChangePositions) onChangePositions(tempPositions)
-                } else {
-                  if (modalContentType === 'changeMap') {
-                    setIsModalVisible(false)
-                    if (onChangeMap && tempMap) onChangeMap(tempMap)
-                  } else {
-                    if (tempValues) {
-                      _addPosition(
-                        tempValues.title,
-                        tempValues.target,
-                        activeKey
-                      )
-                    }
-                    setModalContentType('showAllPositions')
-                  }
-                }
-                setHasChanges(false)
-                setTempValues({ title: '', target: '' })
+                _handleModalAction('accept', isDisabled)
               }}
             >
-              <Text
-                style={{
-                  color: isDisabled ? '#CCC' : '#2962FF',
+              <Image
+                style={{ tintColor: isDisabled ? 'grey' : 'darkgreen' }}
+                source={{
+                  uri: 'https://cdn-icons-png.flaticon.com/512/447/447147.png',
+                  height: 16,
+                  width: 16,
                 }}
-                bold
-                center
-                largerText
-              >
-                Accept
-              </Text>
+              />
             </TouchableOpacity>
             <Text
               style={{
@@ -489,69 +547,27 @@ export default function LinkedMap({
               {optionText}
             </Text>
             <TouchableOpacity
+              testID='modal_button_close'
               style={{
                 justifyContent: 'center',
-                paddingVertical: 5,
-                paddingHorizontal: 10,
+                padding: 8,
+                aspectRatio: 1,
+                borderWidth: 1,
+                borderRadius: 999,
+                borderColor: 'darkred',
               }}
               onPress={() => {
-                if (
-                  (modalContentType === 'showAllPositions' &&
-                    JSON.stringify(tempPositions) !==
-                      JSON.stringify(mapPositions)) ||
-                  hasChanges
-                ) {
-                  Alert.alert(
-                    'Close?',
-                    'Do you really want to close? Any unsaved progress will be lost!',
-                    [
-                      {
-                        text: 'Cancel',
-                        style: 'cancel',
-                      },
-                      {
-                        text: 'OK',
-                        onPress: () => {
-                          if (
-                            modalContentType === 'showAllPositions' ||
-                            modalContentType === 'changeMap'
-                          ) {
-                            setTempPositions([])
-                            setTempValues({ title: '', target: '' })
-                            setIsModalVisible(false)
-                          } else {
-                            setModalContentType('showAllPositions')
-                          }
-                          setHasChanges(false)
-                        },
-                        style: 'destructive',
-                      },
-                    ]
-                  )
-                } else {
-                  switch (modalContentType) {
-                    case 'addPosition':
-                    case 'editPosition':
-                      setModalContentType('showAllPositions')
-                      break
-                    case 'showAllPositions':
-                      setTempPositions([])
-                    case 'changeMap':
-                    default:
-                      setIsModalVisible(false)
-                  }
-                  if (modalContentType === 'showAllPositions') {
-                    setTempPositions([])
-                    setIsModalVisible(false)
-                  } else if (modalContentType) {
-                    setModalContentType('showAllPositions')
-                  }
-                }
+                _handleModalAction('close', isDisabled)
               }}
             >
-              <Text style={{ color: '#2962FF' }} bold center largerText>
-                Close
-              </Text>
+              <Image
+                style={{ tintColor: 'darkred' }}
+                source={{
+                  uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828747.png',
+                  height: 16,
+                  width: 16,
+                }}
+              />
             </TouchableOpacity>
           </View>
           {_renderModalContent()}
@@ -561,117 +577,147 @@ export default function LinkedMap({
   }
 
   const _renderMenu = () => {
-    if (showMenu) {
-      return (
-        <Menu
-          style={{
-            position: 'absolute',
-            right: 0,
-            top: 0,
-            zIndex: 1,
+    return (
+      <ScrollView style={{ paddingHorizontal: 20 }}>
+        <TouchableOpacity
+          onPress={() => {
+            bottomSheetRef.current?.close()
+            setOptionText('Change map')
+            setModalContentType('changeMap')
+            setTimeout(() => {
+              setIsModalVisible(true)
+            }, 100)
           }}
-          onBackdropPress={() => setOptionText('')}
+          style={{ paddingVertical: 5 }}
         >
-          <MenuTrigger
-            text='Menu'
-            style={{
-              borderWidth: 1,
-              borderRadius: 5,
-              margin: 10,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: 'white',
-            }}
-            customStyles={{
-              triggerText: {
-                fontSize: 18,
-                color: 'black',
-                paddingVertical: 4,
-                paddingHorizontal: 8,
-              },
-            }}
-          />
-          <MenuOptions
-            optionsContainerStyle={{
-              marginTop: 45,
-              marginLeft: -10,
-              width: 'auto',
-              borderRadius: 5,
-            }}
-            customStyles={{
-              optionWrapper: {},
-              optionText: {
-                fontSize: 16,
-                color: 'black',
-                paddingVertical: 2,
-                paddingHorizontal: 4,
-              },
-            }}
-          >
-            <MenuOption
-              onSelect={() => {
-                setOptionText('Change map')
-                setModalContentType('changeMap')
-                setIsModalVisible(true)
-              }}
-              text='Change map'
-              style={{ borderBottomWidth: 1 }}
-            />
-            <MenuOption
-              onSelect={() => {
-                setTempPositions([...mapPositions])
-                setOptionText('Manage positions')
-                setModalContentType('showAllPositions')
-                setIsModalVisible(true)
-              }}
-              text='Manage positions'
-            />
-          </MenuOptions>
-        </Menu>
-      )
-    }
-
-    return null
+          <Text largerText>Change map</Text>
+        </TouchableOpacity>
+        <View
+          style={{
+            height: 1,
+            width: '100%',
+            backgroundColor: 'grey',
+            marginVertical: 5,
+            opacity: 0.5,
+          }}
+        />
+        <TouchableOpacity
+          onPress={() => {
+            bottomSheetRef.current?.close()
+            setTempPositions([...mapPositions])
+            setOptionText('Manage positions')
+            setModalContentType('showAllPositions')
+            setTimeout(() => {
+              setIsModalVisible(true)
+            }, 100)
+          }}
+          style={{ paddingVertical: 5 }}
+        >
+          <Text largerText>Manage Positions</Text>
+        </TouchableOpacity>
+        <View
+          style={{
+            height: 1,
+            width: '100%',
+            backgroundColor: 'grey',
+            marginVertical: 5,
+            opacity: 0.5,
+          }}
+        />
+        <TouchableOpacity
+          onPress={() => {
+            bottomSheetRef.current?.close()
+          }}
+          style={{ paddingVertical: 5 }}
+        >
+          <Text largerText>Close</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    )
   }
 
   return (
-    <MenuProvider>
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <View
         style={{
           flex: 1,
+          width: '100%',
           alignItems: 'center',
-          justifyContent: 'center',
+          overflow: 'hidden',
         }}
+        onLayout={(e) =>
+          setContainerSize({
+            height: e.nativeEvent.layout.height,
+            width: e.nativeEvent.layout.width,
+          })
+        }
       >
-        <View
-          style={{
-            flex: 1,
-            width: '100%',
-            alignItems: 'center',
-            overflow: 'hidden',
-          }}
-          onLayout={(e) =>
-            setContainerSize({
-              height: e.nativeEvent.layout.height,
-              width: e.nativeEvent.layout.width,
-            })
-          }
-        >
-          {_renderMenu()}
-          {title && (
-            <Text style={{ marginTop: 10, fontSize: 18, fontWeight: 'bold' }}>
-              {title}
-            </Text>
-          )}
-          {_renderImage(containerSize.height, containerSize.width)}
-        </View>
-        <Modal
-          isVisible={isModalVisible}
-          onModalHide={() => setIsModalVisible(false)}
-        >
-          {_renderModal()}
-        </Modal>
+        {showMenu && (
+          <View
+            style={{
+              position: 'absolute',
+              top: 10,
+              right: 10,
+              zIndex: 10,
+              borderColor: 'black',
+              borderWidth: 1,
+              borderRadius: 5,
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                zIndex: 1,
+                paddingVertical: 5,
+                paddingHorizontal: 10,
+                backgroundColor: '#EEEEEE66',
+              }}
+              onPress={() => bottomSheetRef.current?.open()}
+            >
+              <Text largerText>Menu</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        {title && (
+          <Text style={{ marginTop: 10, fontSize: 18, fontWeight: 'bold' }}>
+            {title}
+          </Text>
+        )}
+        {_renderImage(containerSize.height, containerSize.width)}
       </View>
-    </MenuProvider>
+      <Modal
+        isVisible={isModalVisible}
+        onModalHide={() => setIsModalVisible(false)}
+        onDismiss={() => setIsModalVisible(false)}
+      >
+        {_renderModal()}
+      </Modal>
+      <RBSheet
+        ref={bottomSheetRef}
+        closeOnDragDown
+        dragFromTopOnly
+        closeOnPressBack={true}
+        animationType={'slide'}
+        openDuration={100}
+        closeDuration={100}
+        customStyles={{
+          container: {
+            borderTopLeftRadius: 5,
+            borderTopRightRadius: 5,
+            paddingBottom: 50,
+            height: 'auto',
+            maxHeight: 200,
+          },
+        }}
+        closeOnPressMask
+      >
+        {_renderMenu()}
+      </RBSheet>
+    </View>
   )
 }

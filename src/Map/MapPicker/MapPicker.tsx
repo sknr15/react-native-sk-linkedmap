@@ -7,6 +7,7 @@ import {
 } from 'react-native'
 import { Text } from '../../Form'
 import { TPosition } from '../../Position'
+import * as ImagePicker from 'expo-image-picker'
 
 export type TMap = { key: string; title: string; src?: ImageSourcePropType } // what does a map need?
 
@@ -44,7 +45,7 @@ export const MapPicker = ({ map, onChange, positions }: Props) => {
       return
     }
 
-    //const result = await ImagePicker.launchImageLibraryAsync({})
+    // const result = await ImagePicker.launchImageLibraryAsync({})
 
     //
     // CHANGE!!!
@@ -97,7 +98,7 @@ export const MapPicker = ({ map, onChange, positions }: Props) => {
           }}
           numberOfLines={2}
         >
-          {tempSource}
+          Bild: {tempSource}
         </Text>
       </View>
       <View></View>
