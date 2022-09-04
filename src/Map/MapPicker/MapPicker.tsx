@@ -9,15 +9,19 @@ import { Text } from '../../Form'
 import { TPosition } from '../../Position'
 import * as ImagePicker from 'expo-image-picker'
 
-export type TMap = { key: string; title: string; src?: ImageSourcePropType } // what does a map need?
+export type TMap = {
+  key: string
+  title: string
+  imageSource?: ImageSourcePropType
+  positions?: TPosition[]
+} // what does a map need?
 
 type Props = {
   map?: TMap
   onChange?: (map: TMap) => void
-  positions?: TPosition[]
 }
 
-export const MapPicker = ({ map, onChange, positions }: Props) => {
+export const MapPicker = ({ map, onChange }: Props) => {
   const [hasPermissions, setHasPermissions] = React.useState<boolean>(false)
   const [tempSource, setTempSource] = React.useState<string>('')
 
@@ -28,11 +32,11 @@ export const MapPicker = ({ map, onChange, positions }: Props) => {
 
   useEffect(() => {
     if (map) {
-      if (typeof map.src === 'string') {
-        setTempSource(map.src)
+      if (typeof map.imageSource === 'string') {
+        setTempSource(map.imageSource)
       }
-      if (typeof map.src === 'number') {
-        setTempSource(map.src.toString())
+      if (typeof map.imageSource === 'number') {
+        setTempSource(map.imageSource.toString())
       }
     }
   }, [map])
@@ -54,11 +58,11 @@ export const MapPicker = ({ map, onChange, positions }: Props) => {
     if (map) {
       let _src = require('../solarMap.jpeg')
 
-      if (map.src === _src) _src = require('../mapExample.png')
+      if (map.imageSource === _src) _src = require('../mapExample.png')
 
       setTempSource(_src.toString())
 
-      if (onChange) onChange({ ...map, src: _src })
+      if (onChange) onChange({ ...map, imageSource: _src })
     }
   }
 
@@ -101,7 +105,6 @@ export const MapPicker = ({ map, onChange, positions }: Props) => {
           Bild: {tempSource}
         </Text>
       </View>
-      <View></View>
     </View>
   )
 }

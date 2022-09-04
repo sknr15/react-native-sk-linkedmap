@@ -17,6 +17,7 @@ import {
   AddPosition,
   EditPosition,
   PositionPicker,
+  TCoordinates,
   TPosition,
 } from './Position'
 import { Text } from './Form'
@@ -36,8 +37,7 @@ export default function LinkedMap({
   map,
   positions,
   showMenu,
-  onChangePositions,
-  onChangeMap,
+  onChange,
   onClick,
 }: {
   testID: string
@@ -47,9 +47,8 @@ export default function LinkedMap({
   map: TMap
   positions?: TPosition[]
   showMenu?: boolean
-  onChangePositions?: (positions: TPosition[]) => void
-  onChangeMap?: (map: TMap) => void
   onClick?: (position?: TPosition) => void
+  onChange?: (map: TMap) => void
 }) {
   const [containerSize, setContainerSize] = React.useState<{
     height: number
@@ -84,7 +83,8 @@ export default function LinkedMap({
   const [tempValues, setTempValues] = React.useState<{
     title: string
     target: string
-  }>({ title: '', target: '' })
+    coordinates?: TCoordinates
+  }>({ title: '', target: '', coordinates: undefined })
   const [activeKey, setActiveKey] = React.useState<string | undefined>(
     undefined
   )
@@ -99,9 +99,9 @@ export default function LinkedMap({
   }, [image, map])
 
   React.useEffect(() => {
-    if (positions) {
+    if (map.positions) {
       setMapPositions(
-        positions.sort((a, b) => {
+        map.positions.sort((a, b) => {
           if (a.title === b.title) return a.key.localeCompare(b.key)
           return a.title.localeCompare(b.title)
         })
@@ -134,28 +134,28 @@ export default function LinkedMap({
     }
   }
 
-  const _addPosition = (title: string, target: string, key?: string) => {
+  const _addPosition = (position: TPosition, key?: string) => {
     let _mapPos: typeof tempPositions = [...tempPositions]
     if (key) {
-      if (_mapPos.find((pos) => pos.key === key)) {
+      if (_mapPos.find((pos) => pos.key === position.key)) {
         _mapPos = _mapPos.map((obj) => {
-          if (obj.key === key) {
-            return { ...obj, title: title, target: target }
+          if (obj.key === position.key) {
+            return { ...obj, ...position }
           }
 
           return obj
         })
       } else {
-        _mapPos?.push({ key, title, target })
+        _mapPos?.push({ ...position })
       }
     } else {
-      let _key = title.replace(/\s/g, '').toLowerCase()
+      let _key = position.title.replace(/\s/g, '').toLowerCase()
       let i = 0
       while (true) {
         if (_mapPos?.find((e) => e.key === _key)) {
-          _key = title.replace(/\s/g, '').toLowerCase() + '_' + i++
+          _key = position.title.replace(/\s/g, '').toLowerCase() + '_' + i++
         } else {
-          _mapPos?.push({ key: _key, title, target })
+          _mapPos?.push({ ...position, key: _key })
           break
         }
       }
@@ -164,7 +164,7 @@ export default function LinkedMap({
   }
 
   const _renderImage = (height: number, width: number, editMode?: boolean) => {
-    if (map && map.src) {
+    if (map && map.imageSource) {
       return (
         <ImageZoom
           cropHeight={height}
@@ -174,7 +174,11 @@ export default function LinkedMap({
           onClick={_handleOnClick}
         >
           <Image
-            source={typeof map.src === 'string' ? { uri: map.src } : map.src}
+            source={
+              typeof map.imageSource === 'string'
+                ? { uri: map.imageSource }
+                : map.imageSource
+            }
             style={{
               height,
               width,
@@ -215,22 +219,6 @@ export default function LinkedMap({
     )
   }
 
-  const _renderAspectRatioButtons = () => {
-    return <View style={{ flexDirection: 'row' }}></View>
-  }
-
-  const _renderPositionPicker = (height: number, width: number) => {
-    return (
-      <PositionPicker
-        testId={testID}
-        map={map}
-        height={height}
-        width={width}
-        onChange={() => {}}
-      />
-    )
-  }
-
   const _renderManagePositions = () => {
     switch (modalContentType) {
       case 'addPosition':
@@ -238,8 +226,8 @@ export default function LinkedMap({
           <AddPosition
             testId={`${testID}_add_mapposition`}
             map={map}
-            onChange={(title, target) => {
-              setTempValues({ title, target })
+            onChangePosition={(position) => {
+              setTempValues({ ...position })
               setHasChanges(true)
             }}
           />
@@ -252,8 +240,8 @@ export default function LinkedMap({
               testId={`${testID}_edit_mapposition`}
               position={_activePosition}
               map={map}
-              onChange={(title, target) => {
-                setTempValues({ title, target })
+              onChangePosition={(position) => {
+                setTempValues({ ...position })
                 setHasChanges(true)
               }}
             />
@@ -367,10 +355,8 @@ export default function LinkedMap({
     return (
       <MapPicker
         map={map}
-        positions={tempPositions}
         onChange={(map) => {
           setTempMap({ ...map })
-
           setHasChanges(true)
         }}
       />
@@ -399,14 +385,15 @@ export default function LinkedMap({
         if (modalContentType === 'showAllPositions') {
           setMapPositions(tempPositions)
           setIsModalVisible(false)
-          if (onChangePositions) onChangePositions(tempPositions)
+          console.log(tempPositions)
+          if (onChange) onChange({ ...map, positions: [...tempPositions] })
         } else {
           if (modalContentType === 'changeMap') {
             setIsModalVisible(false)
-            if (onChangeMap && tempMap) onChangeMap(tempMap)
+            if (onChange && tempMap) onChange(tempMap)
           } else {
             if (tempValues) {
-              _addPosition(tempValues.title, tempValues.target, activeKey)
+              _addPosition({ ...tempValues }, activeKey)
             }
             setModalContentType('showAllPositions')
           }
