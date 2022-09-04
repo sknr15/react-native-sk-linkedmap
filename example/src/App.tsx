@@ -12,7 +12,13 @@ import { request, check, PERMISSIONS } from 'react-native-permissions'
 
 const example = require('./mapExample.png')
 
-type TPosition = { key: string; title: string; target: any }
+type TCoordinates = { x1: number; x2: number; y1: number; y2: number }
+type TPosition = {
+  key: string
+  title: string
+  target: any
+  coordinates?: TCoordinates
+}
 type TMap = {
   key: string
   title: string
@@ -22,7 +28,12 @@ type TMap = {
 
 const App = () => {
   const pos: TPosition[] = [
-    { key: '123', title: '123', target: 'www.123.de' },
+    {
+      key: '123',
+      title: '123',
+      target: 'www.123.de',
+      coordinates: { x1: 14, x2: 35, y1: 31, y2: 42 },
+    },
     { key: 'testmap1', title: 'Testmap 1', target: 'testmap.com' },
     { key: 'dasisteintest', title: 'Das ist ein Test', target: 'test' },
     { key: '123456', title: '123456', target: '123456' },
@@ -89,7 +100,6 @@ const App = () => {
         map={map}
         showMenu={showMenu}
         onChange={(map) => {
-          console.log(map)
           setMap(map)
         }}
         onClick={(pos) => {

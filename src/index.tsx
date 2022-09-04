@@ -2,6 +2,7 @@ import * as React from 'react'
 import {
   Alert,
   Image,
+  ImageBackground,
   ImageSourcePropType,
   ScrollView,
   TouchableOpacity,
@@ -32,7 +33,6 @@ type TModalContentType =
 export default function LinkedMap({
   testID,
   title,
-  image,
   style,
   map,
   positions,
@@ -42,7 +42,6 @@ export default function LinkedMap({
 }: {
   testID: string
   title?: string
-  image?: ImageSourcePropType
   style?: ViewStyle
   map: TMap
   positions?: TPosition[]
@@ -62,8 +61,6 @@ export default function LinkedMap({
   const [imageSource, setImageSource] = React.useState<ImageSourcePropType>(0)
   const [optionText, setOptionText] = React.useState<string>('')
 
-  const [isMapPickerVisible, setIsMapPickerVisible] =
-    React.useState<boolean>(false)
   const [isModalVisible, setIsModalVisible] = React.useState<boolean>(false)
 
   const [hasPermissions, setHasPermissions] = React.useState<boolean>(false)
@@ -81,42 +78,39 @@ export default function LinkedMap({
   )
 
   const [tempValues, setTempValues] = React.useState<{
+    key?: string
     title: string
     target: string
     coordinates?: TCoordinates
-  }>({ title: '', target: '', coordinates: undefined })
+  }>({ key: undefined, title: '', target: '', coordinates: undefined })
   const [activeKey, setActiveKey] = React.useState<string | undefined>(
     undefined
   )
   const [hasChanges, setHasChanges] = React.useState<boolean>(false)
 
+  const [sizeFactor, setSizeFactor] = React.useState<{
+    width: number
+    height: number
+  }>({ width: 1, height: 1 })
+
   const bottomSheetRef = React.useRef<RBSheet | undefined>(undefined)
-
-  React.useEffect(() => {
-    if (image) {
-      setImageSource(image)
-    }
-  }, [image, map])
-
-  React.useEffect(() => {
-    if (map.positions) {
-      setMapPositions(
-        map.positions.sort((a, b) => {
-          if (a.title === b.title) return a.key.localeCompare(b.key)
-          return a.title.localeCompare(b.title)
-        })
-      )
-    }
-  }, [positions])
 
   React.useEffect(() => {
     if (map) {
       setTempMap(map)
+      if (map.positions) {
+        setMapPositions(
+          map.positions.sort((a, b) => {
+            if (a.title === b.title) return a.key.localeCompare(b.key)
+            return a.title.localeCompare(b.title)
+          })
+        )
+      }
     }
   }, [map])
 
   React.useEffect(() => {
-    _requestPermission()
+    //r_requestPermission()
   }, [])
 
   const _requestPermission = async () => {
@@ -124,13 +118,9 @@ export default function LinkedMap({
     setHasPermissions(ImagePicker.PermissionStatus.GRANTED === 'granted')
   }
 
-  const _handleOnClick = () => {
-    const _activePosition =
-      mapPositions.find((e) => e.key === activeKey) ?? mapPositions[0]
-    if (_activePosition) {
-      if (onClick) {
-        onClick(_activePosition)
-      }
+  const _handleOnClick = (position: TPosition) => {
+    if (onClick) {
+      onClick(position)
     }
   }
 
@@ -171,33 +161,58 @@ export default function LinkedMap({
           cropWidth={width}
           imageHeight={height}
           imageWidth={width}
-          onClick={_handleOnClick}
         >
-          <Image
-            source={
-              typeof map.imageSource === 'string'
-                ? { uri: map.imageSource }
-                : map.imageSource
-            }
-            style={{
-              height,
-              width,
-            }}
-            resizeMode={'contain'}
-            resizeMethod={'resize'}
-          />
+          <ImageBackground
+            testID={`map_pick_position`}
+            source={map.imageSource}
+            resizeMode='contain'
+            resizeMethod='scale'
+            style={{ flexGrow: 1 }}
+            onLayout={(e) => setSizeFactor(e.nativeEvent.layout)}
+          >
+            <View
+              style={{
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'transparent',
+              }}
+            >
+              {map.positions?.map((position) => {
+                if (position.coordinates) {
+                  const { x1, x2, y1, y2 } = position.coordinates
+                  return (
+                    <TouchableOpacity
+                      key={`map_position_${position.key}`}
+                      style={{
+                        position: 'absolute',
+                        left: (x1 / 100) * sizeFactor.width,
+                        top: (y1 / 100) * sizeFactor.height,
+                        width: ((x2 - x1) / 100) * sizeFactor.width,
+                        height: ((y2 - y1) / 100) * sizeFactor.height,
+                        borderWidth: 1,
+                        borderColor: 'red',
+                      }}
+                      onPress={() => _handleOnClick(position)}
+                    ></TouchableOpacity>
+                  )
+                }
+
+                return null
+              })}
+            </View>
+          </ImageBackground>
         </ImageZoom>
       )
     }
 
-    if (image || imageSource) {
+    if (imageSource) {
       return (
         <ImageZoom
           cropHeight={height}
           cropWidth={width}
           imageHeight={height}
           imageWidth={width}
-          onClick={_handleOnClick}
         >
           <Image
             source={imageSource}
@@ -354,6 +369,7 @@ export default function LinkedMap({
   const _renderMapPicker = () => {
     return (
       <MapPicker
+        testId='mappicker'
         map={map}
         onChange={(map) => {
           setTempMap({ ...map })
@@ -385,7 +401,6 @@ export default function LinkedMap({
         if (modalContentType === 'showAllPositions') {
           setMapPositions(tempPositions)
           setIsModalVisible(false)
-          console.log(tempPositions)
           if (onChange) onChange({ ...map, positions: [...tempPositions] })
         } else {
           if (modalContentType === 'changeMap') {
@@ -393,7 +408,7 @@ export default function LinkedMap({
             if (onChange && tempMap) onChange(tempMap)
           } else {
             if (tempValues) {
-              _addPosition({ ...tempValues }, activeKey)
+              _addPosition({ ...tempValues, key: activeKey ?? '' }, activeKey)
             }
             setModalContentType('showAllPositions')
           }
@@ -651,18 +666,18 @@ export default function LinkedMap({
               position: 'absolute',
               top: 10,
               right: 10,
-              zIndex: 10,
-              borderColor: 'black',
-              borderWidth: 1,
-              borderRadius: 5,
+              zIndex: 1,
             }}
           >
             <TouchableOpacity
               style={{
-                zIndex: 1,
+                flex: 1,
                 paddingVertical: 5,
                 paddingHorizontal: 10,
-                backgroundColor: '#EEEEEE66',
+                backgroundColor: '#EEEEEE',
+                borderRadius: 5,
+                borderColor: 'black',
+                borderWidth: 1,
               }}
               onPress={() => bottomSheetRef.current?.open()}
             >
@@ -685,7 +700,7 @@ export default function LinkedMap({
         {_renderModal()}
       </Modal>
       <RBSheet
-        ref={bottomSheetRef}
+        ref={bottomSheetRef as React.LegacyRef<RBSheet>}
         closeOnDragDown
         dragFromTopOnly
         closeOnPressBack={true}

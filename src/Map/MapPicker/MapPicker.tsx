@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react'
+import React, { LegacyRef, useEffect, useRef } from 'react'
 import {
   Alert,
+  ImageBackground,
   ImageSourcePropType,
+  ScrollView,
   TouchableOpacity,
   View,
 } from 'react-native'
@@ -17,13 +19,23 @@ export type TMap = {
 } // what does a map need?
 
 type Props = {
+  testId: string
   map?: TMap
   onChange?: (map: TMap) => void
 }
 
-export const MapPicker = ({ map, onChange }: Props) => {
+export const MapPicker = ({ testId, map, onChange }: Props) => {
   const [hasPermissions, setHasPermissions] = React.useState<boolean>(false)
-  const [tempSource, setTempSource] = React.useState<string>('')
+  const [tempSource, setTempSource] = React.useState<
+    ImageSourcePropType | undefined
+  >(map?.imageSource)
+
+  const [sizeFactor, setSizeFactor] = React.useState<{
+    width: number
+    height: number
+  }>({ width: 1, height: 1 })
+
+  const imageRef = useRef<ImageBackground>()
 
   useEffect(() => {
     // TODO: Check for permissions
@@ -32,12 +44,7 @@ export const MapPicker = ({ map, onChange }: Props) => {
 
   useEffect(() => {
     if (map) {
-      if (typeof map.imageSource === 'string') {
-        setTempSource(map.imageSource)
-      }
-      if (typeof map.imageSource === 'number') {
-        setTempSource(map.imageSource.toString())
-      }
+      setTempSource(map.imageSource)
     }
   }, [map])
 
@@ -58,53 +65,107 @@ export const MapPicker = ({ map, onChange }: Props) => {
     if (map) {
       let _src = require('../solarMap.jpeg')
 
-      if (map.imageSource === _src) _src = require('../mapExample.png')
+      if (tempSource === _src) _src = require('../mapExample.png')
 
-      setTempSource(_src.toString())
+      setTempSource(_src)
 
-      if (onChange) onChange({ ...map, imageSource: _src })
+      if (onChange) onChange({ ...map, positions: [], imageSource: _src })
     }
   }
 
   return (
-    <View>
+    <ScrollView style={{ flex: 1 }}>
       <View style={{ marginBottom: 20 }}>
         <Text style={{ color: 'red' }}>
-          Achtung: Alle verlinkten Positionen gehen verloren!
+          Attention: All linked positions will be deleted on change!
         </Text>
       </View>
-      <View style={{ marginBottom: 20 }}>
-        <TouchableOpacity
+      <View style={{ flexGrow: 1, marginBottom: 20 }}>
+        <View style={{ marginBottom: 20 }}>
+          <TouchableOpacity
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              borderRadius: 5,
+              borderColor: 'black',
+              borderWidth: 1,
+              backgroundColor: '#EEE',
+              alignSelf: 'center',
+              marginBottom: 2,
+            }}
+            onPress={async () => {
+              console.log('TODO: ImagePicker öffnen, Bild ändern')
+              _pickImage()
+            }}
+          >
+            <Text>Choose image...</Text>
+          </TouchableOpacity>
+          <Text
+            style={{
+              alignSelf: 'center',
+              maxWidth: '60%',
+              fontStyle: 'italic',
+              paddingHorizontal: 10,
+            }}
+            numberOfLines={2}
+          >
+            Image: {tempSource}
+          </Text>
+        </View>
+        <View
           style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingVertical: 10,
-            paddingHorizontal: 20,
-            borderRadius: 5,
-            borderColor: 'black',
+            flexGrow: 1,
             borderWidth: 1,
-            backgroundColor: '#EEE',
-            alignSelf: 'center',
-            marginBottom: 2,
-          }}
-          onPress={async () => {
-            console.log('TODO: ImagePicker öffnen, Bild ändern')
-            _pickImage()
+            padding: 10,
           }}
         >
-          <Text>Bild auswählen...</Text>
-        </TouchableOpacity>
-        <Text
-          style={{
-            alignSelf: 'center',
-            maxWidth: '50%',
-            fontStyle: 'italic',
-          }}
-          numberOfLines={2}
-        >
-          Bild: {tempSource}
-        </Text>
+          <ImageBackground
+            testID={`${testId}_pick_position`}
+            source={tempSource ?? {}}
+            resizeMode='contain'
+            resizeMethod='scale'
+            style={{ width: '100%', height: '100%', flexGrow: 1 }}
+            onLayout={(e) => setSizeFactor(e.nativeEvent.layout)}
+          >
+            <View
+              style={{
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'transparent',
+              }}
+            >
+              {map?.positions?.map((position) => {
+                if (position.coordinates) {
+                  const { x1, x2, y1, y2 } = position.coordinates
+                  return (
+                    <View
+                      key={`${testId}_position_${position.key}`}
+                      style={{
+                        position: 'absolute',
+                        left: (x1 / 100) * sizeFactor.width,
+                        top: (y1 / 100) * sizeFactor.height,
+                        width: ((x2 - x1) / 100) * sizeFactor.width,
+                        height: ((y2 - y1) / 100) * sizeFactor.height,
+                        borderWidth: 1,
+                        borderColor: 'red',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Text adjustsFontSizeToFit>{position.title}</Text>
+                    </View>
+                  )
+                }
+
+                return null
+              })}
+            </View>
+          </ImageBackground>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   )
 }
