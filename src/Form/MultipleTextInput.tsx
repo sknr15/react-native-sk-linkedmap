@@ -37,6 +37,8 @@ export const MultipleTextInput = (props: IMultipleTextInputComponent) => {
       elements.push(
         <RNTextInput
           {...props}
+          testID={`input_${idx}`}
+          key={`input_${idx}`}
           style={{
             color: 'black',
             fontSize: largerText ? 18 : 14,

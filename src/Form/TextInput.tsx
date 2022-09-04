@@ -46,6 +46,7 @@ export const TextInput = (props: ITextInputComponent) => {
       )}
       <RNTextInput
         {...props}
+        testID={`input`}
         style={{
           color: 'black',
           fontSize: largerText ? 18 : 14,
