@@ -42,6 +42,8 @@ export const PositionPicker = ({
     y2: containerSize.height,
   })
 
+  const [isSingleTouch, setIsSingleTouch] = useState<boolean>(true)
+
   useEffect(() => {
     if (
       newCoordinates &&
@@ -60,7 +62,12 @@ export const PositionPicker = ({
 
   const _handleCoordinates = (x: number, y: number) => {
     let _coordinates = { ...newCoordinates }
-    if (_coordinates.x1 === 0 && _coordinates.y1 === 0) {
+    if (
+      Math.abs(x - _coordinates.x1) < 3 ||
+      Math.abs(y - _coordinates.y1) < 3
+    ) {
+      _coordinates = { ...emptyCoordinates, x1: x, y1: y }
+    } else if (_coordinates.x1 === 0 && _coordinates.y1 === 0) {
       _coordinates = { ...emptyCoordinates, x1: x, y1: y }
     } else if (_coordinates.x2 !== 0 && _coordinates.y2 !== 0) {
       _coordinates = { ...emptyCoordinates, x1: x, y1: y }
@@ -138,9 +145,8 @@ export const PositionPicker = ({
           imageWidth={width ?? containerSize.width}
           minScale={1}
           maxScale={3}
-          enableCenterFocus={false}
         >
-          <TouchableOpacity
+          <View
             style={{
               flex: 1,
               alignSelf: 'center',
@@ -148,12 +154,20 @@ export const PositionPicker = ({
               justifyContent: 'center',
               backgroundColor: 'transparent',
             }}
-            onPress={(e) => {
-              const { locationX, locationY } = e.nativeEvent
-              _handleCoordinates(
-                (locationX / sizeFactor.width) * 100,
-                (locationY / sizeFactor.height) * 100
-              )
+            //activeOpacity={0.8}
+            onTouchStart={(e) => setIsSingleTouch(true)}
+            onTouchMove={(e) => setIsSingleTouch(false)}
+            onTouchEnd={(e) => {
+              if (e.nativeEvent.changedTouches.length > 1) {
+                return
+              }
+              if (isSingleTouch) {
+                const { locationX, locationY } = e.nativeEvent
+                _handleCoordinates(
+                  (locationX / sizeFactor.width) * 100,
+                  (locationY / sizeFactor.height) * 100
+                )
+              }
             }}
           >
             <Image
@@ -166,7 +180,7 @@ export const PositionPicker = ({
               onLayout={(e) => setSizeFactor(e.nativeEvent.layout)}
             />
             {_renderPosition()}
-          </TouchableOpacity>
+          </View>
         </ImageZoom>
       </View>
     )
