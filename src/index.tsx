@@ -72,6 +72,7 @@ export default function LinkedMap({
 
   const [activeKey, setActiveKey] = useState<string | undefined>(undefined)
   const [hasChanges, setHasChanges] = useState<boolean>(false)
+  const [keyErrors, setKeyErrors] = useState<string[]>([])
 
   const bottomSheetRef = useRef<RBSheet | undefined>(undefined)
 
@@ -79,18 +80,28 @@ export default function LinkedMap({
     if (map) {
       setTempMap(map)
       if (map.positions) {
-        setMapPositions(
-          map.positions.sort((a, b) => {
-            if (a.title === b.title) return a.key.localeCompare(b.key)
-            return a.title.localeCompare(b.title)
-          })
-        )
+        let keys = map.positions.map((position) => position.key)
+        let duplicates: string[] = []
+        keys.forEach((pos, idx) => {
+          if (keys.indexOf(pos) !== idx) duplicates.push(pos)
+        })
+
+        setKeyErrors([...duplicates])
+
+        if (duplicates.length === 0) {
+          setMapPositions(
+            map.positions.sort((a, b) => {
+              if (a.title === b.title) return a.key.localeCompare(b.key)
+              return a.title.localeCompare(b.title)
+            })
+          )
+        }
       }
     }
   }, [map])
 
   useEffect(() => {
-    //r_requestPermission()
+    // _requestPermission()
   }, [])
 
   const _requestPermission = async () => {
@@ -562,7 +573,7 @@ export default function LinkedMap({
           })
         }
       >
-        {showMenu && (
+        {showMenu && keyErrors.length === 0 && (
           <View
             style={{
               position: 'absolute',
@@ -592,7 +603,34 @@ export default function LinkedMap({
             {title}
           </Text>
         )}
-        <Map testId='linkedmap' map={map} onClick={_handleOnClick} zoomable />
+        {keyErrors.length === 0 ? (
+          <Map testId='linkedmap' map={map} onClick={_handleOnClick} zoomable />
+        ) : (
+          <View
+            style={{
+              marginTop: 'auto',
+              marginBottom: 'auto',
+              alignItems: 'center',
+            }}
+          >
+            <Text
+              center
+              style={{
+                marginBottom: 15,
+              }}
+              largerText
+            >
+              Found duplicates in position keys!
+            </Text>
+            {keyErrors.map((e) => {
+              return (
+                <Text center key={`keyerror_${e}`} style={{ marginBottom: 2 }}>
+                  {e}
+                </Text>
+              )
+            })}
+          </View>
+        )}
       </View>
       <Modal
         isVisible={isModalVisible}

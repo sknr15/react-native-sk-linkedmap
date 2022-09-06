@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-  Alert,
-  ImageSourcePropType,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { Alert, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
 import LinkedMap, { TMap, TPosition } from 'react-native-sk-linkedmap'
 import { request, check, PERMISSIONS } from 'react-native-permissions'
 
@@ -20,14 +13,15 @@ const App = () => {
       target: 'www.123.de',
       coordinates: { x1: 9, x2: 32, y1: 31, y2: 42 },
     },
-    { key: 'testmap1', title: 'Testmap 1', target: 'testmap.com' },
+    { key: 'testmap4', title: 'Target Array', target: [] },
     {
       key: 'dasisteintest',
       title: 'Das ist ein Test',
       target: 'test',
       coordinates: { x1: 68, x2: 92, y1: 70, y2: 81 },
     },
-    { key: '123456', title: '123456', target: '123456' },
+    { key: 'testmap5', title: 'Test Map 5', target: '123456' },
+    { key: 'testmaparr', title: 'Test Map Array', target: ['expobeispiel'] },
   ]
 
   const [map, setMap] = useState<TMap>({

@@ -131,16 +131,18 @@ export const EditPosition = ({
           _onChange('title', val)
         }}
       />
-      <TextInput
-        testID={`${testId}_input_target`}
-        label={'Target'}
-        placeholder='Target...'
-        autoCapitalize={'none'}
-        value={tempPosition.target}
-        onChangeText={(val) => {
-          _onChange('target', val)
-        }}
-      />
+      {typeof tempPosition.target === 'string' && (
+        <TextInput
+          testID={`${testId}_input_target`}
+          label={'Target'}
+          placeholder='Target...'
+          autoCapitalize={'none'}
+          value={tempPosition.target}
+          onChangeText={(val) => {
+            _onChange('target', val)
+          }}
+        />
+      )}
       {_renderCoordinatesInput()}
       <View style={{ flex: 1 }}>
         {/* {_renderAspectRatioButtons()} */}
