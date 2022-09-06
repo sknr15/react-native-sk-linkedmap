@@ -21,6 +21,8 @@ type TModalContentType =
   | 'showAllPositions'
   | 'changeMap'
 
+export type { TCoordinates, TMap, TPosition }
+
 export default function LinkedMap({
   testID,
   title,

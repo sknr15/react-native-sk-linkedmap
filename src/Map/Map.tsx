@@ -102,11 +102,12 @@ export const Map = ({
                   left,
                   height,
                   width,
+                  borderWidth: isAnimationFinished ? 1 : 0,
+                  borderColor: 'red',
+                  borderRadius: 1,
                   alignItems: 'center',
                   justifyContent: 'center',
                   zIndex: 10,
-                  borderColor: 'red',
-                  borderWidth: isAnimationFinished ? 1 : 0,
                 }}
                 onPress={() => onClick(position)}
               >
@@ -119,7 +120,15 @@ export const Map = ({
                     opacity: animatedOpacityValue.current,
                   }}
                 >
-                  {showText && <Text>{position.title}</Text>}
+                  {showText && (
+                    <Text
+                      center
+                      style={{ fontSize: 10, paddingHorizontal: 10 }}
+                      adjustsFontSizeToFit
+                    >
+                      {position.title}
+                    </Text>
+                  )}
                 </Animated.View>
               </TouchableOpacity>
             )
@@ -136,6 +145,7 @@ export const Map = ({
                   width,
                   borderWidth: 1,
                   borderColor: 'red',
+                  borderRadius: 1,
                   justifyContent: 'center',
                   alignItems: 'center',
                   zIndex: 10,

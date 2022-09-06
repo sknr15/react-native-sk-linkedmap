@@ -7,24 +7,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import LinkedMap from 'react-native-sk-linkedmap'
+import LinkedMap, { TMap, TPosition } from 'react-native-sk-linkedmap'
 import { request, check, PERMISSIONS } from 'react-native-permissions'
 
 const example = require('./mapExample.png')
-
-type TCoordinates = { x1: number; x2: number; y1: number; y2: number }
-type TPosition = {
-  key: string
-  title: string
-  target: any
-  coordinates?: TCoordinates
-}
-type TMap = {
-  key: string
-  title: string
-  imageSource?: ImageSourcePropType
-  positions?: TPosition[]
-}
 
 const App = () => {
   const pos: TPosition[] = [
