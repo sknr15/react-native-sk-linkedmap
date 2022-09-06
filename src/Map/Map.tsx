@@ -44,7 +44,7 @@ export const Map = ({
     const ANIMATIONINITIALDELAY = 1000
 
     useEffect(() => {
-      if (!isAnimationFinished) {
+      if (onClick && !isAnimationFinished) {
         Animated.loop(
           Animated.sequence([
             Animated.timing(animatedOpacityValue.current, {
@@ -106,7 +106,7 @@ export const Map = ({
                   borderColor: 'red',
                   borderWidth: isAnimationFinished ? 1 : 0,
                 }}
-                onPress={onClick ? () => onClick(position) : undefined}
+                onPress={() => onClick(position)}
               >
                 <Animated.View
                   style={{
