@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-  Alert,
-  ImageBackground,
-  ImageSourcePropType,
-  ScrollView,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { Alert, TouchableOpacity, View } from 'react-native'
 import { Text } from '../../Form'
 import * as ImagePicker from 'expo-image-picker'
 import { TMap, TPosition } from '../../interfaces'

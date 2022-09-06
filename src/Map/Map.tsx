@@ -44,6 +44,8 @@ export const Map = ({
     const ANIMATIONINITIALDELAY = 1000
 
     useEffect(() => {
+      // Animated dots for positions
+
       if (onClick && !isAnimationFinished) {
         Animated.loop(
           Animated.sequence([

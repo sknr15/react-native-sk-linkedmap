@@ -118,6 +118,8 @@ export const PositionPicker = ({
   }
 
   if (map && map.imageSource) {
+    // No cropper yet, positions are created via two clicks (1st + 2nd coordinates)
+
     // if iOS or Android
     return (
       <View

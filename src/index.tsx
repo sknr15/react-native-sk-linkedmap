@@ -8,7 +8,6 @@ import {
 } from 'react-native'
 import Modal from 'react-native-modal'
 import * as ImagePicker from 'expo-image-picker'
-import ReactCrop from 'react-image-crop'
 import { AddPosition, EditPosition } from './Position'
 import { Text } from './Form'
 import RBSheet from 'react-native-raw-bottom-sheet'
@@ -539,11 +538,14 @@ export default function LinkedMap({
 
   return (
     <View
-      style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+      style={[
+        {
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        style,
+      ]}
     >
       <View
         style={{
