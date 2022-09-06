@@ -1,28 +1,20 @@
-import * as React from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {
   Alert,
-  Image,
-  ImageBackground,
-  ImageSourcePropType,
   ScrollView,
   TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native'
-import ImageZoom from 'react-native-image-pan-zoom'
 import Modal from 'react-native-modal'
 import * as ImagePicker from 'expo-image-picker'
 import ReactCrop from 'react-image-crop'
-import { MapPicker, TMap } from './Map'
-import {
-  AddPosition,
-  EditPosition,
-  PositionPicker,
-  TCoordinates,
-  TPosition,
-} from './Position'
+import { AddPosition, EditPosition } from './Position'
 import { Text } from './Form'
 import RBSheet from 'react-native-raw-bottom-sheet'
+import Image from 'react-native-scalable-image'
+import { TCoordinates, TMap, TPosition } from './interfaces'
+import { Map, MapPicker } from './Map'
 
 type TModalContentType =
   | 'addPosition'
@@ -35,7 +27,6 @@ export default function LinkedMap({
   title,
   style,
   map,
-  positions,
   showMenu,
   onChange,
   onClick,
@@ -44,58 +35,46 @@ export default function LinkedMap({
   title?: string
   style?: ViewStyle
   map: TMap
-  positions?: TPosition[]
   showMenu?: boolean
   onClick?: (position?: TPosition) => void
   onChange?: (map: TMap) => void
 }) {
-  const [containerSize, setContainerSize] = React.useState<{
+  const [containerSize, setContainerSize] = useState<{
     height: number
     width: number
   }>({ height: 0, width: 0 })
-  const [modalSize, setModalSize] = React.useState<{
+  const [modalSize, setModalSize] = useState<{
     height: number
     width: number
   }>({ height: 0, width: 0 })
 
-  const [imageSource, setImageSource] = React.useState<ImageSourcePropType>(0)
-  const [optionText, setOptionText] = React.useState<string>('')
+  const [optionText, setOptionText] = useState<string>('')
 
-  const [isModalVisible, setIsModalVisible] = React.useState<boolean>(false)
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
-  const [hasPermissions, setHasPermissions] = React.useState<boolean>(false)
+  const [hasPermissions, setHasPermissions] = useState<boolean>(false)
 
   const [modalContentType, setModalContentType] =
-    React.useState<TModalContentType>('showAllPositions')
+    useState<TModalContentType>('showAllPositions')
 
-  const [mapPositions, setMapPositions] = React.useState<TPosition[]>([])
+  const [mapPositions, setMapPositions] = useState<TPosition[]>([])
 
-  const [tempPositions, setTempPositions] = React.useState<typeof mapPositions>(
-    []
-  )
-  const [tempMap, setTempMap] = React.useState<typeof map | undefined>(
-    undefined
-  )
+  const [tempPositions, setTempPositions] = useState<typeof mapPositions>([])
+  const [tempMap, setTempMap] = useState<typeof map | undefined>(undefined)
 
-  const [tempValues, setTempValues] = React.useState<{
+  const [tempValues, setTempValues] = useState<{
     key?: string
     title: string
     target: string
     coordinates?: TCoordinates
   }>({ key: undefined, title: '', target: '', coordinates: undefined })
-  const [activeKey, setActiveKey] = React.useState<string | undefined>(
-    undefined
-  )
-  const [hasChanges, setHasChanges] = React.useState<boolean>(false)
 
-  const [sizeFactor, setSizeFactor] = React.useState<{
-    width: number
-    height: number
-  }>({ width: 1, height: 1 })
+  const [activeKey, setActiveKey] = useState<string | undefined>(undefined)
+  const [hasChanges, setHasChanges] = useState<boolean>(false)
 
-  const bottomSheetRef = React.useRef<RBSheet | undefined>(undefined)
+  const bottomSheetRef = useRef<RBSheet | undefined>(undefined)
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (map) {
       setTempMap(map)
       if (map.positions) {
@@ -109,7 +88,7 @@ export default function LinkedMap({
     }
   }, [map])
 
-  React.useEffect(() => {
+  useEffect(() => {
     //r_requestPermission()
   }, [])
 
@@ -151,87 +130,6 @@ export default function LinkedMap({
       }
     }
     setTempPositions(_mapPos)
-  }
-
-  const _renderImage = (height: number, width: number, editMode?: boolean) => {
-    if (map && map.imageSource) {
-      return (
-        <ImageZoom
-          cropHeight={height}
-          cropWidth={width}
-          imageHeight={height}
-          imageWidth={width}
-        >
-          <ImageBackground
-            testID={`map_pick_position`}
-            source={map.imageSource}
-            resizeMode='contain'
-            resizeMethod='scale'
-            style={{ flexGrow: 1 }}
-            onLayout={(e) => setSizeFactor(e.nativeEvent.layout)}
-          >
-            <View
-              style={{
-                position: 'absolute',
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'transparent',
-              }}
-            >
-              {map.positions?.map((position) => {
-                if (position.coordinates) {
-                  const { x1, x2, y1, y2 } = position.coordinates
-                  return (
-                    <TouchableOpacity
-                      key={`map_position_${position.key}`}
-                      style={{
-                        position: 'absolute',
-                        left: (x1 / 100) * sizeFactor.width,
-                        top: (y1 / 100) * sizeFactor.height,
-                        width: ((x2 - x1) / 100) * sizeFactor.width,
-                        height: ((y2 - y1) / 100) * sizeFactor.height,
-                        borderWidth: 1,
-                        borderColor: 'red',
-                      }}
-                      onPress={() => _handleOnClick(position)}
-                    ></TouchableOpacity>
-                  )
-                }
-
-                return null
-              })}
-            </View>
-          </ImageBackground>
-        </ImageZoom>
-      )
-    }
-
-    if (imageSource) {
-      return (
-        <ImageZoom
-          cropHeight={height}
-          cropWidth={width}
-          imageHeight={height}
-          imageWidth={width}
-        >
-          <Image
-            source={imageSource}
-            style={{
-              height,
-              width,
-            }}
-            resizeMode={'contain'}
-            resizeMethod={'resize'}
-          />
-        </ImageZoom>
-      )
-    }
-
-    return (
-      <View>
-        <Text>No image selected</Text>
-      </View>
-    )
   }
 
   const _renderManagePositions = () => {
@@ -528,12 +426,14 @@ export default function LinkedMap({
               }}
             >
               <Image
-                style={{ tintColor: isDisabled ? 'grey' : 'darkgreen' }}
+                style={{
+                  tintColor: isDisabled ? 'grey' : 'darkgreen',
+                }}
                 source={{
                   uri: 'https://cdn-icons-png.flaticon.com/512/447/447147.png',
-                  height: 16,
-                  width: 16,
                 }}
+                width={16}
+                height={16}
               />
             </TouchableOpacity>
             <Text
@@ -566,9 +466,8 @@ export default function LinkedMap({
                 style={{ tintColor: 'darkred' }}
                 source={{
                   uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828747.png',
-                  height: 16,
-                  width: 16,
                 }}
+                width={16}
               />
             </TouchableOpacity>
           </View>
@@ -651,7 +550,6 @@ export default function LinkedMap({
           flex: 1,
           width: '100%',
           alignItems: 'center',
-          overflow: 'hidden',
         }}
         onLayout={(e) =>
           setContainerSize({
@@ -690,7 +588,7 @@ export default function LinkedMap({
             {title}
           </Text>
         )}
-        {_renderImage(containerSize.height, containerSize.width)}
+        <Map testId='linkedmap' map={map} onClick={_handleOnClick} zoomable />
       </View>
       <Modal
         isVisible={isModalVisible}

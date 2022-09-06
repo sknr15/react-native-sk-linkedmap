@@ -64,7 +64,7 @@ export const TextInput = (props: ITextInputComponent) => {
         onChangeText={(val) => {
           let _val = val
           if (onlyNumbers) {
-            _val = _val.replace(/[^0-9]/g, '')
+            _val = _val.replace(/[^0-9\.]/g, '')
           }
 
           if (props.onChangeText) {

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Alert,
   ImageSourcePropType,
@@ -32,21 +32,26 @@ const App = () => {
       key: '123',
       title: '123',
       target: 'www.123.de',
-      coordinates: { x1: 14, x2: 35, y1: 31, y2: 42 },
+      coordinates: { x1: 9, x2: 32, y1: 31, y2: 42 },
     },
     { key: 'testmap1', title: 'Testmap 1', target: 'testmap.com' },
-    { key: 'dasisteintest', title: 'Das ist ein Test', target: 'test' },
+    {
+      key: 'dasisteintest',
+      title: 'Das ist ein Test',
+      target: 'test',
+      coordinates: { x1: 68, x2: 92, y1: 70, y2: 81 },
+    },
     { key: '123456', title: '123456', target: '123456' },
   ]
 
-  const [map, setMap] = React.useState<TMap>({
+  const [map, setMap] = useState<TMap>({
     key: 'mapexample',
     title: 'Map Example',
     imageSource: example,
     positions: [...pos],
   })
 
-  const [showMenu, setShowMenu] = React.useState<boolean>(false)
+  const [showMenu, setShowMenu] = useState<boolean>(false)
 
   useEffect(() => {
     check(PERMISSIONS.IOS.CAMERA).then((res) => {

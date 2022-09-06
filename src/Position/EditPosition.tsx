@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { View } from 'react-native'
-import { MultipleTextInput, TextInput } from '../Form'
-import { TMap } from '../Map'
-import { PositionPicker, TCoordinates, TPosition } from './PositionPicker'
+import { TextInput } from '../Form'
+import { emptyCoordinates, TCoordinates, TMap, TPosition } from '../interfaces'
+import { PositionPicker } from './PositionPicker'
 
 type Props = {
   testId: string
@@ -17,15 +17,15 @@ export const EditPosition = ({
   map,
   onChangePosition,
 }: Props) => {
-  const [tempPosition, setTempPosition] = React.useState<TPosition>({
+  const [tempPosition, setTempPosition] = useState<TPosition>({
     ...position,
   })
-  const [modalSize, setModalSize] = React.useState<{
+  const [modalSize, setModalSize] = useState<{
     height: number
     width: number
   }>({ height: 0, width: 0 })
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (position) {
       setTempPosition({ ...position })
     }
@@ -40,6 +40,84 @@ export const EditPosition = ({
     if (onChangePosition) {
       onChangePosition({ ...tempPosition, [type]: value })
     }
+  }
+
+  const _renderCoordinatesInput = () => {
+    const { x1, x2, y1, y2 } = tempPosition.coordinates ?? emptyCoordinates
+
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <TextInput
+          testID={`${testId}_input_x1`}
+          label={'X1'}
+          placeholder='X1...'
+          autoCapitalize={'none'}
+          value={(Math.round(x1 * 10) / 10).toString()}
+          onChangeText={(val) => {
+            _onChange('coordinates', {
+              ...emptyCoordinates,
+              ...tempPosition.coordinates,
+              x1: Number(val),
+            })
+          }}
+          onlyNumbers
+          style={{ flex: 1, marginRight: 5 }}
+        />
+        <TextInput
+          testID={`${testId}_input_x2`}
+          label={'X2'}
+          placeholder='X2...'
+          autoCapitalize={'none'}
+          value={(Math.round(x2 * 10) / 10).toString()}
+          onChangeText={(val) => {
+            _onChange('coordinates', {
+              ...emptyCoordinates,
+              ...tempPosition.coordinates,
+              x2: Number(val),
+            })
+          }}
+          onlyNumbers
+          style={{ flex: 1, marginRight: 5 }}
+        />
+        <TextInput
+          testID={`${testId}_input_y1`}
+          label={'Y1'}
+          placeholder='Y1...'
+          autoCapitalize={'none'}
+          value={(Math.round(y1 * 10) / 10).toString()}
+          onChangeText={(val) => {
+            _onChange('coordinates', {
+              ...emptyCoordinates,
+              ...tempPosition.coordinates,
+              y1: Number(val),
+            })
+          }}
+          onlyNumbers
+          style={{ flex: 1, marginRight: 5 }}
+        />
+        <TextInput
+          testID={`${testId}_input_y2`}
+          label={'Y2'}
+          placeholder='Y2...'
+          autoCapitalize={'none'}
+          value={(Math.round(y2 * 10) / 10).toString()}
+          onChangeText={(val) => {
+            _onChange('coordinates', {
+              ...emptyCoordinates,
+              ...tempPosition.coordinates,
+              y2: Number(val),
+            })
+          }}
+          onlyNumbers
+          style={{ flex: 1 }}
+        />
+      </View>
+    )
   }
 
   return (
@@ -63,31 +141,7 @@ export const EditPosition = ({
           _onChange('target', val)
         }}
       />
-      <MultipleTextInput
-        testID={`${testId}_input_coordinates`}
-        label={'Co - X1'}
-        placeholder='Coordinates...'
-        autoCapitalize={'none'}
-        onChangeText={(val) => {
-          _onChange('coordinates', {
-            x1: Number(val),
-            x2: Number(val),
-            y1: Number(val),
-            y2: Number(val),
-          })
-        }}
-        inputValues={
-          tempPosition.coordinates
-            ? [
-                tempPosition.coordinates.x1,
-                tempPosition.coordinates.x2,
-                tempPosition.coordinates.y1,
-                tempPosition.coordinates.y2,
-              ]
-            : [0, 0, 0, 0]
-        }
-        onlyNumbers
-      />
+      {_renderCoordinatesInput()}
       <View style={{ flex: 1 }}>
         {/* {_renderAspectRatioButtons()} */}
         <View
@@ -111,12 +165,15 @@ export const EditPosition = ({
             <PositionPicker
               testId={`${testId}`}
               map={map}
-              position={position}
+              position={tempPosition}
               height={modalSize.height}
               width={modalSize.width}
               onChange={(position) => {
-                console.log('TODO: edit', position)
-                // _onChange('coordinates', position.coordinates)
+                // console.log('TODO: edit', position)
+                _onChange(
+                  'coordinates',
+                  position.coordinates ?? emptyCoordinates
+                )
               }}
             />
           </View>
