@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { TouchableOpacity, View } from 'react-native'
+import { View } from 'react-native'
 import ImageZoom from 'react-native-image-pan-zoom'
 import Image from 'react-native-scalable-image'
 import { emptyCoordinates, TCoordinates, TMap, TPosition } from '../interfaces'
@@ -35,13 +35,6 @@ export const PositionPicker = ({
     position.coordinates ?? emptyCoordinates
   )
 
-  const [cropperSize, setCropperSize] = useState<TCoordinates>({
-    x1: 0,
-    y1: 0,
-    x2: containerSize.width,
-    y2: containerSize.height,
-  })
-
   const [isSingleTouch, setIsSingleTouch] = useState<boolean>(true)
 
   useEffect(() => {
@@ -60,31 +53,43 @@ export const PositionPicker = ({
     }
   }
 
-  const _handleCoordinates = (x: number, y: number) => {
+  const _handleCoordinates = (
+    x: number,
+    y: number,
+    x2?: number,
+    y2?: number
+  ) => {
     let _coordinates = { ...newCoordinates }
-    if (
-      Math.abs(x - _coordinates.x1) < 3 ||
-      Math.abs(y - _coordinates.y1) < 3
-    ) {
-      _coordinates = { ...emptyCoordinates, x1: x, y1: y }
-    } else if (_coordinates.x1 === 0 && _coordinates.y1 === 0) {
-      _coordinates = { ...emptyCoordinates, x1: x, y1: y }
-    } else if (_coordinates.x2 !== 0 && _coordinates.y2 !== 0) {
-      _coordinates = { ...emptyCoordinates, x1: x, y1: y }
+    if (x2 && y2) {
+      _coordinates = { x1: x, x2, y1: y, y2 }
     } else {
-      if (x < _coordinates.x1) {
-        _coordinates = { ..._coordinates, x2: _coordinates.x1, x1: x }
+      if (
+        // if change is too small -> accidental tap
+        Math.abs(x - _coordinates.x1) < 3 ||
+        Math.abs(y - _coordinates.y1) < 3
+      ) {
+        _coordinates = { ...emptyCoordinates, x1: x, y1: y }
+      } else if (_coordinates.x1 === 0 && _coordinates.y1 === 0) {
+        // if x1 & y1 NOT set -> set x1 & y1
+        _coordinates = { ...emptyCoordinates, x1: x, y1: y }
+      } else if (_coordinates.x2 !== 0 && _coordinates.y2 !== 0) {
+        // if all coordinates set -> clear and set x1 & y1
+        _coordinates = { ...emptyCoordinates, x1: x, y1: y }
       } else {
-        _coordinates = { ..._coordinates, x2: x }
-      }
-      if (y < _coordinates.y1) {
-        _coordinates = { ..._coordinates, y2: _coordinates.y1, y1: y }
-      } else {
-        _coordinates = { ..._coordinates, y2: y }
+        // if x1 & y1 set are -> set x2 & y2 depending on position
+        // if x1 or y1 are bigger than x2 or y2 -> swap numbers
+        if (x < _coordinates.x1) {
+          _coordinates = { ..._coordinates, x2: _coordinates.x1, x1: x }
+        } else {
+          _coordinates = { ..._coordinates, x2: x }
+        }
+        if (y < _coordinates.y1) {
+          _coordinates = { ..._coordinates, y2: _coordinates.y1, y1: y }
+        } else {
+          _coordinates = { ..._coordinates, y2: y }
+        }
       }
     }
-
-    setCropperSize({ ..._coordinates })
 
     setNewCoordinates({ ..._coordinates })
   }
@@ -154,15 +159,13 @@ export const PositionPicker = ({
               justifyContent: 'center',
               backgroundColor: 'transparent',
             }}
-            //activeOpacity={0.8}
-            onTouchStart={(e) => setIsSingleTouch(true)}
-            onTouchMove={(e) => setIsSingleTouch(false)}
+            onTouchStart={() => {
+              setIsSingleTouch(true)
+            }}
+            onTouchMove={() => setIsSingleTouch(false)}
             onTouchEnd={(e) => {
-              if (e.nativeEvent.changedTouches.length > 1) {
-                return
-              }
+              const { locationX, locationY } = e.nativeEvent
               if (isSingleTouch) {
-                const { locationX, locationY } = e.nativeEvent
                 _handleCoordinates(
                   (locationX / sizeFactor.width) * 100,
                   (locationY / sizeFactor.height) * 100
@@ -178,7 +181,7 @@ export const PositionPicker = ({
               height={height ?? containerSize.height}
               width={width ?? containerSize.width}
               onLayout={(e) => setSizeFactor(e.nativeEvent.layout)}
-            />
+            ></Image>
             {_renderPosition()}
           </View>
         </ImageZoom>
