@@ -65,6 +65,11 @@
     <string>YOUR TEXT PhotoLibrary</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
   	<string>YOUR TEXT PhotoLibraryAdd</string>
-
+	<key>NSPhotoLibraryUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to save photos</string>
+<key>NSCameraUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to access your camera</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to use your microphone</string>
 </dict>
 </plist>

@@ -22,7 +22,7 @@ export const MapPicker = ({ testId, map, onChange }: Props) => {
   }>({ width: 1, height: 1 })
 
   useEffect(() => {
-    // TODO: Check for permissions
+    // _requestPermission()
     setHasPermissions(true)
   }, [])
 
@@ -33,6 +33,11 @@ export const MapPicker = ({ testId, map, onChange }: Props) => {
     }
   }, [map])
 
+  const _requestPermission = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    setHasPermissions(status === ImagePicker.PermissionStatus.GRANTED)
+  }
+
   const _pickImage = async () => {
     if (!hasPermissions) {
       Alert.alert('No permission', 'No permissions to media library', [
@@ -41,20 +46,39 @@ export const MapPicker = ({ testId, map, onChange }: Props) => {
       return
     }
 
-    // const result = await ImagePicker.launchImageLibraryAsync({})
+    // const pickedMedia = await ImagePicker.launchImageLibraryAsync({
+    //   mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    //   quality: 0.66,
+    // })
+
+    // if (!pickedMedia.cancelled) {
+    //   let uri = pickedMedia.uri
+    //   if (pickedMedia.type === 'image' || pickedMedia.uri.includes('image')) {
+    //     if (pickedMedia.width > 2000 || pickedMedia.height > 2000) {
+    //       Alert.alert('Image too big', 'Selected image is too big (> 2000)', [
+    //         { text: 'OK' },
+    //       ])
+    //       return
+    //     }
+    //   }
+
+    //   if (tempMap) {
+    //     setTempMap({ ...tempMap, imageSource: { uri }, positions: [] })
+    //   }
+    // }
 
     //
     // CHANGE!!!
     //
 
-    if (map) {
+    if (tempMap) {
       let _src = require('../solarMap.jpeg')
 
       if (tempMap?.imageSource === _src) _src = require('../mapExample.png')
 
-      setTempMap({ ...map, imageSource: _src, positions: [] })
+      setTempMap({ ...tempMap, imageSource: _src, positions: [] })
 
-      if (onChange) onChange({ ...map, positions: [], imageSource: _src })
+      if (onChange) onChange({ ...tempMap, positions: [], imageSource: _src })
     }
   }
 

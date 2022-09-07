@@ -102,7 +102,7 @@ export const Map = ({
                   left,
                   height,
                   width,
-                  borderWidth: isAnimationFinished ? 1 : 0,
+                  borderWidth: isAnimationFinished ? 2 : 0,
                   borderColor: 'red',
                   borderRadius: 1,
                   alignItems: 'center',

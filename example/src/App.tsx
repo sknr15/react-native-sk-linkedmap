@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Alert, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
 import LinkedMap, { TMap, TPosition } from 'react-native-sk-linkedmap'
 import { request, check, PERMISSIONS } from 'react-native-permissions'
+import * as ImagePicker from 'expo-image-picker'
 
 const example = require('./mapExample.png')
 
@@ -32,14 +33,16 @@ const App = () => {
   })
 
   const [showMenu, setShowMenu] = useState<boolean>(false)
+  const [hasPermissions, setHasPermissions] = useState<boolean>(false)
 
   useEffect(() => {
-    check(PERMISSIONS.IOS.CAMERA).then((res) => {
-      console.log(res)
-    })
-    request(PERMISSIONS.IOS.PHOTO_LIBRARY_ADD_ONLY)
-    request(PERMISSIONS.IOS.PHOTO_LIBRARY)
+    // _requestPermission()
   }, [])
+
+  const _requestPermission = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    setHasPermissions(status === ImagePicker.PermissionStatus.GRANTED)
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

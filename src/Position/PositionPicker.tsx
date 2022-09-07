@@ -65,8 +65,8 @@ export const PositionPicker = ({
     } else {
       if (
         // if change is too small -> accidental tap
-        Math.abs(x - _coordinates.x1) < 3 ||
-        Math.abs(y - _coordinates.y1) < 3
+        Math.abs(x - _coordinates.x1) < 2.5 ||
+        Math.abs(y - _coordinates.y1) < 2.5
       ) {
         _coordinates = { ...emptyCoordinates, x1: x, y1: y }
       } else if (_coordinates.x1 === 0 && _coordinates.y1 === 0) {
@@ -94,6 +94,10 @@ export const PositionPicker = ({
     setNewCoordinates({ ..._coordinates })
   }
 
+  const _renderNewPosition = () => {
+    return
+  }
+
   const _renderPosition = () => {
     if (position.coordinates) {
       const { x1, x2, y1, y2 } = position.coordinates
@@ -115,7 +119,7 @@ export const PositionPicker = ({
             top: (y1 / 100) * sizeFactor.height,
             width: ((x2 - x1) / 100) * sizeFactor.width,
             height: ((y2 - y1) / 100) * sizeFactor.height,
-            borderWidth: 1,
+            borderWidth: x2 && y2 ? 2 : 1,
             borderColor: 'red',
             justifyContent: 'center',
             alignItems: 'center',
@@ -183,6 +187,7 @@ export const PositionPicker = ({
               onLayout={(e) => setSizeFactor(e.nativeEvent.layout)}
             ></Image>
             {_renderPosition()}
+            {_renderNewPosition()}
           </View>
         </ImageZoom>
       </View>

@@ -1,4 +1,7 @@
 {
   "name": "example",
-  "displayName": "LinkedMap"
+  "displayName": "LinkedMap",
+  "expo": {
+    "plugins": ["expo-image-picker"]
+  }
 }

@@ -7,7 +7,6 @@ import {
   ViewStyle,
 } from 'react-native'
 import Modal from 'react-native-modal'
-import * as ImagePicker from 'expo-image-picker'
 import { AddPosition, EditPosition } from './Position'
 import { Text } from './Form'
 import RBSheet from 'react-native-raw-bottom-sheet'
@@ -99,15 +98,6 @@ export default function LinkedMap({
       }
     }
   }, [map])
-
-  useEffect(() => {
-    // _requestPermission()
-  }, [])
-
-  const _requestPermission = async () => {
-    ImagePicker.useMediaLibraryPermissions({})
-    setHasPermissions(ImagePicker.PermissionStatus.GRANTED === 'granted')
-  }
 
   const _handleOnClick = (position: TPosition) => {
     if (onClick) {
