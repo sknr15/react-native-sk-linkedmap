@@ -1,5 +1,11 @@
-import React, { ReactNode, useRef, useState, useEffect } from 'react'
-import { Animated, TouchableOpacity, View, ViewStyle } from 'react-native'
+import React, { ReactNode, useRef, useState, useEffect, createRef } from 'react'
+import {
+  Animated,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native'
 import ImageZoom from 'react-native-image-pan-zoom'
 import Image from 'react-native-scalable-image'
 import { Text } from '../Form'
@@ -15,6 +21,7 @@ type Props = {
   testId: string
   width?: number
   zoomable?: boolean
+  zoomButtonsStyle?: ViewStyle | TextStyle
 }
 
 export const Map = ({
@@ -27,6 +34,7 @@ export const Map = ({
   testId,
   width,
   zoomable,
+  zoomButtonsStyle,
 }: Props) => {
   if (map && map.imageSource) {
     const [containerSize, setContainerSize] = useState<{
@@ -38,6 +46,8 @@ export const Map = ({
       width: number
       height: number
     }>({ width: 1, height: 1 })
+
+    const zoomRef = createRef<ImageZoom>()
 
     const animatedOpacityValue = useRef(new Animated.Value(0))
     const [isAnimationFinished, setIsAnimationFinished] =
@@ -183,40 +193,68 @@ export const Map = ({
       return null
     }
 
+    const _handleZoom = (type: 'in' | 'out' | 'reset') => {
+      if (zoomRef.current) {
+        switch (type) {
+          case 'in':
+            console.log('TODO: Zoom in')
+            break
+          case 'out':
+            console.log('TODO: Zoom out')
+            break
+          case 'reset':
+            zoomRef.current.reset()
+            break
+        }
+      }
+    }
+
     const _renderZoomButtons = () => {
       if (showZoomButtons) {
+        const fontStyle = {
+          fontFamily: zoomButtonsStyle?.fontFamily,
+          fontSize: zoomButtonsStyle?.fontSize,
+          fontStyle: zoomButtonsStyle?.fontStyle,
+          fontWeight: zoomButtonsStyle?.fontWeight,
+        }
         return (
-          <View style={{ position: 'absolute', bottom: 10, right: 10 }}>
-            <View style={{ marginBottom: 5 }}>
+          <View style={{ position: 'absolute', bottom: 0, right: 0 }}>
+            <View
+              style={{ marginBottom: zoomButtonsStyle?.marginBottom ? 0 : 5 }}
+            >
               <TouchableOpacity
                 testID={`${testId}_button_zoomIn`}
                 style={{
-                  padding: 5,
+                  alignItems: 'center',
                   backgroundColor: 'grey',
                   borderRadius: 999,
-                  aspectRatio: 1,
                   justifyContent: 'center',
-                  alignItems: 'center',
+                  padding: 5,
+                  ...zoomButtonsStyle,
                 }}
+                onPress={() => _handleZoom('in')}
               >
-                <Text center largerText>
+                <Text center largerText style={fontStyle}>
                   +
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={{ marginBottom: 5 }}>
+            <View
+              style={{ marginBottom: zoomButtonsStyle?.marginBottom ? 0 : 5 }}
+            >
               <TouchableOpacity
                 testID={`${testId}_button_zoomOut`}
                 style={{
-                  padding: 5,
+                  alignItems: 'center',
                   backgroundColor: 'grey',
                   borderRadius: 999,
-                  aspectRatio: 1,
                   justifyContent: 'center',
-                  alignItems: 'center',
+                  padding: 5,
+                  ...zoomButtonsStyle,
                 }}
+                onPress={() => _handleZoom('out')}
               >
-                <Text center largerText>
+                <Text center largerText style={fontStyle}>
                   -
                 </Text>
               </TouchableOpacity>
@@ -225,15 +263,16 @@ export const Map = ({
               <TouchableOpacity
                 testID={`${testId}_button_resetZoom`}
                 style={{
-                  padding: 5,
+                  alignItems: 'center',
                   backgroundColor: 'grey',
                   borderRadius: 999,
-                  aspectRatio: 1,
                   justifyContent: 'center',
-                  alignItems: 'center',
+                  padding: 5,
+                  ...zoomButtonsStyle,
                 }}
+                onPress={() => _handleZoom('reset')}
               >
-                <Text center largerText>
+                <Text center largerText style={fontStyle}>
                   x
                 </Text>
               </TouchableOpacity>
@@ -256,6 +295,7 @@ export const Map = ({
         onLayout={(e) => setContainerSize(e.nativeEvent.layout)}
       >
         <ImageZoom
+          ref={zoomRef}
           cropHeight={height ?? containerSize.height}
           cropWidth={width ?? containerSize.width}
           imageHeight={height ?? containerSize.height}

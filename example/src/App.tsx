@@ -94,6 +94,13 @@ const App = () => {
           Alert.alert(`Position: ${pos?.title}`, `Target: ${pos?.target}`)
         }}
         showZoomButtons
+        zoomButtonsStyle={{
+          marginRight: 10,
+          padding: 5,
+          fontSize: 20,
+          width: 40,
+          height: 40,
+        }}
       />
     </SafeAreaView>
   )

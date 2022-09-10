@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import {
   Alert,
   ScrollView,
+  TextStyle,
   TouchableOpacity,
   View,
   ViewStyle,
@@ -32,6 +33,7 @@ export const LinkedMap = ({
   style,
   testID,
   title,
+  zoomButtonsStyle,
 }: {
   map: TMap
   onChange?: (map: TMap) => void
@@ -42,6 +44,7 @@ export const LinkedMap = ({
   style?: ViewStyle
   testID?: string
   title?: string
+  zoomButtonsStyle?: ViewStyle | TextStyle
 }) => {
   const [optionText, setOptionText] = useState<string>('')
 
@@ -596,6 +599,7 @@ export const LinkedMap = ({
             zoomable
             positionStyle={positionStyle}
             showZoomButtons={showZoomButtons}
+            zoomButtonsStyle={zoomButtonsStyle}
           />
         ) : (
           <View
