@@ -93,6 +93,7 @@ const App = () => {
         onClick={(pos) => {
           Alert.alert(`Position: ${pos?.title}`, `Target: ${pos?.target}`)
         }}
+        showZoomButtons
       />
     </SafeAreaView>
   )

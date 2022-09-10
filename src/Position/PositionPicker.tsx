@@ -5,21 +5,21 @@ import Image from 'react-native-scalable-image'
 import { emptyCoordinates, TCoordinates, TMap, TPosition } from '../interfaces'
 
 type Props = {
-  testId: string
-  map: TMap
-  position: TPosition
-  onChange?: (position: TPosition) => void
-  width?: number
   height?: number
+  map: TMap
+  onChange?: (position: TPosition) => void
+  position: TPosition
+  testId: string
+  width?: number
 }
 
 export const PositionPicker = ({
-  testId,
-  map,
-  position,
-  onChange,
-  width,
   height,
+  map,
+  onChange,
+  position,
+  testId,
+  width,
 }: Props) => {
   const [containerSize, setContainerSize] = useState<{
     width: number

@@ -23,21 +23,25 @@ type TModalContentType =
 export type { TCoordinates, TMap, TPosition }
 
 export const LinkedMap = ({
-  testID,
-  title,
-  style,
   map,
-  showMenu,
   onChange,
   onClick,
+  positionStyle,
+  showMenu,
+  showZoomButtons,
+  style,
+  testID,
+  title,
 }: {
-  testID: string
-  title?: string
-  style?: ViewStyle
   map: TMap
-  showMenu?: boolean
-  onClick?: (position?: TPosition) => void
   onChange?: (map: TMap) => void
+  onClick?: (position?: TPosition) => void
+  positionStyle?: ViewStyle
+  showMenu?: boolean
+  showZoomButtons?: boolean
+  style?: ViewStyle
+  testID?: string
+  title?: string
 }) => {
   const [optionText, setOptionText] = useState<string>('')
 
@@ -585,7 +589,14 @@ export const LinkedMap = ({
           </Text>
         )}
         {keyErrors.length === 0 ? (
-          <Map testId='linkedmap' map={map} onClick={_handleOnClick} zoomable />
+          <Map
+            testId='linkedmap'
+            map={map}
+            onClick={_handleOnClick}
+            zoomable
+            positionStyle={positionStyle}
+            showZoomButtons={showZoomButtons}
+          />
         ) : (
           <View
             style={{

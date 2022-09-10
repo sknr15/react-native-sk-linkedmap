@@ -3,25 +3,25 @@ import { TextInput as RNTextInput, TextInputProps, View } from 'react-native'
 import { Text } from './Text'
 
 interface ITextInputComponent extends TextInputProps {
-  children?: string | string[] | number | Element | null
-  label?: string
   bold?: boolean
   center?: boolean
+  children?: string | string[] | number | Element | null
   italic?: boolean
+  label?: string
   largerText?: boolean
   onlyNumbers?: boolean
 }
 
 export const TextInput = (props: ITextInputComponent) => {
   const {
-    children,
-    label,
     bold,
     center,
+    children,
     italic,
+    label,
     largerText,
-    style,
     onlyNumbers,
+    style,
   } = props
 
   return (

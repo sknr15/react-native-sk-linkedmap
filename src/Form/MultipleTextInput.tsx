@@ -3,27 +3,27 @@ import { TextInput as RNTextInput, TextInputProps, View } from 'react-native'
 import { Text } from './Text'
 
 interface IMultipleTextInputComponent extends TextInputProps {
-  children?: string | string[] | number | Element | null
-  label?: string
   bold?: boolean
   center?: boolean
+  children?: string | string[] | number | Element | null
+  inputValues?: any[]
   italic?: boolean
+  label?: string
   largerText?: boolean
   onlyNumbers?: boolean
-  inputValues?: any[]
 }
 
 export const MultipleTextInput = (props: IMultipleTextInputComponent) => {
   const {
-    children,
-    label,
     bold,
     center,
+    children,
     italic,
-    largerText,
-    style,
-    onlyNumbers,
     inputValues,
+    label,
+    largerText,
+    onlyNumbers,
+    style,
   } = props
 
   const _inputCount = inputValues?.length ?? 1

@@ -1,28 +1,32 @@
 import React, { ReactNode, useRef, useState, useEffect } from 'react'
-import { Animated, TouchableOpacity, View } from 'react-native'
+import { Animated, TouchableOpacity, View, ViewStyle } from 'react-native'
 import ImageZoom from 'react-native-image-pan-zoom'
 import Image from 'react-native-scalable-image'
 import { Text } from '../Form'
 import { TMap, TPosition } from '../interfaces'
 
 type Props = {
-  testId: string
-  map?: TMap
   height?: number
+  map?: TMap
+  onClick?: (position: TPosition) => void
+  positionStyle?: ViewStyle
+  showText?: boolean
+  showZoomButtons?: boolean
+  testId: string
   width?: number
   zoomable?: boolean
-  showText?: boolean
-  onClick?: (position: TPosition) => void
 }
 
 export const Map = ({
-  testId,
-  map,
   height,
+  map,
+  onClick,
+  positionStyle,
+  showText,
+  showZoomButtons,
+  testId,
   width,
   zoomable,
-  showText,
-  onClick,
 }: Props) => {
   if (map && map.imageSource) {
     const [containerSize, setContainerSize] = useState<{
@@ -45,34 +49,35 @@ export const Map = ({
 
     useEffect(() => {
       // Animated dots for positions
-
-      if (onClick && !isAnimationFinished) {
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(animatedOpacityValue.current, {
-              toValue: HIGH,
-              duration: ANIMATIONDURATION,
-              delay: ANIMATIONINITIALDELAY,
-              useNativeDriver: true,
-            }),
-            Animated.timing(animatedOpacityValue.current, {
-              toValue: LOW,
-              duration: ANIMATIONDURATION,
-              useNativeDriver: true,
-            }),
-            Animated.timing(animatedOpacityValue.current, {
-              toValue: HIGH,
-              duration: ANIMATIONDURATION,
-              useNativeDriver: true,
-            }),
-            Animated.timing(animatedOpacityValue.current, {
-              toValue: LOW,
-              duration: 2500,
-              useNativeDriver: true,
-            }),
-          ]),
-          { iterations: 3 }
-        ).start((e) => setIsAnimationFinished(e.finished))
+      if (!positionStyle) {
+        if (onClick && !isAnimationFinished) {
+          Animated.loop(
+            Animated.sequence([
+              Animated.timing(animatedOpacityValue.current, {
+                toValue: HIGH,
+                duration: ANIMATIONDURATION,
+                delay: ANIMATIONINITIALDELAY,
+                useNativeDriver: true,
+              }),
+              Animated.timing(animatedOpacityValue.current, {
+                toValue: LOW,
+                duration: ANIMATIONDURATION,
+                useNativeDriver: true,
+              }),
+              Animated.timing(animatedOpacityValue.current, {
+                toValue: HIGH,
+                duration: ANIMATIONDURATION,
+                useNativeDriver: true,
+              }),
+              Animated.timing(animatedOpacityValue.current, {
+                toValue: LOW,
+                duration: 2500,
+                useNativeDriver: true,
+              }),
+            ]),
+            { iterations: 3 }
+          ).start((e) => setIsAnimationFinished(e.finished))
+        }
       }
     })
 
@@ -108,17 +113,22 @@ export const Map = ({
                   alignItems: 'center',
                   justifyContent: 'center',
                   zIndex: 10,
+                  ...positionStyle,
                 }}
                 onPress={() => onClick(position)}
               >
                 <Animated.View
-                  style={{
-                    width: size,
-                    height: size,
-                    backgroundColor: 'red',
-                    borderRadius: 999,
-                    opacity: animatedOpacityValue.current,
-                  }}
+                  style={
+                    positionStyle
+                      ? {}
+                      : {
+                          width: size,
+                          height: size,
+                          backgroundColor: 'red',
+                          borderRadius: 999,
+                          opacity: animatedOpacityValue.current,
+                        }
+                  }
                 >
                   {showText && (
                     <Text
@@ -173,6 +183,68 @@ export const Map = ({
       return null
     }
 
+    const _renderZoomButtons = () => {
+      if (showZoomButtons) {
+        return (
+          <View style={{ position: 'absolute', bottom: 10, right: 10 }}>
+            <View style={{ marginBottom: 5 }}>
+              <TouchableOpacity
+                testID={`${testId}_button_zoomIn`}
+                style={{
+                  padding: 5,
+                  backgroundColor: 'grey',
+                  borderRadius: 999,
+                  aspectRatio: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Text center largerText>
+                  +
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{ marginBottom: 5 }}>
+              <TouchableOpacity
+                testID={`${testId}_button_zoomOut`}
+                style={{
+                  padding: 5,
+                  backgroundColor: 'grey',
+                  borderRadius: 999,
+                  aspectRatio: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Text center largerText>
+                  -
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <TouchableOpacity
+                testID={`${testId}_button_resetZoom`}
+                style={{
+                  padding: 5,
+                  backgroundColor: 'grey',
+                  borderRadius: 999,
+                  aspectRatio: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Text center largerText>
+                  x
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )
+      }
+
+      return null
+    }
+
     return (
       <View
         testID={`${testId}_map`}
@@ -213,6 +285,7 @@ export const Map = ({
             {_renderPositions()}
           </View>
         </ImageZoom>
+        {_renderZoomButtons()}
         {showText && (
           <View
             style={{

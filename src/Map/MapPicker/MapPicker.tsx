@@ -6,12 +6,12 @@ import { TMap, TPosition } from '../../interfaces'
 import { Map } from '../Map'
 
 type Props = {
-  testId: string
   map?: TMap
   onChange?: (map: TMap) => void
+  testId: string
 }
 
-export const MapPicker = ({ testId, map, onChange }: Props) => {
+export const MapPicker = ({ map, onChange, testId }: Props) => {
   const [hasPermissions, setHasPermissions] = useState<boolean>(false)
   const [tempMap, setTempMap] = useState<TMap | undefined>(map)
   const [tempPositions, setTempPositions] = useState<TPosition[]>([])

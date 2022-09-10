@@ -5,12 +5,12 @@ import { emptyCoordinates, TCoordinates, TMap, TPosition } from '../interfaces'
 import { PositionPicker } from './PositionPicker'
 
 type Props = {
-  testId: string
   map: TMap
   onChangePosition?: (position: TPosition) => void
+  testId: string
 }
 
-export const AddPosition = ({ testId, map, onChangePosition }: Props) => {
+export const AddPosition = ({ map, onChangePosition, testId }: Props) => {
   const [tempPosition, setTempPosition] = useState<TPosition>({
     key: '',
     title: '',
