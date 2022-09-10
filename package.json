@@ -44,14 +44,12 @@
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "jest": "^27.4.7",
     "metro-react-native-babel-preset": "^0.67.0",
-    "react": "^17.0.2",
-    "react-native": "^0.67.1",
     "react-test-renderer": "^17.0.2",
     "typescript": "^4.5.5"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+    "react": "17.0.1",
+    "react-native": "0.64.3"
   },
   "jest": {
     "preset": "react-native",
@@ -67,7 +65,7 @@
   "dependencies": {
     "expo": "^46.0.6",
     "expo-image-picker": "~12.0.1",
-    "react-dom": "^18.2.0",
+    "react-dom": "17.0.1",
     "react-native-image-pan-zoom": "^2.1.12",
     "react-native-image-picker": "^4.10.0",
     "react-native-modal": "^13.0.1",

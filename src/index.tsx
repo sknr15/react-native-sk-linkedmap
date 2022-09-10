@@ -22,7 +22,7 @@ type TModalContentType =
 
 export type { TCoordinates, TMap, TPosition }
 
-export default function LinkedMap({
+export const LinkedMap = ({
   testID,
   title,
   style,
@@ -38,16 +38,7 @@ export default function LinkedMap({
   showMenu?: boolean
   onClick?: (position?: TPosition) => void
   onChange?: (map: TMap) => void
-}) {
-  const [containerSize, setContainerSize] = useState<{
-    height: number
-    width: number
-  }>({ height: 0, width: 0 })
-  const [modalSize, setModalSize] = useState<{
-    height: number
-    width: number
-  }>({ height: 0, width: 0 })
-
+}) => {
   const [optionText, setOptionText] = useState<string>('')
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
@@ -385,7 +376,13 @@ export default function LinkedMap({
       <View style={{ flex: 1, justifyContent: 'center' }}>
         <View
           testID='modal_backdrop'
-          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+          }}
           onTouchEnd={() => {
             setTempValues({ title: '', target: '' })
             setIsModalVisible(false)
@@ -556,12 +553,6 @@ export default function LinkedMap({
           width: '100%',
           alignItems: 'center',
         }}
-        onLayout={(e) =>
-          setContainerSize({
-            height: e.nativeEvent.layout.height,
-            width: e.nativeEvent.layout.width,
-          })
-        }
       >
         {showMenu && keyErrors.length === 0 && (
           <View
@@ -653,3 +644,5 @@ export default function LinkedMap({
     </View>
   )
 }
+
+export default LinkedMap

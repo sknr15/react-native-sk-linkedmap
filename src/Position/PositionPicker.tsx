@@ -36,6 +36,7 @@ export const PositionPicker = ({
   )
 
   const [isSingleTouch, setIsSingleTouch] = useState<boolean>(true)
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
     if (

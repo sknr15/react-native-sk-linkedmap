@@ -56,6 +56,18 @@ export const AddPosition = ({ testId, map, onChangePosition }: Props) => {
               x1: Number(val),
             })
           }}
+          onBlur={() => {
+            if (
+              !tempPosition.coordinates?.x2 ||
+              tempPosition.coordinates.x2 === 0
+            ) {
+              _onChange('coordinates', {
+                ...emptyCoordinates,
+                ...tempPosition.coordinates,
+                x2: x1 + 10,
+              })
+            }
+          }}
           onlyNumbers
           style={{ flex: 1, marginRight: 5 }}
         />
@@ -87,6 +99,18 @@ export const AddPosition = ({ testId, map, onChangePosition }: Props) => {
               ...tempPosition.coordinates,
               y1: Number(val),
             })
+          }}
+          onBlur={() => {
+            if (
+              !tempPosition.coordinates?.y2 ||
+              tempPosition.coordinates.y2 === 0
+            ) {
+              _onChange('coordinates', {
+                ...emptyCoordinates,
+                ...tempPosition.coordinates,
+                y2: y1 + 10,
+              })
+            }
           }}
           onlyNumbers
           style={{ flex: 1, marginRight: 5 }}
