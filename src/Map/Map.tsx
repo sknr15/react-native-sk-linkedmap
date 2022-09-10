@@ -130,7 +130,7 @@ export const Map = ({
                 <Animated.View
                   style={
                     positionStyle
-                      ? {}
+                      ? { opacity: positionStyle.opacity ?? 1 }
                       : {
                           width: size,
                           height: size,
@@ -169,6 +169,7 @@ export const Map = ({
                   justifyContent: 'center',
                   alignItems: 'center',
                   zIndex: 10,
+                  ...positionStyle,
                 }}
               >
                 {showText && (

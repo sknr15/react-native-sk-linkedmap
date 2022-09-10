@@ -50,8 +50,6 @@ export const LinkedMap = ({
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
-  const [hasPermissions, setHasPermissions] = useState<boolean>(false)
-
   const [modalContentType, setModalContentType] =
     useState<TModalContentType>('showAllPositions')
 

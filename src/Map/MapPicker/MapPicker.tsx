@@ -120,7 +120,10 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
             }}
             numberOfLines={2}
           >
-            Image: {tempMap?.imageSource}
+            Image:{' '}
+            {typeof tempMap?.imageSource !== 'object'
+              ? tempMap?.imageSource?.toString()
+              : tempMap.imageSource?.uri}
           </Text>
         </View>
         <View
