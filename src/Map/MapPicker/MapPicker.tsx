@@ -82,6 +82,25 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
     }
   }
 
+  const _getImageName = () => {
+    let source
+
+    switch (typeof tempMap?.imageSource) {
+      case 'number':
+      case 'string':
+        source = tempMap.imageSource.toString()
+        break
+      case 'object':
+        source = Array.isArray(tempMap.imageSource)
+          ? tempMap.imageSource[0].uri
+          : tempMap.imageSource.uri
+        break
+      default:
+        break
+    }
+    return source
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <View style={{ marginBottom: 20 }}>
@@ -120,10 +139,7 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
             }}
             numberOfLines={2}
           >
-            Image:{' '}
-            {typeof tempMap?.imageSource !== 'object'
-              ? tempMap?.imageSource?.toString()
-              : tempMap.imageSource?.uri}
+            Image: {_getImageName()}
           </Text>
         </View>
         <View

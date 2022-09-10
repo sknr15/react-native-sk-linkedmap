@@ -21,7 +21,7 @@ type Props = {
   testId: string
   width?: number
   zoomable?: boolean
-  zoomButtonsStyle?: ViewStyle | TextStyle
+  zoomButtonsStyle?: ViewStyle & TextStyle
 }
 
 export const Map = ({

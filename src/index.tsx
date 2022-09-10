@@ -44,7 +44,7 @@ export const LinkedMap = ({
   style?: ViewStyle
   testID?: string
   title?: string
-  zoomButtonsStyle?: ViewStyle | TextStyle
+  zoomButtonsStyle?: ViewStyle & TextStyle
 }) => {
   const [optionText, setOptionText] = useState<string>('')
 
