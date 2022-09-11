@@ -378,7 +378,12 @@ export const LinkedMap = ({
         tempValues.title === '' ||
         tempValues.target === '')
     return (
-      <View style={{ flex: 1, justifyContent: 'center' }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+        }}
+      >
         <View
           testID='modal_backdrop'
           style={{
