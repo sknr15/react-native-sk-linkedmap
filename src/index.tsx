@@ -651,6 +651,8 @@ export const LinkedMap = ({
         isVisible={isModalVisible}
         onModalHide={() => setIsModalVisible(false)}
         onDismiss={() => setIsModalVisible(false)}
+        presentationStyle={'overFullScreen'}
+        style={{ margin: 20, paddingTop: 10 }}
       >
         {_renderModal()}
       </Modal>

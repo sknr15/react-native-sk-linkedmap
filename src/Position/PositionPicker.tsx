@@ -1,5 +1,5 @@
-import React, { createRef, useEffect, useState } from 'react'
-import { Platform, TouchableOpacity, View } from 'react-native'
+import React, { createRef, useEffect, useRef, useState } from 'react'
+import { Platform, ScrollView, TouchableOpacity, View } from 'react-native'
 import ImageZoom from 'react-native-image-pan-zoom'
 import Image from 'react-native-scalable-image'
 import { emptyCoordinates, TCoordinates, TMap, TPosition } from '../interfaces'
@@ -49,8 +49,9 @@ export const PositionPicker = ({
 
   const [isSingleTouch, setIsSingleTouch] = useState<boolean>(true)
 
-  const [targetID, setTargetID] = useState<string>('')
   const imgZoomRef = createRef<ImageZoom>()
+  const scrollRef = useRef<ScrollView | null>(null)
+  const [hasScrolled, setHasScrolled] = useState<boolean>(false)
 
   useEffect(() => {
     if (
@@ -77,6 +78,7 @@ export const PositionPicker = ({
     let _coordinates = { ...newCoordinates }
     let x = x1
     let y = y1
+
     if (IS_WEB && imgZoomRef.current) {
       x = x / imgZoomRef.current['scale']
       y = y / imgZoomRef.current['scale']
@@ -173,24 +175,6 @@ export const PositionPicker = ({
     setNewCoordinates({ ..._coordinates })
   }
 
-  const _handleDrag = (newX: number, newY: number) => {
-    let _coordinates = { ...newCoordinates }
-
-    const _width = _coordinates.x2 - _coordinates.x1
-    const _height = _coordinates.y2 - _coordinates.y1
-
-    if (_coordinates.x2 && _coordinates.y2) {
-      _coordinates = {
-        x1: newX,
-        x2: newX + _width,
-        y1: newY,
-        y2: newY + _height,
-      }
-    }
-
-    setNewCoordinates({ ..._coordinates })
-  }
-
   const _renderPosition = () => {
     if (position.coordinates) {
       const { x1, x2, y1, y2 } = position.coordinates
@@ -205,18 +189,45 @@ export const PositionPicker = ({
       const _width = ((x2 - x1) / 100) * sizeFactor.width
       const _height = ((y2 - y1) / 100) * sizeFactor.height
 
+      const posX =
+        (x1 / 100) *
+        sizeFactor.width *
+        (imgZoomRef.current ? imgZoomRef.current['scale'] : 1)
+      const posY =
+        (y1 / 100) *
+        sizeFactor.height *
+        (imgZoomRef.current ? imgZoomRef.current['scale'] : 1)
+
       if (IS_WEB) {
+        if (posY > 0 && scrollRef.current && !hasScrolled) {
+          let scrollTo = Math.max(
+            posY + _height / 2 - containerSize.height / 2,
+            0
+          )
+          scrollRef.current.scrollTo(scrollTo)
+          setHasScrolled(true)
+        }
+
         return (
           <Rnd
-            size={{ height: Math.max(_height, 0), width: Math.max(_width, 0) }}
+            default={{
+              x: posX,
+              y: posY,
+              height: Math.max(_height, 0),
+              width: Math.max(_width, 0),
+            }}
             position={{
-              x: (x1 / 100) * sizeFactor.width,
-              y: (y1 / 100) * sizeFactor.height,
+              x: posX,
+              y: posY,
+            }}
+            size={{
+              height: Math.max(_height, 0),
+              width: Math.max(_width, 0),
             }}
             style={{
-              backgroundColor: '#ff000033',
+              backgroundColor: '#ff000099',
               borderColor: 'red',
-              borderWidth: 1,
+              borderWidth: 2,
             }}
             onDragStart={() => setIsSingleTouch(true)}
             onDrag={(e, d) => {
@@ -240,12 +251,12 @@ export const PositionPicker = ({
               }, 500)
             }}
             onResizeStop={(e, direction, ref, delta, position) => {
-              _handleResize(
-                direction,
-                (delta.width / sizeFactor.width) * 100,
-                (delta.height / sizeFactor.height) * 100
-              )
+              let deltaX = (delta.width / sizeFactor.width) * 100
+              let deltaY = (delta.height / sizeFactor.height) * 100
+
+              _handleResize(direction, deltaX, deltaY)
             }}
+            bounds={'parent'}
           ></Rnd>
         )
       }
@@ -267,6 +278,7 @@ export const PositionPicker = ({
             zIndex: 10,
             backgroundColor: '#ff000033',
           }}
+          pointerEvents={'none'}
         />
       )
     }
@@ -277,38 +289,47 @@ export const PositionPicker = ({
   const _renderMap = () => {
     if (map && map.imageSource) {
       if (IS_WEB) {
+        const size = Math.max(
+          height ?? containerSize.height,
+          width ?? containerSize.width
+        )
         return (
-          <TouchableOpacity
-            activeOpacity={1}
-            style={{
-              flex: 1,
-              alignSelf: 'center',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'transparent',
-            }}
-            onPressOut={(e) => {
-              const { locationX, locationY } = e.nativeEvent
-              if (isSingleTouch) {
-                _handleCoordinates(
-                  (locationX / sizeFactor.width) * 100,
-                  (locationY / sizeFactor.height) * 100
-                )
-              }
-            }}
-          >
-            <Image
-              testID={`${testId}_map_image`}
-              source={map.imageSource}
-              resizeMode='contain'
-              resizeMethod='scale'
-              height={height ?? containerSize.height}
-              width={width ?? containerSize.width}
-              onLayout={(e) => setSizeFactor(e.nativeEvent.layout)}
-            ></Image>
-            {_renderPosition()}
-            {_renderNewPosition()}
-          </TouchableOpacity>
+          <ScrollView ref={scrollRef}>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={{
+                flex: 1,
+                alignSelf: 'center',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'transparent',
+              }}
+              onPressOut={(e) => {
+                const { locationX, locationY } = e.nativeEvent
+                if (isSingleTouch) {
+                  _handleCoordinates(
+                    (locationX / sizeFactor.width) * 100,
+                    (locationY / sizeFactor.height) * 100
+                  )
+                }
+              }}
+            >
+              <Image
+                testID={`${testId}_map_image`}
+                source={map.imageSource}
+                resizeMode='contain'
+                resizeMethod='scale'
+                height={size}
+                width={size}
+                onLayout={(e) => {
+                  setSizeFactor(e.nativeEvent.layout)
+                  setHasScrolled(false)
+                }}
+              ></Image>
+              {_renderPosition()}
+              {_renderNewPosition()}
+            </TouchableOpacity>
+          </ScrollView>
         )
       }
 
@@ -323,23 +344,15 @@ export const PositionPicker = ({
           }}
           onTouchStart={(e) => {
             setIsSingleTouch(true)
-            if (!targetID) {
-              setTargetID(e.nativeEvent.target)
-            }
           }}
           onTouchMove={() => setIsSingleTouch(false)}
           onTouchEnd={(e) => {
             const { locationX, locationY } = e.nativeEvent
             if (isSingleTouch) {
-              if (e.nativeEvent.target === targetID) {
-                // if clicked in parent
-                _handleCoordinates(
-                  (locationX / sizeFactor.width) * 100,
-                  (locationY / sizeFactor.height) * 100
-                )
-              } else {
-                // if clicked in itself
-              }
+              _handleCoordinates(
+                (locationX / sizeFactor.width) * 100,
+                (locationY / sizeFactor.height) * 100
+              )
             }
           }}
         >
@@ -380,8 +393,8 @@ export const PositionPicker = ({
           imageHeight={height ?? containerSize.height}
           imageWidth={width ?? containerSize.width}
           minScale={1}
-          maxScale={3}
-          //enableDoubleClickZoom={false}
+          maxScale={IS_WEB ? 1 : 3}
+          enableDoubleClickZoom={false}
         >
           {_renderMap()}
         </ImageZoom>
