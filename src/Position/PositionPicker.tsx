@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { createRef, useEffect, useState } from 'react'
 import { Platform, TouchableOpacity, View } from 'react-native'
 import ImageZoom from 'react-native-image-pan-zoom'
 import Image from 'react-native-scalable-image'
@@ -50,6 +50,7 @@ export const PositionPicker = ({
   const [isSingleTouch, setIsSingleTouch] = useState<boolean>(true)
 
   const [targetID, setTargetID] = useState<string>('')
+  const imgZoomRef = createRef<ImageZoom>()
 
   useEffect(() => {
     if (
@@ -68,12 +69,18 @@ export const PositionPicker = ({
   }
 
   const _handleCoordinates = (
-    x: number,
-    y: number,
+    x1: number,
+    y1: number,
     x2?: number,
     y2?: number
   ) => {
     let _coordinates = { ...newCoordinates }
+    let x = x1
+    let y = y1
+    if (IS_WEB && imgZoomRef.current) {
+      x = x / imgZoomRef.current['scale']
+      y = y / imgZoomRef.current['scale']
+    }
     if (x2 && y2) {
       _coordinates = { x1: x, x2, y1: y, y2 }
     } else {
@@ -232,7 +239,6 @@ export const PositionPicker = ({
                 setIsSingleTouch(true)
               }, 500)
             }}
-            // disableDragging
             onResizeStop={(e, direction, ref, delta, position) => {
               _handleResize(
                 direction,
@@ -326,10 +332,13 @@ export const PositionPicker = ({
             const { locationX, locationY } = e.nativeEvent
             if (isSingleTouch) {
               if (e.nativeEvent.target === targetID) {
+                // if clicked in parent
                 _handleCoordinates(
                   (locationX / sizeFactor.width) * 100,
                   (locationY / sizeFactor.height) * 100
                 )
+              } else {
+                // if clicked in itself
               }
             }
           }}
@@ -365,13 +374,14 @@ export const PositionPicker = ({
         onLayout={(e) => setContainerSize(e.nativeEvent.layout)}
       >
         <ImageZoom
+          ref={imgZoomRef}
           cropHeight={height ?? containerSize.height}
           cropWidth={width ?? containerSize.width}
           imageHeight={height ?? containerSize.height}
           imageWidth={width ?? containerSize.width}
           minScale={1}
           maxScale={3}
-          enableDoubleClickZoom={false}
+          //enableDoubleClickZoom={false}
         >
           {_renderMap()}
         </ImageZoom>

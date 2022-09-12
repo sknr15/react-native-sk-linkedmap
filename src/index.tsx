@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import {
   Alert,
+  Platform,
   ScrollView,
   TextStyle,
   TouchableOpacity,
@@ -46,6 +47,7 @@ export const LinkedMap = ({
   title?: string
   zoomButtonsStyle?: ViewStyle & TextStyle
 }) => {
+  const IS_WEB = Platform.OS === 'web'
   const [optionText, setOptionText] = useState<string>('')
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
@@ -319,33 +321,47 @@ export const LinkedMap = ({
             JSON.stringify(tempPositions) !== JSON.stringify(mapPositions)) ||
           hasChanges
         ) {
-          Alert.alert(
-            'Close?',
-            'Do you really want to close? Any unsaved progress will be lost!',
-            [
-              {
-                text: 'Cancel',
-                style: 'cancel',
-              },
-              {
-                text: 'OK',
-                onPress: () => {
-                  if (
-                    modalContentType === 'showAllPositions' ||
-                    modalContentType === 'changeMap'
-                  ) {
-                    setTempPositions([])
-                    setTempValues({ title: '', target: '' })
-                    setIsModalVisible(false)
-                  } else {
-                    setModalContentType('showAllPositions')
-                  }
-                  setHasChanges(false)
+          if (IS_WEB) {
+            if (
+              modalContentType === 'showAllPositions' ||
+              modalContentType === 'changeMap'
+            ) {
+              setTempPositions([])
+              setTempValues({ title: '', target: '' })
+              setIsModalVisible(false)
+            } else {
+              setModalContentType('showAllPositions')
+            }
+            setHasChanges(false)
+          } else {
+            Alert.alert(
+              'Close?',
+              'Do you really want to close? Any unsaved progress will be lost!',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
                 },
-                style: 'destructive',
-              },
-            ]
-          )
+                {
+                  text: 'OK',
+                  onPress: () => {
+                    if (
+                      modalContentType === 'showAllPositions' ||
+                      modalContentType === 'changeMap'
+                    ) {
+                      setTempPositions([])
+                      setTempValues({ title: '', target: '' })
+                      setIsModalVisible(false)
+                    } else {
+                      setModalContentType('showAllPositions')
+                    }
+                    setHasChanges(false)
+                  },
+                  style: 'destructive',
+                },
+              ]
+            )
+          }
         } else {
           switch (modalContentType) {
             case 'addPosition':
