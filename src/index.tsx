@@ -34,6 +34,7 @@ export const LinkedMap = ({
   style,
   testID,
   title,
+  titleStyle,
   zoomButtonsStyle,
 }: {
   map: TMap
@@ -45,6 +46,7 @@ export const LinkedMap = ({
   style?: ViewStyle
   testID?: string
   title?: string
+  titleStyle?: TextStyle
   zoomButtonsStyle?: ViewStyle & TextStyle
 }) => {
   const IS_WEB = Platform.OS === 'web'
@@ -606,7 +608,14 @@ export const LinkedMap = ({
           </View>
         )}
         {title && (
-          <Text style={{ marginTop: 10, fontSize: 18, fontWeight: 'bold' }}>
+          <Text
+            style={{
+              marginTop: 10,
+              fontSize: 18,
+              fontWeight: 'bold',
+              ...titleStyle,
+            }}
+          >
             {title}
           </Text>
         )}

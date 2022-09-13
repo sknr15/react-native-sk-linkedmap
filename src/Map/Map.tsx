@@ -45,7 +45,9 @@ export const Map = ({
     const [sizeFactor, setSizeFactor] = useState<{
       width: number
       height: number
-    }>({ width: 1, height: 1 })
+      x: number
+      y: number
+    }>({ width: 0, height: 0, x: 0, y: 0 })
 
     const zoomRef = createRef<ImageZoom>()
 
@@ -98,8 +100,8 @@ export const Map = ({
         if (position.coordinates) {
           const { x1, x2, y1, y2 } = position.coordinates
 
-          const top = (y1 / 100) * sizeFactor.height
-          const left = (x1 / 100) * sizeFactor.width
+          const left = (x1 / 100) * sizeFactor.width + sizeFactor.x
+          const top = (y1 / 100) * sizeFactor.height + sizeFactor.y
 
           const width = ((x2 - x1) / 100) * sizeFactor.width
           const height = ((y2 - y1) / 100) * sizeFactor.height

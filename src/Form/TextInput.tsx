@@ -1,5 +1,10 @@
 import React from 'react'
-import { TextInput as RNTextInput, TextInputProps, View } from 'react-native'
+import {
+  Dimensions,
+  TextInput as RNTextInput,
+  TextInputProps,
+  View,
+} from 'react-native'
 import { Text } from './Text'
 
 interface ITextInputComponent extends TextInputProps {
@@ -35,7 +40,7 @@ export const TextInput = (props: ITextInputComponent) => {
         style,
       ]}
     >
-      {label && (
+      {label && Dimensions.get('window').width > 500 && (
         <Text
           bold
           numberOfLines={1}
@@ -58,6 +63,7 @@ export const TextInput = (props: ITextInputComponent) => {
           flex: 1,
           paddingHorizontal: 5,
           paddingVertical: 2,
+          maxWidth: '100%',
         }}
         value={props.value ?? ''}
         placeholderTextColor={'grey'}

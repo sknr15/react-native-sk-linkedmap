@@ -69,7 +69,7 @@ export const AddPosition = ({ map, onChangePosition, testId }: Props) => {
             }
           }}
           onlyNumbers
-          style={{ flex: 1, marginRight: 5 }}
+          style={{ flex: 1, maxWidth: '25%', marginRight: 5 }}
         />
         <TextInput
           testID={`${testId}_input_x2`}
@@ -85,7 +85,7 @@ export const AddPosition = ({ map, onChangePosition, testId }: Props) => {
             })
           }}
           onlyNumbers
-          style={{ flex: 1, marginRight: 5 }}
+          style={{ flex: 1, maxWidth: '25%', marginRight: 5 }}
         />
         <TextInput
           testID={`${testId}_input_y1`}
@@ -113,7 +113,7 @@ export const AddPosition = ({ map, onChangePosition, testId }: Props) => {
             }
           }}
           onlyNumbers
-          style={{ flex: 1, marginRight: 5 }}
+          style={{ flex: 1, maxWidth: '25%', marginRight: 5 }}
         />
         <TextInput
           testID={`${testId}_input_y2`}
@@ -129,14 +129,14 @@ export const AddPosition = ({ map, onChangePosition, testId }: Props) => {
             })
           }}
           onlyNumbers
-          style={{ flex: 1 }}
+          style={{ flex: 1, maxWidth: '25%' }}
         />
       </View>
     )
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, maxWidth: '100%' }}>
       <TextInput
         testID={`${testId}_input_title`}
         label={'Title'}

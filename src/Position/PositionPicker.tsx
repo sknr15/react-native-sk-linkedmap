@@ -41,7 +41,9 @@ export const PositionPicker = ({
   const [sizeFactor, setSizeFactor] = useState<{
     width: number
     height: number
-  }>({ width: 1, height: 1 })
+    x: number
+    y: number
+  }>({ width: 0, height: 0, x: 0, y: 0 })
 
   const [newCoordinates, setNewCoordinates] = useState<TCoordinates>(
     position.coordinates ?? emptyCoordinates
@@ -51,6 +53,7 @@ export const PositionPicker = ({
 
   const imgZoomRef = createRef<ImageZoom>()
   const scrollRef = useRef<ScrollView | null>(null)
+  const [isHorizontal, setIsHorizontal] = useState<boolean>(false)
   const [hasScrolled, setHasScrolled] = useState<boolean>(false)
 
   useEffect(() => {
@@ -62,6 +65,20 @@ export const PositionPicker = ({
       _handleChange()
     }
   }, [newCoordinates])
+
+  useEffect(() => {
+    if (sizeFactor && containerSize) {
+      if (sizeFactor.width > containerSize.width) {
+        if (!isHorizontal) {
+          setIsHorizontal(true)
+        }
+      } else {
+        if (isHorizontal) {
+          setIsHorizontal(false)
+        }
+      }
+    }
+  }, [sizeFactor, containerSize])
 
   const _handleChange = () => {
     if (onChange) {
@@ -191,21 +208,35 @@ export const PositionPicker = ({
 
       const posX =
         (x1 / 100) *
-        sizeFactor.width *
-        (imgZoomRef.current ? imgZoomRef.current['scale'] : 1)
+          sizeFactor.width *
+          (imgZoomRef.current ? imgZoomRef.current['scale'] : 1) +
+        sizeFactor.x
       const posY =
         (y1 / 100) *
-        sizeFactor.height *
-        (imgZoomRef.current ? imgZoomRef.current['scale'] : 1)
+          sizeFactor.height *
+          (imgZoomRef.current ? imgZoomRef.current['scale'] : 1) +
+        sizeFactor.y
 
       if (IS_WEB) {
-        if (posY > 0 && scrollRef.current && !hasScrolled) {
-          let scrollTo = Math.max(
-            posY + _height / 2 - containerSize.height / 2,
-            0
-          )
-          scrollRef.current.scrollTo(scrollTo)
-          setHasScrolled(true)
+        if (isHorizontal) {
+          if (posX > 0 && scrollRef.current && !hasScrolled) {
+            let scrollTo = Math.max(
+              posX + _width / 2 - containerSize.width / 2,
+              0
+            )
+            console.log(scrollTo)
+            scrollRef.current.scrollTo({ x: scrollTo, y: 0 })
+            setHasScrolled(true)
+          }
+        } else {
+          if (posY > 0 && scrollRef.current && !hasScrolled) {
+            let scrollTo = Math.max(
+              posY + _height / 2 - containerSize.height / 2,
+              0
+            )
+            scrollRef.current.scrollTo({ x: 0, y: scrollTo })
+            setHasScrolled(true)
+          }
         }
 
         return (
@@ -294,7 +325,7 @@ export const PositionPicker = ({
           width ?? containerSize.width
         )
         return (
-          <ScrollView ref={scrollRef}>
+          <ScrollView ref={scrollRef} horizontal={isHorizontal}>
             <TouchableOpacity
               activeOpacity={1}
               style={{
@@ -319,8 +350,8 @@ export const PositionPicker = ({
                 source={map.imageSource}
                 resizeMode='contain'
                 resizeMethod='scale'
-                height={size}
-                width={size}
+                height={Math.max(size, containerSize.height)}
+                width={Math.max(size, containerSize.width)}
                 onLayout={(e) => {
                   setSizeFactor(e.nativeEvent.layout)
                   setHasScrolled(false)
