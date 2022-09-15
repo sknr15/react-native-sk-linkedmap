@@ -568,14 +568,12 @@ export const LinkedMap = ({
 
   return (
     <View
-      style={[
-        {
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-        style,
-      ]}
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...style,
+      }}
     >
       <View
         style={{
@@ -590,7 +588,7 @@ export const LinkedMap = ({
               position: 'absolute',
               top: 10,
               right: 10,
-              zIndex: 1,
+              zIndex: 10,
             }}
           >
             <TouchableOpacity
@@ -602,6 +600,7 @@ export const LinkedMap = ({
                 borderRadius: 5,
                 borderColor: 'black',
                 borderWidth: 1,
+                zIndex: 10,
               }}
               onPress={() => bottomSheetRef.current?.open()}
             >
