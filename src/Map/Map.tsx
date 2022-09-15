@@ -95,6 +95,12 @@ export const Map = ({
       }
     })
 
+    useEffect(() => {
+      if (zoomRef.current) {
+        zoomRef.current.centerOn({ x: 0, y: 0, scale: 1, duration: 0 })
+      }
+    }, [map.key])
+
     const _renderPositions = () => {
       const elements: ReactNode[] = []
 
