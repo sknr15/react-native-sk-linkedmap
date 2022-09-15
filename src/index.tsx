@@ -25,6 +25,7 @@ type TModalContentType =
 export type { TCoordinates, TMap, TPosition }
 
 export const LinkedMap = ({
+  activePosition,
   map,
   onChange,
   onClick,
@@ -37,6 +38,7 @@ export const LinkedMap = ({
   titleStyle,
   zoomButtonsStyle,
 }: {
+  activePosition?: TPosition
   map: TMap
   onChange?: (map: TMap) => void
   onClick?: (position?: TPosition) => void
@@ -622,6 +624,7 @@ export const LinkedMap = ({
         {keyErrors.length === 0 ? (
           <Map
             testId='linkedmap'
+            activePosition={activePosition}
             map={map}
             onClick={_handleOnClick}
             zoomable

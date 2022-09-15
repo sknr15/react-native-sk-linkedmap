@@ -12,6 +12,7 @@ import { Text } from '../Form'
 import { TMap, TPosition } from '../interfaces'
 
 type Props = {
+  activePosition?: TPosition
   height?: number
   map?: TMap
   onClick?: (position: TPosition) => void
@@ -25,6 +26,7 @@ type Props = {
 }
 
 export const Map = ({
+  activePosition,
   height,
   map,
   onClick,
@@ -108,38 +110,63 @@ export const Map = ({
 
           const size = Math.min(width, height) * 0.75
 
+          const isActivePosition =
+            !activePosition?.key ||
+            activePosition.key === '' ||
+            position.key === activePosition?.key
+
           if (onClick) {
             elements.push(
               <TouchableOpacity
                 key={`${testId}_map_position_${position.key}`}
                 testID={`${testId}_map_position_${position.key}`}
-                style={{
-                  position: 'absolute',
-                  top,
-                  left,
-                  height,
-                  width,
-                  borderWidth: isAnimationFinished ? 2 : 0,
-                  borderColor: 'red',
-                  borderRadius: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  zIndex: 10,
-                  ...positionStyle,
-                }}
+                style={
+                  isActivePosition
+                    ? {
+                        position: 'absolute',
+                        top,
+                        left,
+                        height,
+                        width,
+                        borderWidth:
+                          position.key === activePosition?.key
+                            ? 3
+                            : isAnimationFinished
+                            ? 2
+                            : 0,
+                        borderColor: 'red',
+                        borderRadius: 1,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 10,
+                        ...positionStyle,
+                      }
+                    : {
+                        position: 'absolute',
+                        top,
+                        left,
+                        height,
+                        width,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        ...positionStyle,
+                      }
+                }
                 onPress={() => onClick(position)}
               >
                 <Animated.View
                   style={
                     positionStyle
                       ? { opacity: positionStyle.opacity ?? 1 }
-                      : {
+                      : isActivePosition
+                      ? {
                           width: size,
                           height: size,
                           backgroundColor: 'red',
                           borderRadius: 999,
                           opacity: animatedOpacityValue.current,
                         }
+                      : { width: size, height: size }
                   }
                 >
                   {showText && (
