@@ -93,9 +93,10 @@ const App = () => {
         onClick={(pos) => {
           Alert.alert(`Position: ${pos?.title}`, `Target: ${pos?.target}`)
         }}
-        showZoomButtons
+        showZoomButtons={showMenu}
         zoomButtonsStyle={{
-          marginRight: 10,
+          marginRight: 12,
+          marginBottom: 10,
           padding: 5,
           fontSize: 20,
           width: 40,
