@@ -582,32 +582,6 @@ export const LinkedMap = ({
           alignItems: 'center',
         }}
       >
-        {showMenu && keyErrors.length === 0 && (
-          <View
-            style={{
-              position: 'absolute',
-              top: 10,
-              right: 10,
-              zIndex: 10,
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                flex: 1,
-                paddingVertical: 5,
-                paddingHorizontal: 10,
-                backgroundColor: '#EEEEEE',
-                borderRadius: 5,
-                borderColor: 'black',
-                borderWidth: 1,
-                zIndex: 10,
-              }}
-              onPress={() => bottomSheetRef.current?.open()}
-            >
-              <Text largerText>Menu</Text>
-            </TouchableOpacity>
-          </View>
-        )}
         {title && (
           <Text
             style={{
@@ -655,6 +629,30 @@ export const LinkedMap = ({
                 </Text>
               )
             })}
+          </View>
+        )}
+        {showMenu && keyErrors.length === 0 && (
+          <View
+            style={{
+              position: 'absolute',
+              top: 10,
+              right: 10,
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                paddingVertical: 5,
+                paddingHorizontal: 10,
+                backgroundColor: '#EEEEEE',
+                borderRadius: 5,
+                borderColor: 'black',
+                borderWidth: 1,
+              }}
+              onPress={() => bottomSheetRef.current?.open()}
+            >
+              <Text largerText>Menu</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>

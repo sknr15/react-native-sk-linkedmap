@@ -60,6 +60,8 @@ export const Map = ({
     const LOW = 0.0
     const ANIMATIONDURATION = 500
     const ANIMATIONINITIALDELAY = 1000
+    const MINSCALE = 1
+    const MAXSCALE = zoomable ? 3 : 1
 
     useEffect(() => {
       // Animated dots for positions
@@ -231,12 +233,41 @@ export const Map = ({
 
     const _handleZoom = (type: 'in' | 'out' | 'reset') => {
       if (zoomRef.current) {
+        let scale = zoomRef.current['scale']
         switch (type) {
           case 'in':
-            console.log('TODO: Zoom in')
+            if (scale + 0.5 < MAXSCALE) {
+              zoomRef.current.centerOn({
+                x: 0,
+                y: 0,
+                scale: scale + 0.5,
+                duration: 500,
+              })
+            } else {
+              zoomRef.current.centerOn({
+                x: 0,
+                y: 0,
+                scale: MAXSCALE,
+                duration: 500,
+              })
+            }
             break
           case 'out':
-            console.log('TODO: Zoom out')
+            if (scale - 0.5 > MINSCALE) {
+              zoomRef.current.centerOn({
+                x: 0,
+                y: 0,
+                scale: scale - 0.5,
+                duration: 500,
+              })
+            } else {
+              zoomRef.current.centerOn({
+                x: 0,
+                y: 0,
+                scale: MINSCALE,
+                duration: 500,
+              })
+            }
             break
           case 'reset':
             zoomRef.current.reset()
@@ -336,8 +367,8 @@ export const Map = ({
           cropWidth={width ?? containerSize.width}
           imageHeight={height ?? containerSize.height}
           imageWidth={width ?? containerSize.width}
-          minScale={1}
-          maxScale={zoomable ? 3 : 1}
+          minScale={MINSCALE}
+          maxScale={MAXSCALE}
           enableCenterFocus={false}
         >
           <View
@@ -374,8 +405,9 @@ export const Map = ({
             }}
           >
             <Text style={{ fontSize: 10 }}>
-              {Math.round(sizeFactor.height * 100) / 100} x
-              {Math.round(sizeFactor.width * 100) / 100}
+              {`${Math.round(sizeFactor.height * 100) / 100} x ${
+                Math.round(sizeFactor.width * 100) / 100
+              }`}
             </Text>
           </View>
         )}
