@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, TouchableOpacity, View } from 'react-native'
+import { Alert, Platform, TouchableOpacity, View } from 'react-native'
 import { Text } from '../../Form'
 import * as ImagePicker from 'expo-image-picker'
 import { TMap, TPosition } from '../../interfaces'
@@ -12,6 +12,7 @@ type Props = {
 }
 
 export const MapPicker = ({ map, onChange, testId }: Props) => {
+  const IS_WEB = Platform.OS === 'web'
   const [hasPermissions, setHasPermissions] = useState<boolean>(false)
   const [tempMap, setTempMap] = useState<TMap | undefined>(map)
   const [tempPositions, setTempPositions] = useState<TPosition[]>([])
@@ -46,39 +47,41 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
       return
     }
 
-    // const pickedMedia = await ImagePicker.launchImageLibraryAsync({
-    //   mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    //   quality: 0.66,
-    // })
+    if (IS_WEB) {
+      const pickedMedia = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.66,
+      })
 
-    // if (!pickedMedia.cancelled) {
-    //   let uri = pickedMedia.uri
-    //   if (pickedMedia.type === 'image' || pickedMedia.uri.includes('image')) {
-    //     if (pickedMedia.width > 2000 || pickedMedia.height > 2000) {
-    //       Alert.alert('Image too big', 'Selected image is too big (> 2000)', [
-    //         { text: 'OK' },
-    //       ])
-    //       return
-    //     }
-    //   }
+      if (!pickedMedia.cancelled) {
+        let uri = pickedMedia.uri
+        if (pickedMedia.type === 'image' || pickedMedia.uri.includes('image')) {
+          if (pickedMedia.width > 2000 || pickedMedia.height > 2000) {
+            Alert.alert('Image too big', 'Selected image is too big (> 2000)', [
+              { text: 'OK' },
+            ])
+            return
+          }
+        }
 
-    //   if (tempMap) {
-    //     setTempMap({ ...tempMap, imageSource: { uri }, positions: [] })
-    //   }
-    // }
+        if (tempMap) {
+          setTempMap({ ...tempMap, imageSource: { uri }, positions: [] })
+        }
+      }
+    } else {
+      //
+      // CHANGE!!!
+      //
 
-    //
-    // CHANGE!!!
-    //
+      if (tempMap) {
+        let _src = require('../solarMap.jpeg')
 
-    if (tempMap) {
-      let _src = require('../solarMap.jpeg')
+        if (tempMap?.imageSource === _src) _src = require('../mapExample.png')
 
-      if (tempMap?.imageSource === _src) _src = require('../mapExample.png')
+        setTempMap({ ...tempMap, imageSource: _src, positions: [] })
 
-      setTempMap({ ...tempMap, imageSource: _src, positions: [] })
-
-      if (onChange) onChange({ ...tempMap, positions: [], imageSource: _src })
+        if (onChange) onChange({ ...tempMap, positions: [], imageSource: _src })
+      }
     }
   }
 
