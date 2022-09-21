@@ -219,17 +219,28 @@ export const PositionPicker = ({
 
       if (IS_WEB) {
         if (isHorizontal) {
-          if (posX > 0 && scrollRef.current && !hasScrolled) {
+          if (
+            posX > 0 &&
+            x2 > 0 &&
+            y2 > 0 &&
+            scrollRef.current &&
+            !hasScrolled
+          ) {
             let scrollTo = Math.max(
               posX + _width / 2 - containerSize.width / 2,
               0
             )
-            console.log(scrollTo)
             scrollRef.current.scrollTo({ x: scrollTo, y: 0 })
             setHasScrolled(true)
           }
         } else {
-          if (posY > 0 && scrollRef.current && !hasScrolled) {
+          if (
+            posY > 0 &&
+            x2 > 0 &&
+            y2 > 0 &&
+            scrollRef.current &&
+            !hasScrolled
+          ) {
             let scrollTo = Math.max(
               posY + _height / 2 - containerSize.height / 2,
               0
