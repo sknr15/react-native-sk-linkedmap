@@ -70,7 +70,17 @@ export const TextInput = (props: ITextInputComponent) => {
         onChangeText={(val) => {
           let _val = val
           if (onlyNumbers) {
-            _val = _val.replace(/[^0-9]/g, '')
+            if (_val[_val.length - 1] === '.') {
+              _val = _val + '0'
+            }
+
+            _val = _val.replace(/[^0-9\.]/g, '')
+
+            if (_val.split('.').length > 2) {
+              _val = _val.replace('.', ',')
+              _val = _val.split('.').join('')
+              _val = _val.replace(',', '.')
+            }
           }
 
           if (props.onChangeText) {
