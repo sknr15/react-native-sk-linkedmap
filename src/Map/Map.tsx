@@ -14,6 +14,7 @@ import { TMap, TPosition } from '../interfaces'
 type Props = {
   activePosition?: TPosition
   height?: number
+  hidePositions?: boolean
   map?: TMap
   onClick?: (position: TPosition) => void
   positionStyle?: ViewStyle
@@ -28,6 +29,7 @@ type Props = {
 export const Map = ({
   activePosition,
   height,
+  hidePositions,
   map,
   onClick,
   positionStyle,
@@ -60,6 +62,32 @@ export const Map = ({
     const LOW = 0.0
     const ANIMATIONDURATION = 500
     const ANIMATIONINITIALDELAY = 1000
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(animatedOpacityValue.current, {
+          toValue: HIGH,
+          duration: ANIMATIONDURATION,
+          delay: ANIMATIONINITIALDELAY,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedOpacityValue.current, {
+          toValue: LOW,
+          duration: ANIMATIONDURATION,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedOpacityValue.current, {
+          toValue: HIGH,
+          duration: ANIMATIONDURATION,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedOpacityValue.current, {
+          toValue: LOW,
+          duration: 2500,
+          useNativeDriver: true,
+        }),
+      ]),
+      { iterations: 3 }
+    )
     const MINSCALE = 1
     const MAXSCALE = zoomable ? 3 : 1
 
@@ -67,32 +95,7 @@ export const Map = ({
       // Animated dots for positions
       if (!positionStyle) {
         if (onClick && !isAnimationFinished) {
-          Animated.loop(
-            Animated.sequence([
-              Animated.timing(animatedOpacityValue.current, {
-                toValue: HIGH,
-                duration: ANIMATIONDURATION,
-                delay: ANIMATIONINITIALDELAY,
-                useNativeDriver: true,
-              }),
-              Animated.timing(animatedOpacityValue.current, {
-                toValue: LOW,
-                duration: ANIMATIONDURATION,
-                useNativeDriver: true,
-              }),
-              Animated.timing(animatedOpacityValue.current, {
-                toValue: HIGH,
-                duration: ANIMATIONDURATION,
-                useNativeDriver: true,
-              }),
-              Animated.timing(animatedOpacityValue.current, {
-                toValue: LOW,
-                duration: 2500,
-                useNativeDriver: true,
-              }),
-            ]),
-            { iterations: 3 }
-          ).start((e) => setIsAnimationFinished(e.finished))
+          animation.start((e) => setIsAnimationFinished(e.finished))
         }
       }
     })
@@ -101,6 +104,8 @@ export const Map = ({
       if (zoomRef.current) {
         zoomRef.current.centerOn({ x: 0, y: 0, scale: 1, duration: 0 })
       }
+      setIsAnimationFinished(false)
+      animation.reset()
     }, [map.key])
 
     const _renderPositions = () => {
@@ -118,10 +123,11 @@ export const Map = ({
 
           const size = Math.min(width, height) * 0.75
 
-          const isActivePosition =
-            !activePosition?.key ||
-            activePosition.key === '' ||
-            position.key === activePosition?.key
+          const isActivePosition = hidePositions
+            ? position.key === activePosition?.key
+            : !activePosition?.key ||
+              activePosition.key === '' ||
+              position.key === activePosition?.key
 
           if (onClick) {
             elements.push(
@@ -161,6 +167,7 @@ export const Map = ({
                       }
                 }
                 onPress={() => onClick(position)}
+                disabled={hidePositions}
               >
                 <Animated.View
                   style={
@@ -194,20 +201,24 @@ export const Map = ({
               <View
                 key={`${testId}_map_position_${position.key}`}
                 testID={`${testId}_map_position_${position.key}`}
-                style={{
-                  position: 'absolute',
-                  top,
-                  left,
-                  height,
-                  width,
-                  borderWidth: 1,
-                  borderColor: 'red',
-                  borderRadius: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  zIndex: 10,
-                  ...positionStyle,
-                }}
+                style={
+                  isActivePosition
+                    ? {
+                        position: 'absolute',
+                        top,
+                        left,
+                        height,
+                        width,
+                        borderWidth: 1,
+                        borderColor: 'red',
+                        borderRadius: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        zIndex: 10,
+                        ...positionStyle,
+                      }
+                    : {}
+                }
               >
                 {showText && (
                   <Text

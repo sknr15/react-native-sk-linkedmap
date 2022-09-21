@@ -26,6 +26,7 @@ export type { TCoordinates, TMap, TPosition }
 
 export const LinkedMap = ({
   activePosition,
+  hidePositions,
   map,
   onChange,
   onClick,
@@ -39,6 +40,7 @@ export const LinkedMap = ({
   zoomButtonsStyle,
 }: {
   activePosition?: TPosition
+  hidePositions?: boolean
   map: TMap
   onChange?: (map: TMap) => void
   onClick?: (position?: TPosition) => void
@@ -598,6 +600,7 @@ export const LinkedMap = ({
           <Map
             testId='linkedmap'
             activePosition={activePosition}
+            hidePositions={hidePositions}
             map={map}
             onClick={_handleOnClick}
             zoomable
