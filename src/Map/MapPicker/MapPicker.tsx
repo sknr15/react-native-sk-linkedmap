@@ -73,6 +73,8 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
       // CHANGE!!!
       //
 
+      console.log('TODO: ImagePicker öffnen, Bild ändern')
+
       if (tempMap) {
         let _src = require('../solarMap.jpeg')
 
@@ -127,7 +129,6 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
               marginBottom: 2,
             }}
             onPress={async () => {
-              console.log('TODO: ImagePicker öffnen, Bild ändern')
               _pickImage()
             }}
           >
