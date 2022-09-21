@@ -209,7 +209,7 @@ export const Map = ({
                         left,
                         height,
                         width,
-                        borderWidth: 1,
+                        borderWidth: 2,
                         borderColor: 'red',
                         borderRadius: 1,
                         justifyContent: 'center',

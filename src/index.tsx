@@ -602,7 +602,7 @@ export const LinkedMap = ({
             activePosition={activePosition}
             hidePositions={hidePositions}
             map={map}
-            onClick={_handleOnClick}
+            onClick={onClick ? (pos) => _handleOnClick(pos) : undefined}
             zoomable
             positionStyle={positionStyle}
             showZoomButtons={showZoomButtons}
