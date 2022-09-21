@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import {
   Alert,
+  Animated,
   Platform,
   ScrollView,
   TextStyle,
@@ -26,6 +27,7 @@ export type { TCoordinates, TMap, TPosition }
 
 export const LinkedMap = ({
   activePosition,
+  customAnimation,
   hidePositions,
   map,
   onChange,
@@ -39,18 +41,33 @@ export const LinkedMap = ({
   titleStyle,
   zoomButtonsStyle,
 }: {
+  /** Description of prop "activePosition". */
   activePosition?: TPosition
+  /** Description of prop "customAnimation". */
+  customAnimation?: typeof Animated.View
+  /** Description of prop "hidePositions". */
   hidePositions?: boolean
+  /** Description of prop "map". */
   map: TMap
+  /** Description of prop "onChange". */
   onChange?: (map: TMap) => void
+  /** Description of prop "onClick". */
   onClick?: (position?: TPosition) => void
+  /** Description of prop "positionStyle". */
   positionStyle?: ViewStyle
+  /** Description of prop "showMenu". */
   showMenu?: boolean
+  /** Description of prop "showZoomButtons". */
   showZoomButtons?: boolean
+  /** Description of prop "style". */
   style?: ViewStyle
+  /** Description of prop "testID". */
   testID?: string
+  /** Description of prop "title". */
   title?: string
+  /** Description of prop "titleStyle". */
   titleStyle?: TextStyle
+  /** Description of prop "zoomButtonsStyle". */
   zoomButtonsStyle?: ViewStyle & TextStyle
 }) => {
   const IS_WEB = Platform.OS === 'web'
@@ -600,6 +617,7 @@ export const LinkedMap = ({
           <Map
             testId='linkedmap'
             activePosition={activePosition}
+            customAnimation={customAnimation}
             hidePositions={hidePositions}
             map={map}
             onClick={onClick ? (pos) => _handleOnClick(pos) : undefined}

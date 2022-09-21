@@ -13,6 +13,7 @@ import { TMap, TPosition } from '../interfaces'
 
 type Props = {
   activePosition?: TPosition
+  customAnimation?: typeof Animated.View
   height?: number
   hidePositions?: boolean
   map?: TMap
@@ -28,6 +29,7 @@ type Props = {
 
 export const Map = ({
   activePosition,
+  customAnimation,
   height,
   hidePositions,
   map,
@@ -169,31 +171,33 @@ export const Map = ({
                 onPress={() => onClick(position)}
                 disabled={hidePositions}
               >
-                <Animated.View
-                  style={
-                    positionStyle
-                      ? { opacity: positionStyle.opacity ?? 1 }
-                      : isActivePosition
-                      ? {
-                          width: size,
-                          height: size,
-                          backgroundColor: 'red',
-                          borderRadius: 999,
-                          opacity: animatedOpacityValue.current,
-                        }
-                      : { width: size, height: size }
-                  }
-                >
-                  {showText && (
-                    <Text
-                      center
-                      style={{ fontSize: 10, paddingHorizontal: 10 }}
-                      adjustsFontSizeToFit
-                    >
-                      {position.title}
-                    </Text>
-                  )}
-                </Animated.View>
+                {customAnimation ?? (
+                  <Animated.View
+                    style={
+                      positionStyle
+                        ? { opacity: positionStyle.opacity ?? 1 }
+                        : isActivePosition
+                        ? {
+                            width: size,
+                            height: size,
+                            backgroundColor: 'red',
+                            borderRadius: 999,
+                            opacity: animatedOpacityValue.current,
+                          }
+                        : { width: size, height: size }
+                    }
+                  >
+                    {showText && (
+                      <Text
+                        center
+                        style={{ fontSize: 10, paddingHorizontal: 10 }}
+                        adjustsFontSizeToFit
+                      >
+                        {position.title}
+                      </Text>
+                    )}
+                  </Animated.View>
+                )}
               </TouchableOpacity>
             )
           } else {
