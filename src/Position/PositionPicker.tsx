@@ -270,6 +270,8 @@ export const PositionPicker = ({
               backgroundColor: '#ff000099',
               borderColor: 'red',
               borderWidth: 2,
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
             onDragStart={() => setIsSingleTouch(true)}
             onDrag={(e, d) => {
@@ -299,7 +301,20 @@ export const PositionPicker = ({
               _handleResize(direction, deltaX, deltaY)
             }}
             bounds={'parent'}
-          ></Rnd>
+          >
+            {x2 === 0 && y2 === 0 && (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: -2,
+                  left: -2,
+                  height: 4,
+                  width: 4,
+                  backgroundColor: 'red',
+                }}
+              ></View>
+            )}
+          </Rnd>
         )
       }
 
