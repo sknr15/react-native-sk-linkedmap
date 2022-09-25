@@ -204,12 +204,14 @@ export const LinkedMap = ({
           <View style={{ flex: 1 }}>
             <TouchableOpacity
               style={{
+                alignSelf: 'center',
                 justifyContent: 'center',
                 alignItems: 'center',
                 paddingVertical: 10,
-                paddingHorizontal: 10,
+                paddingHorizontal: 15,
                 backgroundColor: '#448AFF',
                 borderRadius: 5,
+                width: Platform.OS === 'web' ? 'auto' : '100%',
               }}
               onPress={() => {
                 setActiveKey(undefined)
@@ -984,7 +986,7 @@ export const LinkedMap = ({
         onModalHide={() => setIsModalVisible(false)}
         onDismiss={() => setIsModalVisible(false)}
         presentationStyle={'overFullScreen'}
-        style={{ margin: 20, paddingTop: 10 }}
+        style={{ marginVertical: 20, marginHorizontal: 10, paddingTop: 10 }}
       >
         {_renderModal()}
       </Modal>
