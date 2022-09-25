@@ -168,7 +168,6 @@ export const LinkedMap = ({
 
   const _renderManagePositions = () => {
     let _type = editMode ? contentType : modalContentType
-    console.log(_type)
     switch (_type) {
       case 'addPosition':
         return (
