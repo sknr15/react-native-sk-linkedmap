@@ -316,12 +316,16 @@ export const Map = ({
                   backgroundColor: 'grey',
                   borderRadius: 999,
                   justifyContent: 'center',
-                  padding: 5,
+                  aspectRatio: 1,
                   ...zoomButtonsStyle,
                 }}
                 onPress={() => _handleZoom('in')}
               >
-                <Text center largerText style={fontStyle}>
+                <Text
+                  center
+                  largerText
+                  style={{ paddingHorizontal: 5, ...fontStyle }}
+                >
                   +
                 </Text>
               </TouchableOpacity>
@@ -336,12 +340,17 @@ export const Map = ({
                   backgroundColor: 'grey',
                   borderRadius: 999,
                   justifyContent: 'center',
-                  padding: 5,
+                  aspectRatio: 1,
+                  paddingHorizontal: 5,
                   ...zoomButtonsStyle,
                 }}
                 onPress={() => _handleZoom('out')}
               >
-                <Text center largerText style={fontStyle}>
+                <Text
+                  center
+                  largerText
+                  style={{ paddingHorizontal: 5, ...fontStyle }}
+                >
                   -
                 </Text>
               </TouchableOpacity>
@@ -354,12 +363,17 @@ export const Map = ({
                   backgroundColor: 'grey',
                   borderRadius: 999,
                   justifyContent: 'center',
-                  padding: 5,
+                  aspectRatio: 1,
+                  paddingHorizontal: 5,
                   ...zoomButtonsStyle,
                 }}
                 onPress={() => _handleZoom('reset')}
               >
-                <Text center largerText style={fontStyle}>
+                <Text
+                  center
+                  largerText
+                  style={{ paddingHorizontal: 5, ...fontStyle }}
+                >
                   x
                 </Text>
               </TouchableOpacity>

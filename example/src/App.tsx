@@ -33,6 +33,7 @@ const App = () => {
   })
 
   const [showMenu, setShowMenu] = useState<boolean>(false)
+  const [showEditMode, setShowEditMode] = useState<boolean>(false)
   const [hasPermissions, setHasPermissions] = useState<boolean>(false)
 
   useEffect(() => {
@@ -51,8 +52,11 @@ const App = () => {
           width: '100%',
           backgroundColor: 'lightgray',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'space-evenly',
           paddingVertical: 5,
+          paddingHorizontal: 20,
+          flexDirection: 'row',
+          flexWrap: 'wrap',
         }}
       >
         <TouchableOpacity
@@ -82,12 +86,39 @@ const App = () => {
           </View>
           <Text style={{ fontSize: 16, color: 'black' }}>Enable Menu</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setShowEditMode(!showEditMode)}
+          style={{ flexDirection: 'row', alignItems: 'center' }}
+        >
+          <View
+            style={{
+              width: 20,
+              height: 20,
+              borderColor: 'black',
+              borderWidth: 1,
+              marginRight: 5,
+              borderRadius: 999,
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                margin: 2,
+                backgroundColor: showEditMode ? 'black' : 'transparent',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 999,
+              }}
+            />
+          </View>
+          <Text style={{ fontSize: 16, color: 'black' }}>Enable EditMode</Text>
+        </TouchableOpacity>
       </View>
       <LinkedMap
         testID='linkedmap'
         map={map}
-        // showMenu={showMenu}
-        editMode={showMenu}
+        showMenu={showMenu}
+        editMode={showEditMode}
         onChange={(map) => {
           setMap(map)
         }}
