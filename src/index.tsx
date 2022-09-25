@@ -210,7 +210,7 @@ export const LinkedMap = ({
                 paddingHorizontal: 15,
                 backgroundColor: '#448AFF',
                 borderRadius: 5,
-                width: Platform.OS === 'web' ? 'auto' : '100%',
+                width: IS_WEB ? 'auto' : '100%',
               }}
               onPress={() => {
                 setActiveKey(undefined)
@@ -286,31 +286,38 @@ export const LinkedMap = ({
                         testID={`mapposition_${position.key}_delete`}
                         onPress={() => {
                           if (IS_WEB) {
-                            let _mapPos = tempPositions?.filter(
-                              (e) => e.key !== position.key
+                            const result = window.confirm(
+                              `Do you really want to delete this position?\n"${position.title}"`
                             )
-                            setTempPositions(_mapPos)
-                          }
-                          Alert.alert(
-                            'Delete?',
-                            `Do you really want to delete this position?\n"${position.title}"`,
-                            [
-                              {
-                                text: 'Cancel',
-                                style: 'cancel',
-                              },
-                              {
-                                text: 'OK',
-                                onPress: () => {
-                                  let _mapPos = tempPositions?.filter(
-                                    (e) => e.key !== position.key
-                                  )
-                                  setTempPositions(_mapPos)
+
+                            if (result) {
+                              let _mapPos = tempPositions?.filter(
+                                (e) => e.key !== position.key
+                              )
+                              setTempPositions(_mapPos)
+                            }
+                          } else {
+                            Alert.alert(
+                              'Delete?',
+                              `Do you really want to delete this position?\n"${position.title}"`,
+                              [
+                                {
+                                  text: 'Cancel',
+                                  style: 'cancel',
                                 },
-                                style: 'destructive',
-                              },
-                            ]
-                          )
+                                {
+                                  text: 'OK',
+                                  onPress: () => {
+                                    let _mapPos = tempPositions?.filter(
+                                      (e) => e.key !== position.key
+                                    )
+                                    setTempPositions(_mapPos)
+                                  },
+                                  style: 'destructive',
+                                },
+                              ]
+                            )
+                          }
                         }}
                         style={{
                           justifyContent: 'center',
@@ -432,17 +439,23 @@ export const LinkedMap = ({
           hasChanges
         ) {
           if (IS_WEB) {
-            if (
-              contentType === 'showAllPositions' ||
-              contentType === 'changeMap'
-            ) {
-              setTempPositions([])
-              setTempValues({ title: '', target: '' })
-              setContentType('menu')
-            } else {
-              setContentType('showAllPositions')
+            const result = window.confirm(
+              'Do you really want to close? Any unsaved progress will be lost!'
+            )
+
+            if (result) {
+              if (
+                contentType === 'showAllPositions' ||
+                contentType === 'changeMap'
+              ) {
+                setTempPositions([])
+                setTempValues({ title: '', target: '' })
+                setContentType('menu')
+              } else {
+                setContentType('showAllPositions')
+              }
+              setHasChanges(false)
             }
-            setHasChanges(false)
           } else {
             Alert.alert(
               'Close?',
@@ -532,17 +545,23 @@ export const LinkedMap = ({
           hasChanges
         ) {
           if (IS_WEB) {
-            if (
-              modalContentType === 'showAllPositions' ||
-              modalContentType === 'changeMap'
-            ) {
-              setTempPositions([])
-              setTempValues({ title: '', target: '' })
-              setIsModalVisible(false)
-            } else {
-              setModalContentType('showAllPositions')
+            const result = window.confirm(
+              'Do you really want to close? Any unsaved progress will be lost!'
+            )
+
+            if (result) {
+              if (
+                modalContentType === 'showAllPositions' ||
+                modalContentType === 'changeMap'
+              ) {
+                setTempPositions([])
+                setTempValues({ title: '', target: '' })
+                setIsModalVisible(false)
+              } else {
+                setModalContentType('showAllPositions')
+              }
+              setHasChanges(false)
             }
-            setHasChanges(false)
           } else {
             Alert.alert(
               'Close?',
