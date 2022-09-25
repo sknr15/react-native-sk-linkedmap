@@ -23,11 +23,19 @@ type TModalContentType =
   | 'showAllPositions'
   | 'changeMap'
 
+type TContentType =
+  | 'menu'
+  | 'addPosition'
+  | 'editPosition'
+  | 'showAllPositions'
+  | 'changeMap'
+
 export type { TCoordinates, TMap, TPosition }
 
 export const LinkedMap = ({
   activePosition,
   customAnimation,
+  editMode,
   hidePositions,
   map,
   onChange,
@@ -45,6 +53,8 @@ export const LinkedMap = ({
   activePosition?: TPosition
   /** Description of prop "customAnimation". */
   customAnimation?: typeof Animated.View
+  /** Description of prop "editMode". */
+  editMode?: boolean
   /** Description of prop "hidePositions". */
   hidePositions?: boolean
   /** Description of prop "map". */
@@ -77,6 +87,7 @@ export const LinkedMap = ({
 
   const [modalContentType, setModalContentType] =
     useState<TModalContentType>('showAllPositions')
+  const [contentType, setContentType] = useState<TContentType>('menu')
 
   const [mapPositions, setMapPositions] = useState<TPosition[]>([])
 
@@ -156,7 +167,9 @@ export const LinkedMap = ({
   }
 
   const _renderManagePositions = () => {
-    switch (modalContentType) {
+    let _type = editMode ? contentType : modalContentType
+    console.log(_type)
+    switch (_type) {
       case 'addPosition':
         return (
           <AddPosition
@@ -201,7 +214,11 @@ export const LinkedMap = ({
               onPress={() => {
                 setActiveKey(undefined)
                 setTempValues({ title: '', target: '' })
-                setModalContentType('addPosition')
+                if (editMode) {
+                  setContentType('addPosition')
+                } else {
+                  setModalContentType('addPosition')
+                }
               }}
             >
               <Text style={{ fontSize: 18, color: 'white' }}>Add position</Text>
@@ -233,7 +250,11 @@ export const LinkedMap = ({
                             title: position.title,
                             target: position.target,
                           })
-                          setModalContentType('editPosition')
+                          if (editMode) {
+                            setContentType('editPosition')
+                          } else {
+                            setModalContentType('editPosition')
+                          }
                         }}
                         style={{
                           flex: 1,
@@ -263,10 +284,32 @@ export const LinkedMap = ({
                       <TouchableOpacity
                         testID={`mapposition_${position.key}_delete`}
                         onPress={() => {
-                          let _mapPos = tempPositions?.filter(
-                            (e) => e.key !== position.key
+                          if (IS_WEB) {
+                            let _mapPos = tempPositions?.filter(
+                              (e) => e.key !== position.key
+                            )
+                            setTempPositions(_mapPos)
+                          }
+                          Alert.alert(
+                            'Delete?',
+                            `Do you really want to delete this position?\n"${position.title}"`,
+                            [
+                              {
+                                text: 'Cancel',
+                                style: 'cancel',
+                              },
+                              {
+                                text: 'OK',
+                                onPress: () => {
+                                  let _mapPos = tempPositions?.filter(
+                                    (e) => e.key !== position.key
+                                  )
+                                  setTempPositions(_mapPos)
+                                },
+                                style: 'destructive',
+                              },
+                            ]
                           )
-                          setTempPositions(_mapPos)
                         }}
                         style={{
                           justifyContent: 'center',
@@ -301,12 +344,155 @@ export const LinkedMap = ({
   }
 
   const _renderModalContent = () => {
+    if (editMode) {
+      switch (contentType) {
+        case 'changeMap':
+          return _renderMapPicker()
+        case 'showAllPositions':
+        default:
+          return _renderManagePositions()
+      }
+    }
+
     switch (optionText) {
       case 'Change map':
         return _renderMapPicker()
       case 'Manage positions':
       default:
         return _renderManagePositions()
+    }
+  }
+
+  const _renderEditMode = () => {
+    switch (contentType) {
+      case 'menu':
+        return (
+          <View style={{ flex: 1 }}>
+            <View
+              style={{
+                paddingBottom: 20,
+              }}
+            >
+              {_renderMenu()}
+            </View>
+            <View style={{ flex: 1, borderWidth: 2 }}>
+              <Map
+                testId='linkedmap'
+                customAnimation={customAnimation}
+                hidePositions={hidePositions}
+                map={map}
+                zoomable
+                positionStyle={positionStyle}
+                showZoomButtons={false}
+              />
+            </View>
+          </View>
+        )
+      default:
+        return _renderModalContent()
+    }
+  }
+
+  const _handleEditAction = (
+    type: 'accept' | 'close',
+    isDisabled?: boolean
+  ) => {
+    switch (type) {
+      case 'accept':
+        if (isDisabled) {
+          return
+        }
+        if (contentType === 'showAllPositions') {
+          setMapPositions(tempPositions)
+          setContentType('menu')
+          if (onChange) onChange({ ...map, positions: [...tempPositions] })
+        } else {
+          if (contentType === 'changeMap') {
+            setContentType('menu')
+            if (onChange && tempMap) onChange(tempMap)
+          } else {
+            if (tempValues) {
+              _addPosition({ ...tempValues, key: activeKey ?? '' }, activeKey)
+            }
+            setContentType('showAllPositions')
+          }
+        }
+        setHasChanges(false)
+        setTempValues({ title: '', target: '' })
+        break
+      case 'close':
+        if (contentType === 'menu') {
+          return
+        }
+      default:
+        if (
+          (contentType === 'showAllPositions' &&
+            JSON.stringify(tempPositions) !== JSON.stringify(mapPositions)) ||
+          hasChanges
+        ) {
+          if (IS_WEB) {
+            if (
+              contentType === 'showAllPositions' ||
+              contentType === 'changeMap'
+            ) {
+              setTempPositions([])
+              setTempValues({ title: '', target: '' })
+              setContentType('menu')
+            } else {
+              setContentType('showAllPositions')
+            }
+            setHasChanges(false)
+          } else {
+            Alert.alert(
+              'Close?',
+              'Do you really want to close? Any unsaved progress will be lost!',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text: 'OK',
+                  onPress: () => {
+                    if (
+                      contentType === 'showAllPositions' ||
+                      contentType === 'changeMap'
+                    ) {
+                      setTempPositions([])
+                      setTempValues({ title: '', target: '' })
+                      setContentType('menu')
+                    } else {
+                      setContentType('showAllPositions')
+                    }
+                    setHasChanges(false)
+                  },
+                  style: 'destructive',
+                },
+              ]
+            )
+          }
+        } else {
+          switch (contentType) {
+            case 'addPosition':
+            case 'editPosition':
+              setContentType('showAllPositions')
+              break
+            case 'showAllPositions':
+              setTempPositions([])
+            case 'changeMap':
+            default:
+              setContentType('menu')
+          }
+          if (contentType === 'showAllPositions') {
+            setTempPositions([])
+            setContentType('menu')
+          } else if (contentType === 'changeMap') {
+            setContentType('menu')
+          } else {
+            setContentType('showAllPositions')
+          }
+        }
+        break
     }
   }
 
@@ -527,9 +713,14 @@ export const LinkedMap = ({
 
   const _renderMenu = () => {
     return (
-      <ScrollView style={{ paddingHorizontal: 20 }}>
+      <ScrollView style={{ flexGrow: 0 }}>
         <TouchableOpacity
           onPress={() => {
+            if (editMode) {
+              setContentType('changeMap')
+              setModalContentType('changeMap')
+              return
+            }
             bottomSheetRef.current?.close()
             setOptionText('Change map')
             setModalContentType('changeMap')
@@ -552,6 +743,11 @@ export const LinkedMap = ({
         />
         <TouchableOpacity
           onPress={() => {
+            if (editMode) {
+              setTempPositions([...mapPositions])
+              setContentType('showAllPositions')
+              return
+            }
             bottomSheetRef.current?.close()
             setTempPositions([...mapPositions])
             setOptionText('Manage positions')
@@ -564,36 +760,129 @@ export const LinkedMap = ({
         >
           <Text largerText>Manage Positions</Text>
         </TouchableOpacity>
-        <View
-          style={{
-            height: 1,
-            width: '100%',
-            backgroundColor: 'grey',
-            marginVertical: 5,
-            opacity: 0.5,
-          }}
-        />
-        <TouchableOpacity
-          onPress={() => {
-            bottomSheetRef.current?.close()
-          }}
-          style={{ paddingVertical: 5 }}
-        >
-          <Text largerText>Close</Text>
-        </TouchableOpacity>
+        {!editMode && (
+          <View>
+            <View
+              style={{
+                height: 1,
+                width: '100%',
+                backgroundColor: 'grey',
+                marginVertical: 5,
+                opacity: 0.5,
+              }}
+            />
+
+            <TouchableOpacity
+              onPress={() => {
+                bottomSheetRef.current?.close()
+              }}
+              style={{ paddingVertical: 5 }}
+            >
+              <Text largerText>Close</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
     )
   }
 
-  return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        ...style,
-      }}
-    >
+  const _renderContent = () => {
+    if (editMode) {
+      const isDisabled =
+        (contentType === 'addPosition' || contentType === 'editPosition') &&
+        (!tempValues.title ||
+          !tempValues.target ||
+          tempValues.title === '' ||
+          tempValues.target === '')
+
+      return (
+        <View
+          style={{
+            flex: 1,
+            width: '100%',
+            backgroundColor: 'white',
+            padding: 20,
+          }}
+        >
+          {contentType !== 'menu' && (
+            <View
+              testID='edit_header_buttons'
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 20,
+              }}
+            >
+              <TouchableOpacity
+                testID='edit_button_accept'
+                style={{
+                  justifyContent: 'center',
+                  padding: 8,
+                  aspectRatio: 1,
+                  borderWidth: 1,
+                  borderRadius: 999,
+                  borderColor: isDisabled ? 'grey' : 'darkgreen',
+                }}
+                disabled={isDisabled}
+                onPress={() => {
+                  _handleEditAction('accept', isDisabled)
+                }}
+              >
+                <Image
+                  style={{
+                    tintColor: isDisabled ? 'grey' : 'darkgreen',
+                  }}
+                  source={{
+                    uri: 'https://cdn-icons-png.flaticon.com/512/447/447147.png',
+                  }}
+                  width={16}
+                  height={16}
+                />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  flex: 1,
+                  fontSize: 20,
+                  textAlign: 'center',
+                }}
+                adjustsFontSizeToFit
+                center
+                numberOfLines={2}
+              >
+                {optionText}
+              </Text>
+              <TouchableOpacity
+                testID='modal_button_close'
+                style={{
+                  justifyContent: 'center',
+                  padding: 8,
+                  aspectRatio: 1,
+                  borderWidth: 1,
+                  borderRadius: 999,
+                  borderColor: 'darkred',
+                }}
+                onPress={() => {
+                  _handleEditAction('close', isDisabled)
+                }}
+              >
+                <Image
+                  style={{ tintColor: 'darkred' }}
+                  source={{
+                    uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828747.png',
+                  }}
+                  width={16}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+          {_renderEditMode()}
+        </View>
+      )
+    }
+
+    return (
       <View
         style={{
           flex: 1,
@@ -677,6 +966,19 @@ export const LinkedMap = ({
           </View>
         )}
       </View>
+    )
+  }
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...style,
+      }}
+    >
+      {_renderContent()}
       <Modal
         isVisible={isModalVisible}
         onModalHide={() => setIsModalVisible(false)}
@@ -705,7 +1007,7 @@ export const LinkedMap = ({
         }}
         closeOnPressMask
       >
-        {_renderMenu()}
+        <View style={{ paddingHorizontal: 20 }}>{_renderMenu()}</View>
       </RBSheet>
     </View>
   )

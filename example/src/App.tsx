@@ -86,7 +86,8 @@ const App = () => {
       <LinkedMap
         testID='linkedmap'
         map={map}
-        showMenu={showMenu}
+        // showMenu={showMenu}
+        editMode={showMenu}
         onChange={(map) => {
           setMap(map)
         }}

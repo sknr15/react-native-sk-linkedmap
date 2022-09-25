@@ -301,6 +301,7 @@ export const PositionPicker = ({
               _handleResize(direction, deltaX, deltaY)
             }}
             bounds={'parent'}
+            cancel='body'
           >
             {x2 === 0 && y2 === 0 && (
               <View
