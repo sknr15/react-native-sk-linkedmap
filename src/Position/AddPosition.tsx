@@ -183,8 +183,8 @@ export const AddPosition = ({ map, onChangePosition, testId }: Props) => {
               testId={testId}
               map={map}
               position={tempPosition}
-              width={modalSize.width}
               height={modalSize.height}
+              width={modalSize.width}
               onChange={(position) => {
                 // console.log('TODO: add', position)
                 _onChange(

@@ -18,9 +18,9 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
   const [tempPositions, setTempPositions] = useState<TPosition[]>([])
 
   const [sizeFactor, setSizeFactor] = useState<{
-    width: number
     height: number
-  }>({ width: 1, height: 1 })
+    width: number
+  }>({ height: 1, width: 1 })
 
   useEffect(() => {
     // _requestPermission()
@@ -56,7 +56,7 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
       if (!pickedMedia.cancelled) {
         let uri = pickedMedia.uri
         if (pickedMedia.type === 'image' || pickedMedia.uri.includes('image')) {
-          if (pickedMedia.width > 4096 || pickedMedia.height > 4096) {
+          if (pickedMedia.height > 4096 || pickedMedia.width > 4096) {
             Alert.alert('Image too big', 'Selected image is too big (> 2000)', [
               { text: 'OK' },
             ])

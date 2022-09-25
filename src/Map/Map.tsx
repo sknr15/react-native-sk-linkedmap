@@ -44,16 +44,21 @@ export const Map = ({
 }: Props) => {
   if (map && map.imageSource) {
     const [containerSize, setContainerSize] = useState<{
-      width: number
       height: number
-    }>({ width: 0, height: 0 })
+      width: number
+    }>({ height: 0, width: 0 })
 
     const [sizeFactor, setSizeFactor] = useState<{
-      width: number
       height: number
+      width: number
       x: number
       y: number
-    }>({ width: 0, height: 0, x: 0, y: 0 })
+    }>({ height: 0, width: 0, x: 0, y: 0 })
+
+    const [imageSize, setImageSize] = useState<{
+      height: number
+      width: number
+    }>({ height: 0, width: 0 })
 
     const zoomRef = createRef<ImageZoom>()
 
@@ -120,10 +125,10 @@ export const Map = ({
           const left = (x1 / 100) * sizeFactor.width + sizeFactor.x
           const top = (y1 / 100) * sizeFactor.height + sizeFactor.y
 
-          const width = ((x2 - x1) / 100) * sizeFactor.width
           const height = ((y2 - y1) / 100) * sizeFactor.height
+          const width = ((x2 - x1) / 100) * sizeFactor.width
 
-          const size = Math.min(width, height) * 0.75
+          const size = Math.min(height, width) * 0.75
 
           const isActivePosition = hidePositions
             ? position.key === activePosition?.key
@@ -178,13 +183,13 @@ export const Map = ({
                         ? { opacity: positionStyle.opacity ?? 1 }
                         : isActivePosition
                         ? {
-                            width: size,
                             height: size,
+                            width: size,
                             backgroundColor: 'red',
                             borderRadius: 999,
                             opacity: animatedOpacityValue.current,
                           }
-                        : { width: size, height: size }
+                        : { height: size, width: size }
                     }
                   >
                     {showText && (
@@ -371,8 +376,8 @@ export const Map = ({
         testID={`${testId}_map`}
         style={{
           flex: 1,
-          width: '100%',
           height: '100%',
+          width: '100%',
         }}
         onLayout={(e) => setContainerSize(e.nativeEvent.layout)}
       >
@@ -403,6 +408,20 @@ export const Map = ({
               height={height ?? containerSize.height}
               width={width ?? containerSize.width}
               onLayout={(e) => setSizeFactor(e.nativeEvent.layout)}
+              onLoad={(e) => {
+                if (e.nativeEvent?.path && e.nativeEvent.path[0]) {
+                  const image = e.nativeEvent.path[0]
+
+                  if (image) {
+                    setImageSize({
+                      height: image.naturalHeight,
+                      width: image.naturalWidth,
+                    })
+                  }
+                } else {
+                  setImageSize({ ...sizeFactor })
+                }
+              }}
             />
             {_renderPositions()}
           </View>
@@ -420,8 +439,8 @@ export const Map = ({
             }}
           >
             <Text style={{ fontSize: 10 }}>
-              {`${Math.round(sizeFactor.height * 100) / 100} x ${
-                Math.round(sizeFactor.width * 100) / 100
+              {`${Math.round(imageSize?.height * 100) / 100} x ${
+                Math.round(imageSize?.width * 100) / 100
               }`}
             </Text>
           </View>

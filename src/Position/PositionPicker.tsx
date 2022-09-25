@@ -34,16 +34,16 @@ export const PositionPicker = ({
 }: Props) => {
   const IS_WEB = Platform.OS === 'web'
   const [containerSize, setContainerSize] = useState<{
-    width: number
     height: number
-  }>({ width: 0, height: 0 })
+    width: number
+  }>({ height: 0, width: 0 })
 
   const [sizeFactor, setSizeFactor] = useState<{
-    width: number
     height: number
+    width: number
     x: number
     y: number
-  }>({ width: 0, height: 0, x: 0, y: 0 })
+  }>({ height: 0, width: 0, x: 0, y: 0 })
 
   const [newCoordinates, setNewCoordinates] = useState<TCoordinates>(
     position.coordinates ?? emptyCoordinates
@@ -203,8 +203,8 @@ export const PositionPicker = ({
         return null
       }
 
-      const _width = ((x2 - x1) / 100) * sizeFactor.width
       const _height = ((y2 - y1) / 100) * sizeFactor.height
+      const _width = ((x2 - x1) / 100) * sizeFactor.width
 
       const posX =
         (x1 / 100) *
@@ -327,8 +327,8 @@ export const PositionPicker = ({
             position: 'absolute',
             left: (x1 / 100) * sizeFactor.width,
             top: (y1 / 100) * sizeFactor.height,
-            width: Math.max(_width, 0),
             height: Math.max(_height, 0),
+            width: Math.max(_width, 0),
             borderWidth: x2 && y2 ? 2 : 1,
             borderColor: 'red',
             justifyContent: 'center',
@@ -439,8 +439,8 @@ export const PositionPicker = ({
         testID={`${testId}_map`}
         style={{
           flex: 1,
-          width: '100%',
           height: '100%',
+          width: '100%',
         }}
         onLayout={(e) => setContainerSize(e.nativeEvent.layout)}
       >

@@ -645,8 +645,8 @@ export const LinkedMap = ({
         />
         <View
           style={{
-            width: '100%',
             flex: 1,
+            width: '100%',
             borderRadius: 5,
             shadowColor: 'grey',
             backgroundColor: 'white',
@@ -686,8 +686,8 @@ export const LinkedMap = ({
                 source={{
                   uri: 'https://cdn-icons-png.flaticon.com/512/447/447147.png',
                 }}
-                width={16}
                 height={16}
+                width={16}
               />
             </TouchableOpacity>
             <Text
@@ -721,6 +721,7 @@ export const LinkedMap = ({
                 source={{
                   uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828747.png',
                 }}
+                height={16}
                 width={16}
               />
             </TouchableOpacity>
@@ -857,8 +858,8 @@ export const LinkedMap = ({
                   source={{
                     uri: 'https://cdn-icons-png.flaticon.com/512/447/447147.png',
                   }}
-                  width={16}
                   height={16}
+                  width={16}
                 />
               </TouchableOpacity>
               <Text
@@ -892,6 +893,7 @@ export const LinkedMap = ({
                   source={{
                     uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828747.png',
                   }}
+                  height={16}
                   width={16}
                 />
               </TouchableOpacity>
