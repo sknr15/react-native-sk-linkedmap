@@ -108,7 +108,7 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
         break
     }
 
-    return source
+    return ' ' + source + ' '
   }
 
   return (
@@ -149,7 +149,7 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
             numberOfLines={2}
             center
           >
-            Image: {_getImageName()}
+            {`Image:${_getImageName()}`}
           </Text>
         </View>
         <View

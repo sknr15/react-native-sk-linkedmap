@@ -132,7 +132,7 @@ export const LinkedMap = ({
   }, [map])
 
   useEffect(() => {
-    if (mapPositions) {
+    if (mapPositions && map.key) {
       setTempPositions([...mapPositions])
     }
   }, [mapPositions])
