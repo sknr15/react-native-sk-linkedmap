@@ -23,8 +23,7 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
   }>({ height: 1, width: 1 })
 
   useEffect(() => {
-    // _requestPermission()
-    setHasPermissions(true)
+    _requestPermission()
   }, [])
 
   useEffect(() => {
@@ -40,14 +39,34 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
   }
 
   const _pickImage = async () => {
-    if (!hasPermissions) {
-      Alert.alert('No permission', 'No permissions to media library', [
-        { text: 'OK' },
-      ])
+    if (!hasPermissions && !__DEV__) {
+      if (IS_WEB) {
+        window.confirm('No permissions to media library')
+      } else {
+        Alert.alert('No permission', 'No permissions to media library', [
+          { text: 'OK' },
+        ])
+      }
       return
     }
 
-    if (IS_WEB) {
+    if (__DEV__) {
+      //
+      // CHANGE!!!
+      //
+
+      console.log('TODO: ImagePicker öffnen, Bild ändern')
+
+      if (tempMap) {
+        let _src = require('../solarMap.jpeg')
+
+        if (tempMap?.imageSource === _src) _src = require('../mapExample.png')
+
+        setTempMap({ ...tempMap, imageSource: _src, positions: [] })
+
+        if (onChange) onChange({ ...tempMap, positions: [], imageSource: _src })
+      }
+    } else {
       const pickedMedia = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 0.66,
@@ -68,27 +87,11 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
           setTempMap({ ...tempMap, imageSource: { uri }, positions: [] })
         }
       }
-    } else {
-      //
-      // CHANGE!!!
-      //
-
-      console.log('TODO: ImagePicker öffnen, Bild ändern')
-
-      if (tempMap) {
-        let _src = require('../solarMap.jpeg')
-
-        if (tempMap?.imageSource === _src) _src = require('../mapExample.png')
-
-        setTempMap({ ...tempMap, imageSource: _src, positions: [] })
-
-        if (onChange) onChange({ ...tempMap, positions: [], imageSource: _src })
-      }
     }
   }
 
   const _getImageName = () => {
-    let source
+    let source = ''
 
     switch (typeof tempMap?.imageSource) {
       case 'number':
@@ -96,13 +99,15 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
         source = tempMap.imageSource.toString()
         break
       case 'object':
-        source = Array.isArray(tempMap.imageSource)
-          ? tempMap.imageSource[0].uri
-          : tempMap.imageSource.uri
+        source =
+          (Array.isArray(tempMap.imageSource)
+            ? tempMap.imageSource[0].uri
+            : tempMap.imageSource.uri) ?? ''
         break
       default:
         break
     }
+
     return source
   }
 
@@ -142,6 +147,7 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
               paddingHorizontal: 10,
             }}
             numberOfLines={2}
+            center
           >
             Image: {_getImageName()}
           </Text>

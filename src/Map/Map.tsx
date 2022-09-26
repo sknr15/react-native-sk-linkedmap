@@ -423,18 +423,15 @@ export const Map = ({
               width={width ?? containerSize.width}
               onLayout={(e) => setSizeFactor(e.nativeEvent.layout)}
               onLoad={(e) => {
-                if (e.nativeEvent?.path && e.nativeEvent.path[0]) {
-                  const image = e.nativeEvent.path[0]
-
-                  if (image) {
-                    setImageSize({
-                      height: image.naturalHeight,
-                      width: image.naturalWidth,
-                    })
-                  }
+                if (e.nativeEvent?.source) {
+                  setImageSize({ ...e.nativeEvent.source })
                 } else {
                   setImageSize({ ...sizeFactor })
                 }
+              }}
+              style={{
+                maxHeight: containerSize.height,
+                maxWidth: containerSize.width,
               }}
             />
             {_renderPositions()}

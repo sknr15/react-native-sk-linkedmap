@@ -131,6 +131,12 @@ export const LinkedMap = ({
     }
   }, [map])
 
+  useEffect(() => {
+    if (mapPositions) {
+      setTempPositions([...mapPositions])
+    }
+  }, [mapPositions])
+
   const _handleOnClick = (position: TPosition) => {
     if (onClick) {
       onClick(position)
