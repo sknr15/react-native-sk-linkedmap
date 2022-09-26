@@ -2,6 +2,20 @@
   "name": "example",
   "displayName": "LinkedMap",
   "expo": {
-    "plugins": ["expo-image-picker"]
+    "plugins": [
+      "expo-image-picker",
+      {
+        "photosPermission": "The app accesses your photos to let you share them with your friends."
+      }
+    ]
+  },
+  "android": {
+    "package": "react-native-sk-linkedmap",
+    "permissions": [
+      "READ_EXTERNAL_STORAGE",
+      "WRITE_EXTERNAL_STORAGE",
+      "CAMERA_ROLL"
+    ],
+    "versionCode": 36
   }
 }

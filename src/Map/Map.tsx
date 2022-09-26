@@ -404,6 +404,7 @@ export const Map = ({
           minScale={MINSCALE}
           maxScale={MAXSCALE}
           enableCenterFocus={false}
+          enableDoubleClickZoom={zoomable}
         >
           <View
             style={{

@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
+import {
+  Alert,
+  PermissionsAndroid,
+  Platform,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import LinkedMap, { TMap, TPosition } from 'react-native-sk-linkedmap'
 import { request, check, PERMISSIONS } from 'react-native-permissions'
 import * as ImagePicker from 'expo-image-picker'
@@ -37,12 +45,27 @@ const App = () => {
   const [hasPermissions, setHasPermissions] = useState<boolean>(false)
 
   useEffect(() => {
-    // _requestPermission()
+    _requestPermission()
   }, [])
 
   const _requestPermission = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    setHasPermissions(status === ImagePicker.PermissionStatus.GRANTED)
+    switch (Platform.OS) {
+      case 'android':
+        const granted = await PermissionsAndroid.request(
+          'android.permission.READ_EXTERNAL_STORAGE'
+        )
+        setHasPermissions(granted === PermissionsAndroid.RESULTS.GRANTED)
+        return
+      case 'ios':
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync()
+        setHasPermissions(status === ImagePicker.PermissionStatus.GRANTED)
+        return
+      case 'web':
+      default:
+        setHasPermissions(true)
+        return
+    }
   }
 
   return (

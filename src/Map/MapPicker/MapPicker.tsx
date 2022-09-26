@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, Platform, TouchableOpacity, View } from 'react-native'
+import {
+  Alert,
+  Platform,
+  TouchableOpacity,
+  View,
+  PermissionsAndroid,
+} from 'react-native'
 import { Text } from '../../Form'
 import * as ImagePicker from 'expo-image-picker'
 import { TMap, TPosition } from '../../interfaces'
@@ -15,12 +21,6 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
   const IS_WEB = Platform.OS === 'web'
   const [hasPermissions, setHasPermissions] = useState<boolean>(false)
   const [tempMap, setTempMap] = useState<TMap | undefined>(map)
-  const [tempPositions, setTempPositions] = useState<TPosition[]>([])
-
-  const [sizeFactor, setSizeFactor] = useState<{
-    height: number
-    width: number
-  }>({ height: 1, width: 1 })
 
   useEffect(() => {
     _requestPermission()
@@ -29,17 +29,31 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
   useEffect(() => {
     if (map) {
       setTempMap(map)
-      setTempPositions(map.positions ?? [])
     }
   }, [map])
 
   const _requestPermission = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    setHasPermissions(status === ImagePicker.PermissionStatus.GRANTED)
+    switch (Platform.OS) {
+      case 'android':
+        const granted = await PermissionsAndroid.request(
+          'android.permission.READ_EXTERNAL_STORAGE'
+        )
+        setHasPermissions(granted === PermissionsAndroid.RESULTS.GRANTED)
+        return
+      case 'ios':
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync()
+        setHasPermissions(status === ImagePicker.PermissionStatus.GRANTED)
+        return
+      case 'web':
+      default:
+        setHasPermissions(true)
+        return
+    }
   }
 
   const _pickImage = async () => {
-    if (!hasPermissions && !__DEV__) {
+    if (!hasPermissions) {
       if (IS_WEB) {
         window.confirm('No permissions to media library')
       } else {
@@ -50,7 +64,7 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
       return
     }
 
-    if (__DEV__) {
+    if (!__DEV__) {
       //
       // CHANGE!!!
       //
@@ -67,25 +81,33 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
         if (onChange) onChange({ ...tempMap, positions: [], imageSource: _src })
       }
     } else {
-      const pickedMedia = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.66,
-      })
+      try {
+        const pickedMedia = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          quality: 0.66,
+        })
 
-      if (!pickedMedia.cancelled) {
-        let uri = pickedMedia.uri
-        if (pickedMedia.type === 'image' || pickedMedia.uri.includes('image')) {
+        if (!pickedMedia) {
+          return
+        }
+
+        if (!pickedMedia.cancelled) {
+          let uri = pickedMedia.uri
+          console.log(uri)
           if (pickedMedia.height > 4096 || pickedMedia.width > 4096) {
             Alert.alert('Image too big', 'Selected image is too big (> 2000)', [
               { text: 'OK' },
             ])
             return
           }
-        }
 
-        if (tempMap) {
-          setTempMap({ ...tempMap, imageSource: { uri }, positions: [] })
+          if (tempMap) {
+            setTempMap({ ...tempMap, imageSource: { uri }, positions: [] })
+          }
         }
+      } catch (error) {
+        console.log(error)
       }
     }
   }
@@ -158,7 +180,7 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
             borderWidth: 1,
           }}
         >
-          <Map testId='mappicker' map={tempMap} showText />
+          <Map testId='mappicker' map={tempMap} showText zoomable={false} />
         </View>
       </View>
     </View>
