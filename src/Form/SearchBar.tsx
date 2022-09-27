@@ -23,7 +23,6 @@ export const SearchBar = (props: ISearchBarComponent) => {
         {
           flexDirection: 'row',
           alignItems: 'center',
-          marginVertical: 5,
           paddingVertical: 10,
         },
         style,

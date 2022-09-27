@@ -253,7 +253,7 @@ export const LinkedMap = ({
       default:
         return (
           <View style={{ flex: 1 }}>
-            <View style={{ borderBottomWidth: 1 }}>
+            <View style={{ marginBottom: 5 }}>
               <TouchableOpacity
                 style={{
                   alignSelf: 'center',
@@ -264,6 +264,7 @@ export const LinkedMap = ({
                   backgroundColor: '#448AFF',
                   borderRadius: 5,
                   width: IS_WEB ? 'auto' : '100%',
+                  marginBottom: 5,
                 }}
                 onPress={() => {
                   setActiveKey(undefined)
@@ -813,6 +814,7 @@ export const LinkedMap = ({
         <TouchableOpacity
           onPress={() => {
             if (editMode) {
+              setOptionText('Change map')
               setContentType('changeMap')
               setModalContentType('changeMap')
               return
@@ -840,6 +842,7 @@ export const LinkedMap = ({
         <TouchableOpacity
           onPress={() => {
             if (editMode) {
+              setOptionText('Manage positions')
               setTempPositions([...mapPositions])
               setContentType('showAllPositions')
               return
