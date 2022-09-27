@@ -176,8 +176,10 @@ export const LinkedMap = ({
   useEffect(() => {
     let _searched = [...tempPositions]
     if (searchTerm.length > 0) {
-      _searched = _searched.filter((item) =>
-        item.title.toLowerCase().includes(searchTerm.toLowerCase())
+      _searched = _searched.filter(
+        (item) =>
+          item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.key.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
     setSearchedPositions(_searched)
