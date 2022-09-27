@@ -482,6 +482,10 @@ export const LinkedMap = ({
     type: 'accept' | 'close',
     isDisabled?: boolean
   ) => {
+    if (contentType === 'showAllPositions' || contentType === 'changeMap') {
+      setSearchTerm('')
+    }
+
     switch (type) {
       case 'accept':
         if (isDisabled) {
@@ -591,6 +595,13 @@ export const LinkedMap = ({
     type: 'accept' | 'close',
     isDisabled?: boolean
   ) => {
+    if (
+      modalContentType === 'showAllPositions' ||
+      modalContentType === 'changeMap'
+    ) {
+      setSearchTerm('')
+    }
+
     switch (type) {
       case 'accept':
         if (isDisabled) {

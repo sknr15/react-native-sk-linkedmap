@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {
   Alert,
+  BackHandler,
   LogBox,
   PermissionsAndroid,
   Platform,
@@ -60,6 +61,20 @@ const App = () => {
   useEffect(() => {
     _requestPermission()
   }, [])
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonPress)
+    return () => {
+      BackHandler.removeEventListener(
+        'hardwareBackPress',
+        handleBackButtonPress
+      )
+    }
+  }, [])
+
+  const handleBackButtonPress = () => {
+    return true
+  }
 
   const _requestPermission = async () => {
     switch (Platform.OS) {

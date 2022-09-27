@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   TextInput as RNTextInput,
   TextInputProps,
@@ -17,6 +17,8 @@ interface ISearchBarComponent extends TextInputProps {
 export const SearchBar = (props: ISearchBarComponent) => {
   const { bold, center, largerText, onClear, style } = props
 
+  const [containerHeight, setContainerHeight] = useState<number>(0)
+
   return (
     <View
       style={[
@@ -24,6 +26,7 @@ export const SearchBar = (props: ISearchBarComponent) => {
           flexDirection: 'row',
           alignItems: 'center',
           paddingVertical: 10,
+          height: 'auto',
         },
         style,
       ]}
@@ -41,13 +44,13 @@ export const SearchBar = (props: ISearchBarComponent) => {
           {...props}
           testID={`searchbar`}
           style={{
+            flex: 1,
             color: 'black',
             fontSize: largerText ? 20 : 16,
             fontWeight: bold ? 'bold' : 'normal',
             textAlign: center ? 'center' : 'left',
             fontStyle: props.value ? 'normal' : 'italic',
-            paddingHorizontal: 5,
-            paddingVertical: 2,
+            padding: 5,
             maxWidth: '100%',
           }}
           value={props.value ?? ''}
@@ -57,6 +60,7 @@ export const SearchBar = (props: ISearchBarComponent) => {
               props.onChangeText(val)
             }
           }}
+          onLayout={(e) => setContainerHeight(e.nativeEvent.layout.height)}
         ></RNTextInput>
         {props.value !== '' && (
           <TouchableOpacity
@@ -64,13 +68,14 @@ export const SearchBar = (props: ISearchBarComponent) => {
               justifyContent: 'center',
               alignItems: 'center',
               backgroundColor: 'lightgrey',
-              paddingHorizontal: 8,
               borderTopRightRadius: 2,
               borderBottomRightRadius: 2,
+              height: containerHeight,
+              width: containerHeight,
             }}
             onPress={onClear}
           >
-            <Text>X</Text>
+            <Text center>X</Text>
           </TouchableOpacity>
         )}
       </View>
