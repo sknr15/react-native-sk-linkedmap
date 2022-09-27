@@ -11,7 +11,7 @@ import {
 } from 'react-native'
 import Modal from 'react-native-modal'
 import { AddPosition, EditPosition } from './Position'
-import { Text } from './Form'
+import { SearchBar, Text } from './Form'
 import RBSheet from 'react-native-raw-bottom-sheet'
 import Image from 'react-native-scalable-image'
 import { TCoordinates, TMap, TPosition } from './interfaces'
@@ -49,35 +49,65 @@ export const LinkedMap = ({
   titleStyle,
   zoomButtonsStyle,
 }: {
-  /** Description of prop "activePosition". */
+  /**
+   * If set, provided position is focused.
+   **/
   activePosition?: TPosition
-  /** Description of prop "customAnimation". */
+  /**
+   * Allows the user to set own custom animation for the positions.
+   **/
   customAnimation?: typeof Animated.View
-  /** Description of prop "editMode". */
+  /**
+   * Enables edit mode to edit map and positions.
+   **/
   editMode?: boolean
-  /** Description of prop "hidePositions". */
+  /**
+   * If enabled, positions are not shown on the map (only active position if activePosition is set).
+   **/
   hidePositions?: boolean
-  /** Description of prop "map". */
+  /**
+   * Shows the map (and positions).
+   **/
   map: TMap
-  /** Description of prop "onChange". */
+  /**
+   * Called when the map or positions are changed.
+   **/
   onChange?: (map: TMap) => void
-  /** Description of prop "onClick". */
+  /**
+   * Called when a position is clicked/pressed.
+   **/
   onClick?: (position?: TPosition) => void
-  /** Description of prop "positionStyle". */
+  /**
+   * Changes the style of the positions.
+   **/
   positionStyle?: ViewStyle
-  /** Description of prop "showMenu". */
+  /**
+   *  Shows a menu button to edit maps and positions. Deprecated, use editMode instead.
+   **/
   showMenu?: boolean
-  /** Description of prop "showZoomButtons". */
+  /**
+   *  Shows zoom-in, zoom-out and reset-zoom buttons (web-only).
+   **/
   showZoomButtons?: boolean
-  /** Description of prop "style". */
+  /**
+   *  Changes the style of the component.
+   **/
   style?: ViewStyle
-  /** Description of prop "testID". */
+  /**
+   *  Used to locate this component in end-to-end tests.
+   **/
   testID?: string
-  /** Description of prop "title". */
+  /**
+   *  Shows a title above the map.
+   **/
   title?: string
-  /** Description of prop "titleStyle". */
+  /**
+   *  Changes the style of the title. Only works when "title" is set.
+   **/
   titleStyle?: TextStyle
-  /** Description of prop "zoomButtonsStyle". */
+  /**
+   *  Changes the style of the zoom buttons. Only works if "showZoomButtons" is set.
+   **/
   zoomButtonsStyle?: ViewStyle & TextStyle
 }) => {
   const IS_WEB = Platform.OS === 'web'
@@ -92,6 +122,12 @@ export const LinkedMap = ({
   const [mapPositions, setMapPositions] = useState<TPosition[]>([])
 
   const [tempPositions, setTempPositions] = useState<typeof mapPositions>([])
+  const [searchedPositions, setSearchedPositions] = useState<
+    typeof tempPositions
+  >([])
+
+  const [searchTerm, setSearchTerm] = useState<string>('')
+
   const [tempMap, setTempMap] = useState<typeof map | undefined>(undefined)
 
   const [tempValues, setTempValues] = useState<{
@@ -136,6 +172,16 @@ export const LinkedMap = ({
       setTempPositions([...mapPositions])
     }
   }, [mapPositions])
+
+  useEffect(() => {
+    let _searched = [...tempPositions]
+    if (searchTerm.length > 0) {
+      _searched = _searched.filter((item) =>
+        item.title.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+    setSearchedPositions(_searched)
+  }, [tempPositions, searchTerm])
 
   const _handleOnClick = (position: TPosition) => {
     if (onClick) {
@@ -207,137 +253,160 @@ export const LinkedMap = ({
       default:
         return (
           <View style={{ flex: 1 }}>
-            <TouchableOpacity
-              style={{
-                alignSelf: 'center',
-                justifyContent: 'center',
-                alignItems: 'center',
-                paddingVertical: 10,
-                paddingHorizontal: 15,
-                backgroundColor: '#448AFF',
-                borderRadius: 5,
-                width: IS_WEB ? 'auto' : '100%',
-              }}
-              onPress={() => {
-                setActiveKey(undefined)
-                setTempValues({ title: '', target: '' })
-                if (editMode) {
-                  setContentType('addPosition')
-                } else {
-                  setModalContentType('addPosition')
-                }
-              }}
-            >
-              <Text style={{ fontSize: 18, color: 'white' }}>Add position</Text>
-            </TouchableOpacity>
-            <ScrollView style={{ marginTop: 10 }}>
-              {tempPositions
-                ?.sort((a, b) => {
-                  if (a.title === b.title) return a.key.localeCompare(b.key)
-                  return a.title.localeCompare(b.title)
-                })
-                .map((position, index) => {
-                  const isLastItem = index === tempPositions.length - 1
-                  return (
-                    <View
-                      style={{
-                        width: '100%',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        borderBottomWidth: isLastItem ? 0 : 1,
-                        paddingVertical: 5,
-                      }}
-                      key={`mapposition_${position.key}`}
-                    >
-                      <TouchableOpacity
-                        testID={`mapposition_${position.key}_detail`}
-                        onPress={() => {
-                          setActiveKey(position.key)
-                          setTempValues({
-                            title: position.title,
-                            target: position.target,
-                          })
-                          if (editMode) {
-                            setContentType('editPosition')
-                          } else {
-                            setModalContentType('editPosition')
-                          }
-                        }}
-                        style={{
-                          flex: 1,
-                          justifyContent: 'center',
-                          paddingLeft: 10,
-                          paddingVertical: 5,
-                          paddingHorizontal: 10,
-                        }}
-                      >
+            <View style={{ borderBottomWidth: 1 }}>
+              <TouchableOpacity
+                style={{
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  paddingVertical: 10,
+                  paddingHorizontal: 15,
+                  backgroundColor: '#448AFF',
+                  borderRadius: 5,
+                  width: IS_WEB ? 'auto' : '100%',
+                }}
+                onPress={() => {
+                  setActiveKey(undefined)
+                  setTempValues({ title: '', target: '' })
+                  if (editMode) {
+                    setContentType('addPosition')
+                  } else {
+                    setModalContentType('addPosition')
+                  }
+                }}
+              >
+                <Text style={{ fontSize: 16, color: 'white' }}>
+                  Add position
+                </Text>
+              </TouchableOpacity>
+              {tempPositions.length >= 5 && (
+                <SearchBar
+                  value={searchTerm}
+                  placeholder={'Search...'}
+                  onChangeText={(val) => setSearchTerm(val)}
+                  onClear={() => setSearchTerm('')}
+                  style={{ width: IS_WEB ? 'auto' : '100%', maxWidth: 600 }}
+                />
+              )}
+            </View>
+            <ScrollView>
+              {searchedPositions.length > 0 ? (
+                <View>
+                  {searchedPositions
+                    .sort((a, b) => {
+                      if (a.title === b.title) return a.key.localeCompare(b.key)
+                      return a.title.localeCompare(b.title)
+                    })
+                    .map((position, index) => {
+                      const isLastItem = index === searchedPositions.length - 1
+                      return (
                         <View
                           style={{
+                            width: '100%',
                             flexDirection: 'row',
-                            alignItems: 'baseline',
+                            justifyContent: 'space-between',
+                            borderBottomWidth: isLastItem ? 0 : 1,
+                            paddingVertical: 5,
                           }}
+                          key={`mapposition_${position.key}`}
                         >
-                          <Text
+                          <TouchableOpacity
+                            testID={`mapposition_${position.key}_detail`}
+                            onPress={() => {
+                              setActiveKey(position.key)
+                              setTempValues({
+                                title: position.title,
+                                target: position.target,
+                              })
+                              if (editMode) {
+                                setContentType('editPosition')
+                              } else {
+                                setModalContentType('editPosition')
+                              }
+                            }}
                             style={{
-                              fontSize: 16,
-                              paddingRight: 5,
+                              flex: 1,
+                              justifyContent: 'center',
+                              paddingLeft: 10,
+                              paddingVertical: 5,
+                              paddingHorizontal: 10,
                             }}
                           >
-                            {position.title}
-                          </Text>
-                          <Text>{`(${position.key})`}</Text>
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        testID={`mapposition_${position.key}_delete`}
-                        onPress={() => {
-                          if (IS_WEB) {
-                            const result = window.confirm(
-                              `Do you really want to delete this position?\n"${position.title}"`
-                            )
+                            <View
+                              style={{
+                                flexDirection: 'row',
+                                alignItems: 'baseline',
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  fontSize: 16,
+                                  paddingRight: 5,
+                                }}
+                              >
+                                {position.title}
+                              </Text>
+                              <Text>{`(${position.key})`}</Text>
+                            </View>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            testID={`mapposition_${position.key}_delete`}
+                            onPress={() => {
+                              if (IS_WEB) {
+                                const result = window.confirm(
+                                  `Do you really want to delete this position?\n"${position.title}"`
+                                )
 
-                            if (result) {
-                              let _mapPos = tempPositions?.filter(
-                                (e) => e.key !== position.key
-                              )
-                              setTempPositions(_mapPos)
-                            }
-                          } else {
-                            Alert.alert(
-                              'Delete?',
-                              `Do you really want to delete this position?\n"${position.title}"`,
-                              [
-                                {
-                                  text: 'Cancel',
-                                  style: 'cancel',
-                                },
-                                {
-                                  text: 'OK',
-                                  onPress: () => {
-                                    let _mapPos = tempPositions?.filter(
-                                      (e) => e.key !== position.key
-                                    )
-                                    setTempPositions(_mapPos)
-                                  },
-                                  style: 'destructive',
-                                },
-                              ]
-                            )
-                          }
-                        }}
-                        style={{
-                          justifyContent: 'center',
-                          paddingVertical: 5,
-                          paddingHorizontal: 10,
-                        }}
-                      >
-                        <Text style={{ color: 'red', fontSize: 16 }}>
-                          Delete
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  )
-                })}
+                                if (result) {
+                                  let _mapPos = tempPositions?.filter(
+                                    (e) => e.key !== position.key
+                                  )
+                                  setTempPositions(_mapPos)
+                                }
+                              } else {
+                                Alert.alert(
+                                  'Delete?',
+                                  `Do you really want to delete this position?\n"${position.title}"`,
+                                  [
+                                    {
+                                      text: 'Cancel',
+                                      style: 'cancel',
+                                    },
+                                    {
+                                      text: 'OK',
+                                      onPress: () => {
+                                        let _mapPos = tempPositions?.filter(
+                                          (e) => e.key !== position.key
+                                        )
+                                        setTempPositions(_mapPos)
+                                      },
+                                      style: 'destructive',
+                                    },
+                                  ]
+                                )
+                              }
+                            }}
+                            style={{
+                              justifyContent: 'center',
+                              paddingVertical: 5,
+                              paddingHorizontal: 10,
+                            }}
+                          >
+                            <Text style={{ color: 'red', fontSize: 16 }}>
+                              Delete
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      )
+                    })}
+                </View>
+              ) : (
+                <View style={{ alignItems: 'center' }}>
+                  <Text style={{ fontSize: 16 }} center>
+                    No positions found...
+                  </Text>
+                </View>
+              )}
             </ScrollView>
           </View>
         )

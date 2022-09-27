@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {
   Alert,
+  LogBox,
   PermissionsAndroid,
   Platform,
   SafeAreaView,
@@ -12,17 +13,24 @@ import LinkedMap, { TMap, TPosition } from 'react-native-sk-linkedmap'
 import { request, check, PERMISSIONS } from 'react-native-permissions'
 import * as ImagePicker from 'expo-image-picker'
 
+if (__DEV__) LogBox.ignoreAllLogs()
+
 const example = require('./mapExample.png')
 
 const App = () => {
   const pos: TPosition[] = [
     {
-      key: '123',
-      title: '123',
-      target: 'www.123.de',
-      coordinates: { x1: 9, x2: 32, y1: 31, y2: 42 },
+      key: 'web1',
+      title: 'Webseite',
+      target: 'www.hellospaces.de',
+      coordinates: { x1: 8.5, x2: 32.5, y1: 30.7, y2: 41.7 },
     },
-    { key: 'testmap4', title: 'Target Array', target: [] },
+    {
+      key: 'multipos',
+      title: 'Multiple Positions',
+      target: ['expo1', 'stage1'],
+      coordinates: { x1: 38, x2: 92, y1: 17.7, y2: 28.7 },
+    },
     {
       key: 'dasisteintest',
       title: 'Das ist ein Test',
@@ -30,7 +38,12 @@ const App = () => {
       coordinates: { x1: 68, x2: 92, y1: 70, y2: 81 },
     },
     { key: 'testmap5', title: 'Test Map 5', target: '123456' },
-    { key: 'testmaparr', title: 'Test Map Array', target: ['expobeispiel'] },
+    {
+      key: 'expo1',
+      title: 'Expo Beispiel',
+      target: { title: 'THM', location: 'Gießen', year: 1971 },
+      coordinates: { x1: 68, x2: 92, y1: 43.8, y2: 54.8 },
+    },
   ]
 
   const [map, setMap] = useState<TMap>({
@@ -146,7 +159,17 @@ const App = () => {
           setMap(map)
         }}
         onClick={(pos) => {
-          Alert.alert(`Position: ${pos?.title}`, `Target: ${pos?.target}`)
+          let _text = `Target: ${pos?.target}`
+          let _target = pos?.target
+          if (typeof _target === 'object') {
+            _text = Object.entries(_target)
+              .map((entry) => entry[0] + ': ' + entry[1])
+              .join('\n')
+          }
+          if (Array.isArray(_target)) {
+            _text = `Targets [${pos?.target.length}]:\n${_target.join('\n')}`
+          }
+          Alert.alert(`Position: ${pos?.title}`, `${_text}`)
         }}
         showZoomButtons={showMenu}
         zoomButtonsStyle={{
