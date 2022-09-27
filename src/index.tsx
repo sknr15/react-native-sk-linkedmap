@@ -465,6 +465,7 @@ export const LinkedMap = ({
                 customAnimation={customAnimation}
                 hidePositions={hidePositions}
                 map={map}
+                showText
                 zoomable
                 positionStyle={positionStyle}
                 showZoomButtons={false}

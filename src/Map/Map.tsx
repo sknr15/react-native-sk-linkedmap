@@ -197,6 +197,8 @@ export const Map = ({
                         center
                         style={{ fontSize: 10, paddingHorizontal: 10 }}
                         adjustsFontSizeToFit
+                        minimumFontScale={0.6}
+                        numberOfLines={position.title.includes(' ') ? 2 : 1}
                       >
                         {position.title}
                       </Text>
@@ -234,6 +236,8 @@ export const Map = ({
                     center
                     style={{ fontSize: 10, paddingHorizontal: 10 }}
                     adjustsFontSizeToFit
+                    minimumFontScale={0.6}
+                    numberOfLines={position.title.includes(' ') ? 2 : 1}
                   >
                     {position.title}
                   </Text>
