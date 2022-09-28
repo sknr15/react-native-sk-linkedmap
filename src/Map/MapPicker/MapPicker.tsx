@@ -72,9 +72,10 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
       console.log('TODO: ImagePicker öffnen, Bild ändern')
 
       if (tempMap) {
-        let _src = require('../solarMap.jpeg')
+        let _src = require('../../Assets/solarMap.jpeg')
 
-        if (tempMap?.imageSource === _src) _src = require('../mapExample.png')
+        if (tempMap?.imageSource === _src)
+          _src = require('../../Assets/mapExample.png')
 
         setTempMap({ ...tempMap, imageSource: _src, positions: [] })
 

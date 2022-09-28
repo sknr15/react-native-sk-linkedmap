@@ -111,10 +111,12 @@ export const LinkedMap = ({
    **/
   zoomButtonsStyle?: ViewStyle & TextStyle
 }) => {
-  const IS_WEB = Platform.OS === 'web'
-  const isTabletOrMobile = Dimensions.get('window').width < 1080
-  const [optionText, setOptionText] = useState<string>('')
+  const acceptIcon = require('./Assets/accept.png')
+  const closeIcon = require('./Assets/close.png')
 
+  const IS_WEB = Platform.OS === 'web'
+
+  const [optionText, setOptionText] = useState<string>('')
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
 
   const [modalContentType, setModalContentType] =
@@ -122,7 +124,6 @@ export const LinkedMap = ({
   const [contentType, setContentType] = useState<TContentType>('menu')
 
   const [mapPositions, setMapPositions] = useState<TPosition[]>([])
-
   const [tempPositions, setTempPositions] = useState<typeof mapPositions>([])
   const [searchedPositions, setSearchedPositions] = useState<
     typeof tempPositions
@@ -131,7 +132,6 @@ export const LinkedMap = ({
   const [searchTerm, setSearchTerm] = useState<string>('')
 
   const [tempMap, setTempMap] = useState<typeof map | undefined>(undefined)
-
   const [tempValues, setTempValues] = useState<{
     key?: string
     title: string
@@ -781,9 +781,7 @@ export const LinkedMap = ({
                 style={{
                   tintColor: isDisabled ? 'grey' : 'darkgreen',
                 }}
-                source={{
-                  uri: 'https://cdn-icons-png.flaticon.com/512/447/447147.png',
-                }}
+                source={acceptIcon}
                 height={16}
                 width={16}
               />
@@ -816,9 +814,7 @@ export const LinkedMap = ({
             >
               <Image
                 style={{ tintColor: 'darkred' }}
-                source={{
-                  uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828747.png',
-                }}
+                source={closeIcon}
                 height={16}
                 width={16}
               />

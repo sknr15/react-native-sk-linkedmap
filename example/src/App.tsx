@@ -56,6 +56,7 @@ const App = () => {
 
   const [showMenu, setShowMenu] = useState<boolean>(false)
   const [showEditMode, setShowEditMode] = useState<boolean>(false)
+  const [hidePositions, setHidePositions] = useState<boolean>(false)
   const [hasPermissions, setHasPermissions] = useState<boolean>(false)
 
   useEffect(() => {
@@ -96,8 +97,8 @@ const App = () => {
     }
   }
 
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
+  const _renderTestButtons = () => {
+    return (
       <View
         style={{
           width: '100%',
@@ -111,7 +112,7 @@ const App = () => {
         }}
       >
         <TouchableOpacity
-          onPress={() => setShowMenu(!showMenu)}
+          onPress={() => setHidePositions(!hidePositions)}
           style={{ flexDirection: 'row', alignItems: 'center' }}
         >
           <View
@@ -128,17 +129,30 @@ const App = () => {
               style={{
                 flex: 1,
                 margin: 2,
-                backgroundColor: showMenu ? 'black' : 'transparent',
+                backgroundColor: hidePositions ? 'black' : 'transparent',
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 999,
               }}
             />
           </View>
-          <Text style={{ fontSize: 16, color: 'black' }}>Enable Menu</Text>
+          <Text
+            style={{
+              fontSize: 16,
+              color: 'black',
+              fontWeight: hidePositions ? 'bold' : 'normal',
+            }}
+          >
+            HidePos
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setShowEditMode(!showEditMode)}
+          onPress={() => {
+            if (!showEditMode) {
+              setShowMenu(false)
+            }
+            setShowEditMode(!showEditMode)
+          }}
           style={{ flexDirection: 'row', alignItems: 'center' }}
         >
           <View
@@ -162,14 +176,65 @@ const App = () => {
               }}
             />
           </View>
-          <Text style={{ fontSize: 16, color: 'black' }}>Enable EditMode</Text>
+          <Text
+            style={{
+              fontSize: 16,
+              color: 'black',
+              fontWeight: showEditMode ? 'bold' : 'normal',
+            }}
+          >
+            EditMode
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setShowMenu(!showMenu)}
+          style={{ flexDirection: 'row', alignItems: 'center' }}
+          disabled={showEditMode}
+        >
+          <View
+            style={{
+              width: 20,
+              height: 20,
+              borderColor: 'black',
+              borderWidth: 1,
+              marginRight: 5,
+              borderRadius: 999,
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                margin: 2,
+                backgroundColor: showMenu ? 'black' : 'transparent',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 999,
+              }}
+            />
+          </View>
+          <Text
+            style={{
+              fontSize: 16,
+              color: 'black',
+              fontWeight: showMenu ? 'bold' : 'normal',
+            }}
+          >
+            Menu
+          </Text>
         </TouchableOpacity>
       </View>
+    )
+  }
+
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      {_renderTestButtons()}
       <LinkedMap
         testID='linkedmap'
         map={map}
-        showMenu={showMenu}
         editMode={showEditMode}
+        hidePositions={hidePositions}
+        showMenu={showMenu}
         onChange={(map) => {
           setMap(map)
         }}
