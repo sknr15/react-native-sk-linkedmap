@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import {
   Alert,
   Animated,
+  Dimensions,
   Platform,
   ScrollView,
   TextStyle,
@@ -111,6 +112,7 @@ export const LinkedMap = ({
   zoomButtonsStyle?: ViewStyle & TextStyle
 }) => {
   const IS_WEB = Platform.OS === 'web'
+  const isTabletOrMobile = Dimensions.get('window').width < 1080
   const [optionText, setOptionText] = useState<string>('')
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
@@ -255,7 +257,12 @@ export const LinkedMap = ({
       default:
         return (
           <View style={{ flex: 1 }}>
-            <View style={{ marginBottom: 5 }}>
+            <View
+              style={{
+                marginBottom: 5,
+                alignItems: 'center',
+              }}
+            >
               <TouchableOpacity
                 style={{
                   alignSelf: 'center',
@@ -288,7 +295,7 @@ export const LinkedMap = ({
                   placeholder={'Search...'}
                   onChangeText={(val) => setSearchTerm(val)}
                   onClear={() => setSearchTerm('')}
-                  style={{ width: IS_WEB ? 'auto' : '100%', maxWidth: 600 }}
+                  style={{ width: '100%', maxWidth: 600 }}
                 />
               )}
             </View>
@@ -467,7 +474,8 @@ export const LinkedMap = ({
                 customAnimation={customAnimation}
                 hidePositions={hidePositions}
                 map={map}
-                showText
+                showImageSize
+                showPositionTitle={!hidePositions}
                 zoomable
                 positionStyle={positionStyle}
                 showZoomButtons={false}
