@@ -197,7 +197,14 @@ export const Map = ({
                     {showPositionTitle && (
                       <Text
                         center
-                        style={{ fontSize: 10, paddingHorizontal: 4 }}
+                        style={{
+                          fontSize: 10,
+                          paddingHorizontal: 4,
+                          maxHeight: height,
+                          maxWidth: width,
+                          backgroundColor: '#FFFFFF55',
+                          borderRadius: 2,
+                        }}
                         adjustsFontSizeToFit
                         minimumFontScale={0.5}
                         numberOfLines={position.title.includes(' ') ? 2 : 1}
@@ -236,7 +243,14 @@ export const Map = ({
                 {showPositionTitle && (
                   <Text
                     center
-                    style={{ fontSize: 10, paddingHorizontal: 4 }}
+                    style={{
+                      fontSize: 10,
+                      paddingHorizontal: 4,
+                      maxHeight: height,
+                      maxWidth: width,
+                      backgroundColor: '#FFFFFF55',
+                      borderRadius: 2,
+                    }}
                     adjustsFontSizeToFit
                     minimumFontScale={0.5}
                     numberOfLines={position.title.includes(' ') ? 2 : 1}
