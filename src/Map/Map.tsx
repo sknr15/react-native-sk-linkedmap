@@ -19,7 +19,8 @@ type Props = {
   map?: TMap
   onClick?: (position: TPosition) => void
   positionStyle?: ViewStyle
-  showText?: boolean
+  showImageSize?: boolean
+  showPositionTitle?: boolean
   showZoomButtons?: boolean
   testId: string
   width?: number
@@ -35,7 +36,8 @@ export const Map = ({
   map,
   onClick,
   positionStyle,
-  showText,
+  showImageSize,
+  showPositionTitle,
   showZoomButtons,
   testId,
   width,
@@ -192,12 +194,12 @@ export const Map = ({
                         : { height: size, width: size }
                     }
                   >
-                    {showText && (
+                    {showPositionTitle && (
                       <Text
                         center
-                        style={{ fontSize: 10, paddingHorizontal: 10 }}
+                        style={{ fontSize: 10, paddingHorizontal: 4 }}
                         adjustsFontSizeToFit
-                        minimumFontScale={0.6}
+                        minimumFontScale={0.5}
                         numberOfLines={position.title.includes(' ') ? 2 : 1}
                       >
                         {position.title}
@@ -231,12 +233,12 @@ export const Map = ({
                     : {}
                 }
               >
-                {showText && (
+                {showPositionTitle && (
                   <Text
                     center
-                    style={{ fontSize: 10, paddingHorizontal: 10 }}
+                    style={{ fontSize: 10, paddingHorizontal: 4 }}
                     adjustsFontSizeToFit
-                    minimumFontScale={0.6}
+                    minimumFontScale={0.5}
                     numberOfLines={position.title.includes(' ') ? 2 : 1}
                   >
                     {position.title}
@@ -443,7 +445,7 @@ export const Map = ({
           </View>
         </ImageZoom>
         {_renderZoomButtons()}
-        {showText && (
+        {showImageSize && (
           <View
             style={{
               position: 'absolute',

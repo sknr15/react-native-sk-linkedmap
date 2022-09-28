@@ -104,6 +104,9 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 
           if (tempMap) {
             setTempMap({ ...tempMap, imageSource: { uri }, positions: [] })
+
+            if (onChange)
+              onChange({ ...tempMap, positions: [], imageSource: { uri } })
           }
         }
       } catch (error) {
@@ -180,7 +183,13 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
             borderWidth: 1,
           }}
         >
-          <Map testId='mappicker' map={tempMap} showText zoomable={false} />
+          <Map
+            testId='mappicker'
+            map={tempMap}
+            showImageSize
+            showPositionTitle
+            zoomable={false}
+          />
         </View>
       </View>
     </View>
