@@ -4,7 +4,7 @@ export type TCoordinates = { x1: number; x2: number; y1: number; y2: number }
 
 export type TMap = {
   key: string
-  title: string
+  title?: string
   imageSource?: ImageSourcePropType
   positions?: TPosition[]
 } // what does a map need?

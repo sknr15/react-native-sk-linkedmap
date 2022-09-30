@@ -99,7 +99,7 @@ export const LinkedMap = ({
    **/
   testID?: string
   /**
-   *  Shows a title above the map.
+   *  Shows the title above the map.
    **/
   title?: string
   /**
