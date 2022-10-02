@@ -260,6 +260,13 @@ const App = () => {
           width: 40,
           height: 40,
         }}
+        title={'Example for LinkedMap'}
+        titleStyle={{
+          backgroundColor: 'white',
+          color: 'black',
+          paddingHorizontal: 6,
+          paddingVertical: 2,
+        }}
       />
     </SafeAreaView>
   )

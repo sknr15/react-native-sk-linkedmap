@@ -1015,7 +1015,7 @@ export const LinkedMap = ({
         {title && (
           <Text
             style={{
-              marginTop: 10,
+              marginVertical: 5,
               fontSize: 18,
               fontWeight: 'bold',
               ...titleStyle,
