@@ -228,7 +228,7 @@ export const LinkedMap = ({
       case 'addPosition':
         return (
           <AddPosition
-            testId={`${testID}_add_mapposition`}
+            testId={`${testID ?? 'linkedmap'}_mapposition_add`}
             map={map}
             onChangePosition={(position) => {
               setTempValues({ ...position })
@@ -241,7 +241,7 @@ export const LinkedMap = ({
         if (_activePosition) {
           return (
             <EditPosition
-              testId={`${testID}_edit_mapposition`}
+              testId={`${testID ?? 'linkedmap'}_mapposition_edit`}
               position={_activePosition}
               map={map}
               onChangePosition={(position) => {
@@ -321,7 +321,9 @@ export const LinkedMap = ({
                           key={`mapposition_${position.key}`}
                         >
                           <TouchableOpacity
-                            testID={`mapposition_${position.key}_detail`}
+                            testID={`${testID ?? 'linkedmap'}_mapposition_${
+                              position.key
+                            }_detail`}
                             onPress={() => {
                               setActiveKey(position.key)
                               setTempValues({
@@ -360,7 +362,9 @@ export const LinkedMap = ({
                             </View>
                           </TouchableOpacity>
                           <TouchableOpacity
-                            testID={`mapposition_${position.key}_delete`}
+                            testID={`${testID ?? 'linkedmap'}_mapposition_${
+                              position.key
+                            }_delete`}
                             onPress={() => {
                               if (IS_WEB) {
                                 const result = window.confirm(
@@ -426,7 +430,7 @@ export const LinkedMap = ({
   const _renderMapPicker = () => {
     return (
       <MapPicker
-        testId='mappicker'
+        testId={`${testID ?? 'linkedmap'}_mappicker`}
         map={map}
         onChange={(map) => {
           setTempMap({ ...map })
@@ -470,7 +474,7 @@ export const LinkedMap = ({
             </View>
             <View style={{ flex: 1, borderWidth: 2 }}>
               <Map
-                testId='linkedmap'
+                testId={`${testID ?? 'linkedmap'}_map`}
                 customAnimation={customAnimation}
                 hidePositions={hidePositions}
                 map={map}
@@ -728,7 +732,7 @@ export const LinkedMap = ({
         }}
       >
         <View
-          testID='modal_backdrop'
+          testID={`${testID ?? 'linkedmap'}_modal_backdrop`}
           style={{
             position: 'absolute',
             top: 0,
@@ -753,7 +757,7 @@ export const LinkedMap = ({
           }}
         >
           <View
-            testID='modal_header_buttons'
+            testID={`${testID ?? 'linkedmap'}_modal_header`}
             style={{
               width: '100%',
               flexDirection: 'row',
@@ -763,7 +767,7 @@ export const LinkedMap = ({
             }}
           >
             <TouchableOpacity
-              testID='modal_button_accept'
+              testID={`${testID ?? 'linkedmap'}_modal_accept`}
               style={{
                 justifyContent: 'center',
                 padding: 8,
@@ -799,7 +803,7 @@ export const LinkedMap = ({
               {optionText}
             </Text>
             <TouchableOpacity
-              testID='modal_button_close'
+              testID={`${testID ?? 'linkedmap'}_modal_close`}
               style={{
                 justifyContent: 'center',
                 padding: 8,
@@ -923,7 +927,7 @@ export const LinkedMap = ({
         >
           {contentType !== 'menu' && (
             <View
-              testID='edit_header_buttons'
+              testID={`${testID ?? 'linkedmap'}_editmode_header`}
               style={{
                 width: '100%',
                 flexDirection: 'row',
@@ -933,7 +937,7 @@ export const LinkedMap = ({
               }}
             >
               <TouchableOpacity
-                testID='edit_button_accept'
+                testID={`${testID ?? 'linkedmap'}_editmode_accept`}
                 style={{
                   justifyContent: 'center',
                   padding: 8,
@@ -971,7 +975,7 @@ export const LinkedMap = ({
                 {optionText}
               </Text>
               <TouchableOpacity
-                testID='modal_button_close'
+                testID={`${testID ?? 'linkedmap'}_editmode_close`}
                 style={{
                   justifyContent: 'center',
                   padding: 8,
@@ -1022,7 +1026,7 @@ export const LinkedMap = ({
         )}
         {keyErrors.length === 0 ? (
           <Map
-            testId='linkedmap'
+            testId={`${testID ?? 'linkedmap'}_map`}
             activePosition={activePosition}
             customAnimation={customAnimation}
             hidePositions={hidePositions}
