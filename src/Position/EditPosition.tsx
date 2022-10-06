@@ -171,7 +171,6 @@ export const EditPosition = ({
               height={modalSize.height}
               width={modalSize.width}
               onChange={(position) => {
-                // console.log('TODO: edit', position)
                 _onChange(
                   'coordinates',
                   position.coordinates ?? emptyCoordinates

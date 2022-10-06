@@ -186,7 +186,6 @@ export const AddPosition = ({ map, onChangePosition, testId }: Props) => {
               height={modalSize.height}
               width={modalSize.width}
               onChange={(position) => {
-                // console.log('TODO: add', position)
                 _onChange(
                   'coordinates',
                   position.coordinates ?? emptyCoordinates

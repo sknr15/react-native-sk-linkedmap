@@ -433,7 +433,6 @@ export const PositionPicker = ({
   }
 
   if (map && map.imageSource) {
-    // No cropper yet, positions are created via two clicks (1st + 2nd coordinates)
     return (
       <View
         testID={`${testId}_map`}
