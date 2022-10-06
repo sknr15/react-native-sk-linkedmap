@@ -7,13 +7,13 @@ export type TMap = {
   title?: string
   imageSource?: ImageSourcePropType
   positions?: TPosition[]
-} // what does a map need?
+}
 
 export type TPosition = {
   key: string
   title: string
   target: any
   coordinates?: TCoordinates
-} // needs coordinates etc.
+}
 
 export const emptyCoordinates: TCoordinates = { x1: 0, x2: 0, y1: 0, y2: 0 }
