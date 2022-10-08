@@ -7,6 +7,8 @@
 
   <key>NSPhotoLibraryUsageDescription</key>
   <string>Give $(PRODUCT_NAME) permission to save photos</string>
+  <key>NSPhotoLibraryAddUsageDescription</key>
+  <string>Give $(PRODUCT_NAME) permission to add photos</string>
   <key>NSCameraUsageDescription</key>
   <string>Give $(PRODUCT_NAME) permission to access your camera</string>
   <key>NSMicrophoneUsageDescription</key>
