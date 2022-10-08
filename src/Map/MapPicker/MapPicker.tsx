@@ -53,35 +53,31 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
   }
 
   const _pickImage = async () => {
-    if (!hasPermissions) {
-      if (IS_WEB) {
-        window.confirm('No permissions to media library')
-      } else {
-        Alert.alert('No permission', 'No permissions to media library', [
-          { text: 'OK' },
-        ])
-      }
-      return
-    }
-
-    if (!__DEV__) {
-      //
-      // CHANGE!!!
-      //
-
-      console.log('TODO: ImagePicker öffnen, Bild ändern')
-
+    if (__DEV__) {
+      // for testing in development mode
       if (tempMap) {
         let _src = require('../../Assets/solarMap.jpeg')
 
-        if (tempMap?.imageSource === _src)
+        if (tempMap?.imageSource === _src) {
           _src = require('../../Assets/mapExample.png')
+        }
 
         setTempMap({ ...tempMap, imageSource: _src, positions: [] })
 
         if (onChange) onChange({ ...tempMap, positions: [], imageSource: _src })
       }
     } else {
+      if (!hasPermissions) {
+        if (IS_WEB) {
+          window.confirm('No permissions to media library')
+        } else {
+          Alert.alert('No permission', 'No permissions to media library', [
+            { text: 'OK' },
+          ])
+        }
+        return
+      }
+
       try {
         const pickedMedia = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -95,7 +91,6 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 
         if (!pickedMedia.cancelled) {
           let uri = pickedMedia.uri
-          console.log(uri)
           if (pickedMedia.height > 4096 || pickedMedia.width > 4096) {
             Alert.alert('Image too big', 'Selected image is too big (> 2000)', [
               { text: 'OK' },
@@ -139,13 +134,13 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ marginBottom: 20 }}>
+      <View style={{ marginBottom: 10 }}>
         <Text style={{ color: 'red' }}>
           Attention: All linked positions will be deleted on change!
         </Text>
       </View>
-      <View style={{ flex: 1, marginBottom: 20 }}>
-        <View style={{ marginBottom: 20 }}>
+      <View style={{ flex: 1, marginBottom: 10 }}>
+        <View style={{ marginBottom: 10 }}>
           <TouchableOpacity
             style={{
               justifyContent: 'center',

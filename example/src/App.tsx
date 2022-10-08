@@ -227,7 +227,7 @@ const App = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'grey' }}>
       {_renderTestButtons()}
       <LinkedMap
         testID='linkedmap'
