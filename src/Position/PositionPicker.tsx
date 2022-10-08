@@ -143,7 +143,6 @@ export const PositionPicker = ({
     newX: number,
     newY: number
   ) => {
-    direction
     let _coordinates = { ...newCoordinates }
 
     switch (direction) {
