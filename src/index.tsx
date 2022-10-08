@@ -832,7 +832,7 @@ export const LinkedMap = ({
 
   const _renderMenu = () => {
     return (
-      <ScrollView style={{ flexGrow: 0 }}>
+      <ScrollView style={{ flexGrow: 0, maxHeight: 200 }}>
         <TouchableOpacity
           onPress={() => {
             if (editMode) {

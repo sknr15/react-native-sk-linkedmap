@@ -80,15 +80,23 @@ const App = () => {
   const _requestPermission = async () => {
     switch (Platform.OS) {
       case 'android':
-        const granted = await PermissionsAndroid.request(
-          'android.permission.READ_EXTERNAL_STORAGE'
-        )
-        setHasPermissions(granted === PermissionsAndroid.RESULTS.GRANTED)
+        try {
+          const granted = await PermissionsAndroid.request(
+            'android.permission.READ_EXTERNAL_STORAGE'
+          )
+          setHasPermissions(granted === PermissionsAndroid.RESULTS.GRANTED)
+        } catch {
+          setHasPermissions(false)
+        }
         return
       case 'ios':
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync()
-        setHasPermissions(status === ImagePicker.PermissionStatus.GRANTED)
+        try {
+          const { status } =
+            await ImagePicker.requestMediaLibraryPermissionsAsync()
+          setHasPermissions(status === ImagePicker.PermissionStatus.GRANTED)
+        } catch {
+          setHasPermissions(false)
+        }
         return
       case 'web':
       default:
@@ -102,13 +110,15 @@ const App = () => {
       <View
         style={{
           width: '100%',
-          backgroundColor: 'lightgray',
+          backgroundColor: 'white',
           alignItems: 'center',
           justifyContent: 'space-evenly',
           paddingVertical: 5,
           paddingHorizontal: 20,
           flexDirection: 'row',
           flexWrap: 'wrap',
+          borderBottomColor: 'black',
+          borderBottomWidth: 1,
         }}
       >
         <TouchableOpacity
@@ -227,7 +237,7 @@ const App = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'grey' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'lightgray' }}>
       {_renderTestButtons()}
       <LinkedMap
         testID='linkedmap'

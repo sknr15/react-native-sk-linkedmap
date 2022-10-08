@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 import { Text } from '../../Form'
 import * as ImagePicker from 'expo-image-picker'
-import { TMap, TPosition } from '../../interfaces'
+import { TMap } from '../../interfaces'
 import { Map } from '../Map'
 
 type Props = {
@@ -35,15 +35,23 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
   const _requestPermission = async () => {
     switch (Platform.OS) {
       case 'android':
-        const granted = await PermissionsAndroid.request(
-          'android.permission.READ_EXTERNAL_STORAGE'
-        )
-        setHasPermissions(granted === PermissionsAndroid.RESULTS.GRANTED)
+        try {
+          const granted = await PermissionsAndroid.request(
+            'android.permission.READ_EXTERNAL_STORAGE'
+          )
+          setHasPermissions(granted === PermissionsAndroid.RESULTS.GRANTED)
+        } catch {
+          setHasPermissions(false)
+        }
         return
       case 'ios':
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync()
-        setHasPermissions(status === ImagePicker.PermissionStatus.GRANTED)
+        try {
+          const { status } =
+            await ImagePicker.requestMediaLibraryPermissionsAsync()
+          setHasPermissions(status === ImagePicker.PermissionStatus.GRANTED)
+        } catch {
+          setHasPermissions(false)
+        }
         return
       case 'web':
       default:
