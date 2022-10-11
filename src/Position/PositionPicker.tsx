@@ -134,10 +134,6 @@ export const PositionPicker = ({
     setNewCoordinates({ ..._coordinates })
   }
 
-  const _renderNewPosition = () => {
-    return
-  }
-
   const _handleResize = (
     direction: ResizeDirection,
     newX: number,
@@ -384,7 +380,6 @@ export const PositionPicker = ({
                 }}
               ></Image>
               {_renderPosition()}
-              {_renderNewPosition()}
             </TouchableOpacity>
           </ScrollView>
         )
@@ -425,7 +420,6 @@ export const PositionPicker = ({
             }}
           ></Image>
           {_renderPosition()}
-          {_renderNewPosition()}
         </View>
       )
     }
