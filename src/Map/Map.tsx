@@ -325,10 +325,16 @@ export const Map = ({
           fontWeight: zoomButtonsStyle?.fontWeight,
         }
         return (
-          <View style={{ position: 'absolute', bottom: 0, right: 0 }}>
-            <View
-              style={{ marginBottom: zoomButtonsStyle?.marginBottom ? 0 : 5 }}
-            >
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
+              marginBottom: zoomButtonsStyle?.marginBottom ?? 5,
+              marginTop: zoomButtonsStyle?.marginTop ?? 0,
+            }}
+          >
+            <View style={{ marginBottom: 10 }}>
               <TouchableOpacity
                 testID={`${testId}_button_zoomIn`}
                 style={{
@@ -338,6 +344,8 @@ export const Map = ({
                   justifyContent: 'center',
                   aspectRatio: 1,
                   ...zoomButtonsStyle,
+                  marginBottom: 0,
+                  marginTop: 0,
                 }}
                 onPress={() => _handleZoom('in')}
               >
@@ -350,9 +358,7 @@ export const Map = ({
                 </Text>
               </TouchableOpacity>
             </View>
-            <View
-              style={{ marginBottom: zoomButtonsStyle?.marginBottom ? 0 : 5 }}
-            >
+            <View style={{ marginBottom: 10 }}>
               <TouchableOpacity
                 testID={`${testId}_button_zoomOut`}
                 style={{
@@ -363,6 +369,8 @@ export const Map = ({
                   aspectRatio: 1,
                   paddingHorizontal: 5,
                   ...zoomButtonsStyle,
+                  marginBottom: 0,
+                  marginTop: 0,
                 }}
                 onPress={() => _handleZoom('out')}
               >
@@ -386,6 +394,8 @@ export const Map = ({
                   aspectRatio: 1,
                   paddingHorizontal: 5,
                   ...zoomButtonsStyle,
+                  marginBottom: 0,
+                  marginTop: 0,
                 }}
                 onPress={() => _handleZoom('reset')}
               >
