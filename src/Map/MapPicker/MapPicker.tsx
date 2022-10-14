@@ -91,6 +91,7 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsEditing: true,
           quality: 0.66,
+          base64: true,
         })
 
         if (!pickedMedia) {
