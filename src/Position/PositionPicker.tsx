@@ -378,7 +378,7 @@ export const PositionPicker = ({
                   setSizeFactor(e.nativeEvent.layout)
                   setHasScrolled(false)
                 }}
-              ></Image>
+              />
               {_renderPosition()}
             </TouchableOpacity>
           </ScrollView>
@@ -418,7 +418,7 @@ export const PositionPicker = ({
             onLayout={(e) => {
               setSizeFactor(e.nativeEvent.layout)
             }}
-          ></Image>
+          />
           {_renderPosition()}
         </View>
       )
