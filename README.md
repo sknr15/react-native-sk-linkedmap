@@ -2,6 +2,58 @@
 
 **Create and show maps with position linking and more...**
 
+## Usage
+
+```jruby
+import React from 'react'
+import { Alert, SafeAreaView } from 'react-native'
+import LinkedMap, { TMap, TPosition } from 'react-native-sk-linkedmap'
+
+const App = () => {
+  const pos: TPosition[] = [
+    // create positions with key, title, target and coordinates
+  ]
+
+  const [map, setMap] = useState<TMap>({
+    key: 'mapexample',
+    title: 'Map Example',
+    imageSource: '',
+    positions: [...pos],
+  })
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'lightgray' }}>
+      {_renderTestButtons()}
+      <LinkedMap
+        testID='linkedmap'
+        map={map}
+        editMode={false}
+        hidePositions={false}
+        showMenu={true}
+        onChange={(map) => { setMap(map) }}
+        onClick={(pos) => {
+          let _text = `Target: ${pos?.target}`
+          let _target = pos?.target
+          if (typeof _target === 'object') {
+            _text = Object.entries(_target)
+              .map((entry) => entry[0] + ': ' + entry[1])
+              .join('\n')
+          }
+          if (Array.isArray(_target)) {
+            _text = `Targets [${pos?.target.length}]:\n${_target.join('\n')}`
+          }
+          Alert.alert(`Position: ${pos?.title}`, `${_text}`)
+        }}
+        showZoomButtons={true}
+        zoomButtonsStyle={{ marginRight: 12, marginBottom: 10, padding: 5, fontSize: 20, width: 40, height: 40 }}
+        title={'Example for LinkedMap'}
+        titleStyle={{ backgroundColor: 'white', color: 'black', paddingHorizontal: 6, paddingVertical: 2 }}
+      />
+    </SafeAreaView>
+  )
+}
+```
+
 ## Parameter
 
 activePosition [optional]
