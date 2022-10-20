@@ -226,9 +226,7 @@ const App = () => {
 				editMode={showEditMode}
 				hidePositions={hidePositions}
 				showMenu={showMenu}
-				onChange={(map) => {
-					setMap(map);
-				}}
+				onChange={(map) => setMap(map)}
 				onClick={(pos) => {
 					let _text = `Target: ${pos?.target}`;
 					let _target = pos?.target;
