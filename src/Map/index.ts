@@ -1,2 +1,2 @@
-export * from './Map'
-export * from './MapPicker'
+export * from './Map';
+export * from './MapPicker';

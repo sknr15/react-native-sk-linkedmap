@@ -1,3 +1,3 @@
-export * from './Text'
-export * from './TextInput'
-export * from './SearchBar'
+export * from './Text';
+export * from './TextInput';
+export * from './SearchBar';

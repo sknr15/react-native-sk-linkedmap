@@ -1,1 +1,1 @@
-export * from './MapPicker'
+export * from './MapPicker';
