@@ -55,7 +55,7 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 		if (__DEV__) {
 			// for testing in development mode
 			if (tempMap) {
-				let _src = require('../../Assets/solarMap.jpeg');
+				let _src = require('../../Assets/mapExample2.jpeg');
 
 				if (tempMap?.imageSource === _src) {
 					_src = require('../../Assets/mapExample.png');
