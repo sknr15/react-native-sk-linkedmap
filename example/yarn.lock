@@ -9800,10 +9800,10 @@ react-native-screens@^3.15.0:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
-react-native-sk-linkedmap@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/react-native-sk-linkedmap/-/react-native-sk-linkedmap-1.0.3.tgz#374b72d1efd61e119cc918375fc21553788b95ee"
-  integrity sha512-97cF4bQajrWOTuCgAJ32ahbKlwBwi0rt/0tkLJsAhsxSUpRaRf2qzrJWIFijJRJfFn+dCkXV2h3t6LRYNPnLcQ==
+react-native-sk-linkedmap@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-sk-linkedmap/-/react-native-sk-linkedmap-1.0.4.tgz#e3fe7c06389dcb981a66045baa20527e0c613165"
+  integrity sha512-gdYnpMeYePgD238lvtwOEnBUq7oJQdji4QXurElaTY1VmbTbEmB9yoHSft+U8rzxhIKaVZiemxofoLEWMNdAVQ==
   dependencies:
     expo "^46.0.6"
     expo-image-picker "~12.0.1"
