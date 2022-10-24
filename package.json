@@ -3,7 +3,7 @@
 	"version": "1.0.1",
 	"description": "LinkedMap",
 	"homepage": "https://github.com/sknr15/linkedmap",
-	"main": "src/index.tsx",
+	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
 	"author": "Simon Konrad <simon.konrad@mni.thm.de>",
 	"license": "MIT",
