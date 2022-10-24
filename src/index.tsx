@@ -695,8 +695,10 @@ export const LinkedMap = ({
 							testID={`${testID ?? 'linkedmap'}_modal_accept`}
 							style={{
 								justifyContent: 'center',
+								alignItems: 'center',
 								padding: 8,
-								aspectRatio: 1,
+								width: 32,
+								height: 32,
 								borderWidth: 1,
 								borderRadius: 999,
 								borderColor: isDisabled ? 'grey' : 'darkgreen'
@@ -706,14 +708,20 @@ export const LinkedMap = ({
 								_handleModalAction('accept', isDisabled);
 							}}
 						>
-							<Image
-								style={{
-									tintColor: isDisabled ? 'grey' : 'darkgreen'
-								}}
-								source={acceptIcon}
-								height={16}
-								width={16}
-							/>
+							{acceptIcon ? (
+								<Image
+									style={{
+										tintColor: isDisabled ? 'grey' : 'darkgreen'
+									}}
+									source={acceptIcon}
+									height={16}
+									width={16}
+								/>
+							) : (
+								<Text adjustsFontSizeToFit style={{ fontSize: 14 }}>
+									{'OK'}
+								</Text>
+							)}
 						</TouchableOpacity>
 						<Text
 							style={{
@@ -731,8 +739,10 @@ export const LinkedMap = ({
 							testID={`${testID ?? 'linkedmap'}_modal_close`}
 							style={{
 								justifyContent: 'center',
+								alignItems: 'center',
 								padding: 8,
-								aspectRatio: 1,
+								width: 32,
+								height: 32,
 								borderWidth: 1,
 								borderRadius: 999,
 								borderColor: 'darkred'
@@ -741,7 +751,13 @@ export const LinkedMap = ({
 								_handleModalAction('close', isDisabled);
 							}}
 						>
-							<Image style={{ tintColor: 'darkred' }} source={closeIcon} height={16} width={16} />
+							{closeIcon ? (
+								<Image style={{ tintColor: 'darkred' }} source={closeIcon} height={16} width={16} />
+							) : (
+								<Text adjustsFontSizeToFit style={{ fontSize: 14 }}>
+									{' X '}
+								</Text>
+							)}
 						</TouchableOpacity>
 					</View>
 					{_renderModalContent()}
@@ -857,8 +873,10 @@ export const LinkedMap = ({
 								testID={`${testID ?? 'linkedmap'}_editmode_accept`}
 								style={{
 									justifyContent: 'center',
+									alignItems: 'center',
 									padding: 8,
-									aspectRatio: 1,
+									width: 32,
+									height: 32,
 									borderWidth: 1,
 									borderRadius: 999,
 									borderColor: isDisabled ? 'grey' : 'darkgreen'
@@ -868,16 +886,20 @@ export const LinkedMap = ({
 									_handleEditAction('accept', isDisabled);
 								}}
 							>
-								<Image
-									style={{
-										tintColor: isDisabled ? 'grey' : 'darkgreen'
-									}}
-									source={{
-										uri: 'https://cdn-icons-png.flaticon.com/512/447/447147.png'
-									}}
-									height={16}
-									width={16}
-								/>
+								{acceptIcon ? (
+									<Image
+										style={{
+											tintColor: isDisabled ? 'grey' : 'darkgreen'
+										}}
+										source={acceptIcon}
+										height={16}
+										width={16}
+									/>
+								) : (
+									<Text adjustsFontSizeToFit style={{ fontSize: 14 }}>
+										{'OK'}
+									</Text>
+								)}
 							</TouchableOpacity>
 							<Text
 								style={{
@@ -895,8 +917,10 @@ export const LinkedMap = ({
 								testID={`${testID ?? 'linkedmap'}_editmode_close`}
 								style={{
 									justifyContent: 'center',
+									alignItems: 'center',
 									padding: 8,
-									aspectRatio: 1,
+									width: 32,
+									height: 32,
 									borderWidth: 1,
 									borderRadius: 999,
 									borderColor: 'darkred'
@@ -905,14 +929,13 @@ export const LinkedMap = ({
 									_handleEditAction('close', isDisabled);
 								}}
 							>
-								<Image
-									style={{ tintColor: 'darkred' }}
-									source={{
-										uri: 'https://cdn-icons-png.flaticon.com/512/1828/1828747.png'
-									}}
-									height={16}
-									width={16}
-								/>
+								{closeIcon ? (
+									<Image style={{ tintColor: 'darkred' }} source={closeIcon} height={16} width={16} />
+								) : (
+									<Text adjustsFontSizeToFit style={{ fontSize: 14 }}>
+										{'X'}
+									</Text>
+								)}
 							</TouchableOpacity>
 						</View>
 					)}
