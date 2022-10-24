@@ -269,8 +269,8 @@ export const PositionPicker = ({ height, map, onChange, position, testId, width 
 					testID={`${testId}_map_position_${position.key}`}
 					style={{
 						position: 'absolute',
-						left: (x1 / 100) * sizeFactor.width,
-						top: (y1 / 100) * sizeFactor.height,
+						left: (x1 / 100) * sizeFactor.width + sizeFactor.x,
+						top: (y1 / 100) * sizeFactor.height + sizeFactor.y,
 						height: Math.max(_height, 0),
 						width: Math.max(_width, 0),
 						borderWidth: x2 && y2 ? 2 : 1,
