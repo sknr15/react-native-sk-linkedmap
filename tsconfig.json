@@ -1,18 +1,18 @@
 {
-  "compilerOptions": {
-    "declaration": true,
-    "esModuleInterop": true,
-    "jsx": "react",
-    "lib": ["ESNext", "DOM"],
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "noEmitOnError": true,
-    "outDir": "./lib",
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "ES2018"
-  },
-  "exclude": ["**/__tests__/*"],
-  "include": ["src"]
+	"compilerOptions": {
+		"declaration": true,
+		"esModuleInterop": true,
+		"jsx": "react",
+		"lib": ["ESNext", "DOM"],
+		"module": "ESNext",
+		"moduleResolution": "Node",
+		"noEmitOnError": true,
+		"outDir": "./lib",
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+		"target": "ES2018"
+	},
+	"exclude": ["**/__tests__/*"],
+	"include": ["src"]
 }

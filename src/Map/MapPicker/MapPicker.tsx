@@ -68,7 +68,7 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 		} else {
 			if (!hasPermissions) {
 				if (IS_WEB) {
-					window.confirm('No permissions to media library');
+					window?.confirm('No permissions to media library');
 				} else {
 					Alert.alert('No permission', 'No permissions to media library', [{ text: 'OK' }]);
 				}

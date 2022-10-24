@@ -338,7 +338,7 @@ export const LinkedMap = ({
 														testID={`${testID ?? 'linkedmap'}_mapposition_${position.key}_delete`}
 														onPress={() => {
 															if (IS_WEB) {
-																const result = window.confirm(
+																const result = window?.confirm(
 																	`Do you really want to delete this position?\n"${position.title}"`
 																);
 
@@ -494,7 +494,7 @@ export const LinkedMap = ({
 			default:
 				if ((contentType === 'showAllPositions' && JSON.stringify(tempPositions) !== JSON.stringify(mapPositions)) || hasChanges) {
 					if (IS_WEB) {
-						const result = window.confirm('Do you really want to close? Any unsaved progress will be lost!');
+						const result = window?.confirm('Do you really want to close? Any unsaved progress will be lost!');
 
 						if (result) {
 							if (contentType === 'showAllPositions' || contentType === 'changeMap') {
@@ -588,7 +588,7 @@ export const LinkedMap = ({
 					hasChanges
 				) {
 					if (IS_WEB) {
-						const result = window.confirm('Do you really want to close? Any unsaved progress will be lost!');
+						const result = window?.confirm('Do you really want to close? Any unsaved progress will be lost!');
 
 						if (result) {
 							if (modalContentType === 'showAllPositions' || modalContentType === 'changeMap') {
