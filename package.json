@@ -27,7 +27,7 @@
 		"!xcuserdata"
 	],
 	"scripts": {
-		"compile": "rm -rf lib && tsc -p .",
+		"compile": "rm -rf lib && tsc -p . && cp -a ./src/Assets/. lib/Assets/",
 		"lint": "eslint . --ext .js,.jsx,.ts,.tsx",
 		"prepare": "yarn compile",
 		"test": "jest"
