@@ -58,7 +58,9 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 				let _src = require('../../Assets/mapExample2.png');
 
 				if (tempMap?.imageSource === _src) {
-					_src = require('../../Assets/mapExample.png');
+					_src = require('../../Assets/mapExample.png') ?? {
+						uri: 'https://www.edrawsoft.com/images/examples/office%20position.png'
+					};
 				}
 
 				setTempMap({ ...tempMap, imageSource: _src, positions: [] });

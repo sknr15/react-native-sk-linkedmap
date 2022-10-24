@@ -40,7 +40,7 @@ const App = () => {
 	const [map, setMap] = useState<TMap>({
 		key: 'mapexample',
 		title: 'Map Example',
-		imageSource: example,
+		imageSource: example ?? { uri: 'https://www.edrawsoft.com/images/examples/office%20position.png' },
 		positions: [...pos]
 	});
 
