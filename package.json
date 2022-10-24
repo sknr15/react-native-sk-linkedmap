@@ -1,9 +1,10 @@
 {
 	"name": "react-native-sk-linkedmap",
 	"version": "1.0.8",
-	"description": "LinkedMap",
+	"description": "Map with position linking feature",
 	"homepage": "https://github.com/sknr15/linkedmap",
-	"main": "lib/index.js",
+	"main": "index.js",
+	"main-internal": "src/index.tsx",
 	"types": "lib/index.d.ts",
 	"author": "Simon Konrad <simon.konrad@mni.thm.de>",
 	"license": "THM",
@@ -48,7 +49,9 @@
 		"metro-react-native-babel-preset": "^0.67.0",
 		"react-native-cli": "^2.0.1",
 		"react-test-renderer": "^17.0.2",
-		"typescript": "^4.5.5"
+		"typescript": "^4.5.5",
+		"react": "17.0.2",
+		"react-native": "0.68.2"
 	},
 	"jest": {
 		"preset": "react-native",
@@ -80,5 +83,9 @@
 	},
 	"resolutions": {
 		"@types/react": "17.0.43"
+	},
+	"peerDependencies": {
+		"react": "*",
+		"react-native": "*"
 	}
 }

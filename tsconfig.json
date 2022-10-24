@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"declaration": true,
 		"esModuleInterop": true,
-		"jsx": "react",
+		"jsx": "react-native",
 		"lib": ["ESNext", "DOM"],
 		"module": "ESNext",
 		"moduleResolution": "Node",
@@ -12,7 +12,8 @@
 		"sourceMap": true,
 		"strict": true,
 		"target": "ES2018",
-		"noImplicitAny": false
+		"noImplicitAny": false,
+		"baseUrl": "./src"
 	},
 	"exclude": ["**/__tests__/*"],
 	"include": ["src"]
