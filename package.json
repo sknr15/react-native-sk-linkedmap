@@ -6,7 +6,7 @@
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
 	"author": "Simon Konrad <simon.konrad@mni.thm.de>",
-	"license": "MIT",
+	"license": "THM",
 	"files": [
 		"android",
 		"ios",
