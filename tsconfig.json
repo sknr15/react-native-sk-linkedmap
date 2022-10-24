@@ -11,7 +11,8 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-		"target": "ES2018"
+		"target": "ES2018",
+		"noImplicitAny": false
 	},
 	"exclude": ["**/__tests__/*"],
 	"include": ["src"]
