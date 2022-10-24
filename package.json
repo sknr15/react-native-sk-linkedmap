@@ -1,6 +1,6 @@
 {
 	"name": "react-native-sk-linkedmap",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"description": "Map with position linking feature",
 	"homepage": "https://github.com/sknr15/linkedmap",
 	"main": "index.js",
