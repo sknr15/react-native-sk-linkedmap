@@ -1,6 +1,6 @@
 {
 	"name": "react-native-sk-linkedmap",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"description": "LinkedMap",
 	"homepage": "https://github.com/sknr15/linkedmap",
 	"main": "lib/index.js",
