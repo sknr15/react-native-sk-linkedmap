@@ -12,7 +12,6 @@ type Props = {
 };
 
 export const MapPicker = ({ map, onChange, testId }: Props) => {
-	const IS_WEB = Platform.OS === 'web';
 	const [hasPermissions, setHasPermissions] = useState<boolean>(false);
 	const [tempMap, setTempMap] = useState<TMap | undefined>(map);
 
@@ -69,7 +68,7 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 			}
 		} else {
 			if (!hasPermissions) {
-				if (IS_WEB) {
+				if (Platform.OS === 'web') {
 					window?.confirm('No permissions to media library');
 				} else {
 					Alert.alert('No permission', 'No permissions to media library', [{ text: 'OK' }]);

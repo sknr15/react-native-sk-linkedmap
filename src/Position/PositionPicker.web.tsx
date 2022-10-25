@@ -17,7 +17,6 @@ type Props = {
 };
 
 export const PositionPicker = ({ height, map, onChange, position, testId, width }: Props) => {
-	const IS_WEB = Platform.OS === 'web';
 	const [containerSize, setContainerSize] = useState<{
 		height: number;
 		width: number;
