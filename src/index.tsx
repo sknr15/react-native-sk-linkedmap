@@ -1015,15 +1015,18 @@ export const LinkedMap = ({
 							style={{
 								flex: 1,
 								paddingVertical: 5,
-								paddingHorizontal: 10,
-								backgroundColor: '#EEEEEE',
+								paddingHorizontal: 8,
+								backgroundColor: "#448AFF",
 								borderRadius: 5,
-								borderColor: 'black',
-								borderWidth: 1
+								borderColor: "black",
+								borderWidth: 1,
+								justifyContent: "center",
+								alignItems: "center", 
+								margin: 5
 							}}
 							onPress={() => bottomSheetRef.current?.open()}
 						>
-							<Text largerText>Menu</Text>
+							<Text style={{ color: "white" }} largerText>Menu</Text>
 						</TouchableOpacity>
 					</View>
 				)}
@@ -1062,7 +1065,7 @@ export const LinkedMap = ({
 					container: {
 						borderTopLeftRadius: 5,
 						borderTopRightRadius: 5,
-						paddingBottom: 50,
+						paddingBottom: 25,
 						height: 'auto',
 						maxHeight: 200
 					}
