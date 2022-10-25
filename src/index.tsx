@@ -4,7 +4,7 @@ import Modal from 'react-native-modal';
 import { AddPosition, EditPosition } from './Position';
 import { SearchBar, Text } from './Form';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import Image from 'react-native-scalable-image';
+import { Image } from 'react-native';
 import { TCoordinates, TMap, TPosition } from './interfaces';
 import { Map, MapPicker } from './Map';
 
@@ -711,11 +711,11 @@ export const LinkedMap = ({
 							{acceptIcon ? (
 								<Image
 									style={{
-										tintColor: isDisabled ? 'grey' : 'darkgreen'
+										tintColor: isDisabled ? 'grey' : 'darkgreen',
+										height: 16,
+										width: 16
 									}}
 									source={acceptIcon}
-									height={16}
-									width={16}
 								/>
 							) : (
 								<Text adjustsFontSizeToFit style={{ fontSize: 14 }}>
@@ -752,7 +752,7 @@ export const LinkedMap = ({
 							}}
 						>
 							{closeIcon ? (
-								<Image style={{ tintColor: 'darkred' }} source={closeIcon} height={16} width={16} />
+								<Image style={{ tintColor: 'darkred', height: 16, width: 16 }} source={closeIcon} />
 							) : (
 								<Text adjustsFontSizeToFit style={{ fontSize: 14 }}>
 									{' X '}
@@ -889,11 +889,11 @@ export const LinkedMap = ({
 								{acceptIcon ? (
 									<Image
 										style={{
-											tintColor: isDisabled ? 'grey' : 'darkgreen'
+											tintColor: isDisabled ? 'grey' : 'darkgreen',
+											height: 16,
+											width: 16
 										}}
 										source={acceptIcon}
-										height={16}
-										width={16}
 									/>
 								) : (
 									<Text adjustsFontSizeToFit style={{ fontSize: 14 }}>
@@ -930,7 +930,7 @@ export const LinkedMap = ({
 								}}
 							>
 								{closeIcon ? (
-									<Image style={{ tintColor: 'darkred' }} source={closeIcon} height={16} width={16} />
+									<Image style={{ tintColor: 'darkred', height: 16, width: 16 }} source={closeIcon} />
 								) : (
 									<Text adjustsFontSizeToFit style={{ fontSize: 14 }}>
 										{'X'}
