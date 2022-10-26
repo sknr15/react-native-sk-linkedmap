@@ -62,9 +62,19 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 					};
 				}
 
-				setTempMap({ ...tempMap, imageSource: _src, positions: [] });
+				setTempMap({
+					...tempMap,
+					imageSource: _src
+					//positions: []
+				});
 
-				if (onChange) onChange({ ...tempMap, positions: [], imageSource: _src });
+				if (onChange) {
+					onChange({
+						...tempMap,
+						imageSource: _src
+						// positions: []
+					});
+				}
 			}
 		} else {
 			if (!hasPermissions) {
@@ -98,15 +108,15 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 					if (tempMap) {
 						setTempMap({
 							...tempMap,
-							imageSource: { uri },
-							positions: []
+							imageSource: { uri }
+							//positions: []
 						});
 
 						if (onChange)
 							onChange({
 								...tempMap,
-								positions: [],
 								imageSource: { uri }
+								//positions: []
 							});
 					}
 				}
@@ -136,9 +146,9 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 
 	return (
 		<View style={{ flex: 1 }}>
-			<View style={{ marginBottom: 10 }}>
+			{/* <View style={{ marginBottom: 10 }}>
 				<Text style={{ color: 'red' }}>Attention: All linked positions will be deleted on change!</Text>
-			</View>
+			</View> */}
 			<View style={{ flex: 1, marginBottom: 10 }}>
 				<View style={{ marginBottom: 10 }}>
 					<TouchableOpacity
