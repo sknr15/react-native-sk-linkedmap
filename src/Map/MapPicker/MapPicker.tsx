@@ -91,7 +91,7 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 				if (!pickedMedia.cancelled) {
 					let uri = pickedMedia.uri;
 					if (pickedMedia.height > 4096 || pickedMedia.width > 4096) {
-						Alert.alert('Image too big', 'Selected image is too big (> 2000)', [{ text: 'OK' }]);
+						Alert.alert('Image too big', 'Selected image is too big (> 4096)', [{ text: 'OK' }]);
 						return;
 					}
 
