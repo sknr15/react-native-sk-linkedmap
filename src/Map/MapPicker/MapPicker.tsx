@@ -62,17 +62,47 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 					};
 				}
 
+				let _positions = tempMap.positions;
+
+				if (tempMap.positions && tempMap.positions.length > 0) {
+					if (Platform.OS === 'web') {
+						const result = window?.confirm(`Do you want to reset the positions?`);
+
+						if (result) {
+							_positions = [];
+						}
+					} else {
+						Alert.alert('Reset?', `Do you want to reset the positions?`, [
+							{
+								text: 'No',
+								style: 'cancel'
+							},
+							{
+								text: 'Yes',
+								onPress: () => {
+									setTempMap({ ...tempMap, imageSource: _src, positions: [] });
+									if (onChange) {
+										onChange({ ...tempMap, imageSource: _src, positions: [] });
+									}
+									return;
+								},
+								style: 'destructive'
+							}
+						]);
+					}
+				}
+
 				setTempMap({
 					...tempMap,
-					imageSource: _src
-					//positions: []
+					imageSource: _src,
+					positions: _positions
 				});
 
 				if (onChange) {
 					onChange({
 						...tempMap,
-						imageSource: _src
-						// positions: []
+						imageSource: _src,
+						positions: _positions
 					});
 				}
 			}
@@ -106,17 +136,47 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 					}
 
 					if (tempMap) {
+						let _positions = tempMap.positions;
+
+						if (tempMap.positions && tempMap.positions.length > 0) {
+							if (Platform.OS === 'web') {
+								const result = window?.confirm(`Do you want to reset the positions?`);
+
+								if (result) {
+									_positions = [];
+								}
+							} else {
+								Alert.alert('Reset?', `Do you want to reset the positions?`, [
+									{
+										text: 'No',
+										style: 'cancel'
+									},
+									{
+										text: 'Yes',
+										onPress: () => {
+											setTempMap({ ...tempMap, imageSource: { uri }, positions: [] });
+											if (onChange) {
+												onChange({ ...tempMap, imageSource: { uri }, positions: [] });
+											}
+											return;
+										},
+										style: 'destructive'
+									}
+								]);
+							}
+						}
+
 						setTempMap({
 							...tempMap,
-							imageSource: { uri }
-							//positions: []
+							imageSource: { uri },
+							positions: _positions
 						});
 
 						if (onChange)
 							onChange({
 								...tempMap,
-								imageSource: { uri }
-								//positions: []
+								imageSource: { uri },
+								positions: _positions
 							});
 					}
 				}
