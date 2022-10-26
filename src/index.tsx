@@ -389,7 +389,9 @@ export const LinkedMap = ({
 								</View>
 							)}
 						</ScrollView>
-						<Text style={{ fontSize: 12, fontStyle: 'italic', color: 'gray' }}>Hint: Click on a position to edit</Text>
+						{searchedPositions.length > 0 && (
+							<Text style={{ fontSize: 12, fontStyle: 'italic', color: 'gray' }}>Hint: Click on a position to edit</Text>
+						)}
 					</View>
 				);
 		}
