@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { TextInput } from '../Form';
+import { Text, TextInput } from '../Form';
 import { emptyCoordinates, TCoordinates, TMap, TPosition } from '../interfaces';
 import { PositionPicker } from './PositionPicker';
 
@@ -22,12 +22,47 @@ export const AddPosition = ({ map, onChangePosition, testId }: Props) => {
 		width: number;
 	}>({ height: 0, width: 0 });
 
+	const [hasRenderedHint, setHasRenderedHint] = useState<boolean>(false);
+
 	const _onChange = (type: 'title' | 'target' | 'coordinates', value: string | TCoordinates) => {
 		setTempPosition({ ...tempPosition, [type]: value });
 
 		if (onChangePosition) {
 			onChangePosition({ ...tempPosition, [type]: value });
 		}
+	};
+
+	const _renderHint = () => {
+		if (hasRenderedHint) {
+			return null;
+		}
+
+		if (tempPosition.coordinates) {
+			if (!tempPosition.coordinates.x1 && !tempPosition.coordinates.y1) {
+				return (
+					<Text style={{ fontSize: 12, fontStyle: 'italic', color: 'gray', marginBottom: 5 }}>
+						Hint: Click on the image to set the first coordinate
+					</Text>
+				);
+			} else {
+				if (!tempPosition.coordinates.x2 && !tempPosition.coordinates.y2) {
+					return (
+						<Text style={{ fontSize: 12, fontStyle: 'italic', color: 'gray', marginBottom: 5 }}>
+							Hint: Click on the image to set the second coordinate
+						</Text>
+					);
+				} else {
+					setHasRenderedHint(true);
+					return null;
+				}
+			}
+		}
+
+		return (
+			<Text style={{ fontSize: 12, fontStyle: 'italic', color: 'gray', marginBottom: 5 }}>
+				Hint: Click on the image to set your coordinates
+			</Text>
+		);
 	};
 
 	const _renderCoordinatesInput = () => {
@@ -150,6 +185,7 @@ export const AddPosition = ({ map, onChangePosition, testId }: Props) => {
 				/>
 			)}
 			{_renderCoordinatesInput()}
+			{_renderHint()}
 			<View style={{ flex: 1 }}>
 				{/* {_renderAspectRatioButtons()} */}
 				<View
