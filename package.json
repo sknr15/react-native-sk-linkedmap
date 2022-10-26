@@ -80,9 +80,6 @@
 		"react-rnd": "^10.3.7",
 		"styled-components": "^5.3.5"
 	},
-	"resolutions": {
-		"@types/react": "17.0.43"
-	},
 	"peerDependencies": {
 		"react": "*",
 		"react-native": "*"
