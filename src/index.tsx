@@ -812,7 +812,7 @@ export const LinkedMap = ({
 							setIsModalVisible(true);
 						}, 100);
 					}}
-					style={btnStyle}
+					style={{ ...btnStyle, marginTop: 0 }}
 				>
 					<Text style={txtStyle} largerText={type === 'bottomsheet'}>
 						Change map
