@@ -143,22 +143,21 @@ export const MapPicker = ({ map, onChange, testId }: Props) => {
 				<View style={{ marginBottom: 10 }}>
 					<TouchableOpacity
 						style={{
-							justifyContent: 'center',
-							alignItems: 'center',
 							paddingVertical: 10,
-							paddingHorizontal: 20,
-							borderRadius: 5,
-							borderColor: 'black',
-							borderWidth: 1,
-							backgroundColor: '#EEE',
+							paddingHorizontal: 15,
 							alignSelf: 'center',
-							marginBottom: 2
+							alignItems: 'center',
+							justifyContent: 'center',
+							backgroundColor: '#448AFF',
+							borderRadius: 5,
+							width: Platform.OS === 'web' ? 'auto' : '100%',
+							marginBottom: 5
 						}}
 						onPress={async () => {
 							_pickImage();
 						}}
 					>
-						<Text>Choose image...</Text>
+						<Text style={{ fontSize: 16, color: 'white' }}>Choose image...</Text>
 					</TouchableOpacity>
 					<Text
 						style={{

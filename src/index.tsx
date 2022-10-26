@@ -242,11 +242,11 @@ export const LinkedMap = ({
 						>
 							<TouchableOpacity
 								style={{
-									alignSelf: 'center',
-									justifyContent: 'center',
-									alignItems: 'center',
 									paddingVertical: 10,
 									paddingHorizontal: 15,
+									alignSelf: 'center',
+									alignItems: 'center',
+									justifyContent: 'center',
 									backgroundColor: '#448AFF',
 									borderRadius: 5,
 									width: IS_WEB ? 'auto' : '100%',
@@ -434,10 +434,10 @@ export const LinkedMap = ({
 					<View style={{ flex: 1 }}>
 						<View
 							style={{
-								paddingBottom: 20
+								paddingBottom: 10
 							}}
 						>
-							{_renderMenu()}
+							{_renderMenu('editmode')}
 						</View>
 						<View style={{ flex: 1, borderWidth: 2 }}>
 							<Map
@@ -766,7 +766,34 @@ export const LinkedMap = ({
 		);
 	};
 
-	const _renderMenu = () => {
+	const _renderMenu = (type: 'bottomsheet' | 'editmode') => {
+		let btnStyle: ViewStyle = {};
+		let txtStyle: TextStyle = {};
+		let viewstyle: ViewStyle = {};
+
+		switch (type) {
+			case 'bottomsheet':
+				btnStyle = { paddingVertical: 5 };
+				txtStyle = {};
+				viewstyle = {};
+				break;
+			case 'editmode':
+			default:
+				btnStyle = {
+					paddingVertical: 10,
+					paddingHorizontal: 15,
+					alignSelf: 'center',
+					alignItems: 'center',
+					justifyContent: 'center',
+					backgroundColor: '#448AFF',
+					borderRadius: 5,
+					width: IS_WEB ? 'auto' : '100%',
+					margin: 5
+				};
+				txtStyle = { fontSize: 16, color: 'white' };
+				viewstyle = { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' };
+		}
+
 		return (
 			<ScrollView style={{ flexGrow: 0, maxHeight: 200 }}>
 				<TouchableOpacity
@@ -784,19 +811,23 @@ export const LinkedMap = ({
 							setIsModalVisible(true);
 						}, 100);
 					}}
-					style={{ paddingVertical: 5 }}
+					style={btnStyle}
 				>
-					<Text largerText>Change map</Text>
+					<Text style={txtStyle} largerText={type === 'bottomsheet'}>
+						Change map
+					</Text>
 				</TouchableOpacity>
-				<View
-					style={{
-						height: 1,
-						width: '100%',
-						backgroundColor: 'grey',
-						marginVertical: 5,
-						opacity: 0.5
-					}}
-				/>
+				{type === 'bottomsheet' && (
+					<View
+						style={{
+							height: 1,
+							width: '100%',
+							backgroundColor: 'grey',
+							marginVertical: 5,
+							opacity: 0.5
+						}}
+					/>
+				)}
 				<TouchableOpacity
 					onPress={() => {
 						if (editMode) {
@@ -813,9 +844,11 @@ export const LinkedMap = ({
 							setIsModalVisible(true);
 						}, 100);
 					}}
-					style={{ paddingVertical: 5 }}
+					style={btnStyle}
 				>
-					<Text largerText>Manage Positions</Text>
+					<Text style={txtStyle} largerText={type === 'bottomsheet'}>
+						Manage Positions
+					</Text>
 				</TouchableOpacity>
 				{!editMode && (
 					<View>
@@ -833,9 +866,11 @@ export const LinkedMap = ({
 							onPress={() => {
 								bottomSheetRef.current?.close();
 							}}
-							style={{ paddingVertical: 5 }}
+							style={btnStyle}
 						>
-							<Text largerText>Close</Text>
+							<Text style={txtStyle} largerText={type === 'bottomsheet'}>
+								Close
+							</Text>
 						</TouchableOpacity>
 					</View>
 				)}
@@ -1016,17 +1051,19 @@ export const LinkedMap = ({
 								flex: 1,
 								paddingVertical: 5,
 								paddingHorizontal: 8,
-								backgroundColor: "#448AFF",
+								backgroundColor: '#448AFF',
 								borderRadius: 5,
-								borderColor: "black",
+								borderColor: 'black',
 								borderWidth: 1,
-								justifyContent: "center",
-								alignItems: "center", 
+								justifyContent: 'center',
+								alignItems: 'center',
 								margin: 5
 							}}
 							onPress={() => bottomSheetRef.current?.open()}
 						>
-							<Text style={{ color: "white" }} largerText>Menu</Text>
+							<Text style={{ color: 'white' }} largerText>
+								Menu
+							</Text>
 						</TouchableOpacity>
 					</View>
 				)}
@@ -1072,7 +1109,7 @@ export const LinkedMap = ({
 				}}
 				closeOnPressMask
 			>
-				<View style={{ paddingHorizontal: 20 }}>{_renderMenu()}</View>
+				<View style={{ paddingHorizontal: 20 }}>{_renderMenu('bottomsheet')}</View>
 			</RBSheet>
 		</View>
 	);
