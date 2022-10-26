@@ -4,8 +4,6 @@ import ImageZoom from 'react-native-image-pan-zoom';
 import Image from 'react-native-scalable-image';
 import { emptyCoordinates, TCoordinates, TMap, TPosition } from '../interfaces';
 
-type ResizeDirection = 'top' | 'right' | 'bottom' | 'left' | 'topRight' | 'topLeft' | 'bottomRight' | 'bottomLeft';
-
 type Props = {
 	height?: number;
 	map: TMap;
@@ -105,55 +103,6 @@ export const PositionPicker = ({ height, map, onChange, position, testId, width 
 					_coordinates = { ..._coordinates, y2: y };
 				}
 			}
-		}
-
-		setNewCoordinates({ ..._coordinates });
-	};
-
-	const _handleResize = (direction: ResizeDirection, newX: number, newY: number) => {
-		let _coordinates = { ...newCoordinates };
-
-		switch (direction) {
-			case 'top':
-				_coordinates = { ..._coordinates, y1: _coordinates.y1 - newY };
-				break;
-			case 'topRight':
-				_coordinates = {
-					..._coordinates,
-					x2: _coordinates.x2 + newX,
-					y1: _coordinates.y1 - newY
-				};
-				break;
-			case 'right':
-				_coordinates = { ..._coordinates, x2: _coordinates.x2 + newX };
-				break;
-			case 'bottomRight':
-				_coordinates = {
-					..._coordinates,
-					x2: _coordinates.x2 + newX,
-					y2: _coordinates.y2 + newY
-				};
-				break;
-			case 'bottom':
-				_coordinates = { ..._coordinates, y2: _coordinates.y2 + newY };
-				break;
-			case 'bottomLeft':
-				_coordinates = {
-					..._coordinates,
-					x1: _coordinates.x1 - newX,
-					y2: _coordinates.y2 + newY
-				};
-				break;
-			case 'left':
-				_coordinates = { ..._coordinates, x1: _coordinates.x1 - newX };
-				break;
-			case 'topLeft':
-				_coordinates = {
-					..._coordinates,
-					x1: _coordinates.x1 - newX,
-					y1: _coordinates.y1 - newY
-				};
-				break;
 		}
 
 		setNewCoordinates({ ..._coordinates });
